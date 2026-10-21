@@ -1,5 +1,7 @@
 # SwiftDispatch
 
+![SwiftDispatch logo](assets/logo/swiftdispatch-logo.png)
+
 A free, lightweight **MediatR alternative** for .NET 10 with **Native AOT support**. Source generation handles registration and dispatch without runtime reflection.
 
 SwiftDispatch uses the same core interface names and handler patterns as MediatR, including `IMediator`, `IRequest`, `IRequestHandler`, `INotification`, and `IPipelineBehavior`. For these supported features, migration is straightforward: update your namespaces to `SwiftDispatch.Contracts` and replace your registration with the setup below.
