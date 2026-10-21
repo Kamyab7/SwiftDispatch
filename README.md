@@ -1,6 +1,6 @@
 # SwiftDispatch
 
-![SwiftDispatch logo](assets/logo/swiftdispatch-logo.png)
+![SwiftDispatch banner](assets/logo/swiftdispatch-banner.png)
 
 A free, lightweight **MediatR alternative** for .NET 10 with **Native AOT support**. Source generation handles registration and dispatch without runtime reflection.
 
