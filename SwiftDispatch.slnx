@@ -2,6 +2,12 @@
   <Folder Name="/src/">
     <Project Path="src/SwiftDispatch.Contracts/SwiftDispatch.Contracts.csproj" />
     <Project Path="src/SwiftDispatch/SwiftDispatch.csproj" />
+    <Project Path="src/SwiftDispatch.SourceGenerator/SwiftDispatch.SourceGenerator.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/SwiftDispatch.Tests/SwiftDispatch.Tests.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/SwiftDispatch.Sample/SwiftDispatch.Sample.csproj" />
+  </Folder>
 </Solution>

@@ -1,0 +1,13 @@
+using SwiftDispatch.Contracts;
+using SwiftDispatch.Sample.Infrastructure;
+
+namespace SwiftDispatch.Sample.Notifications.Handlers;
+
+public sealed class EmailObserver(TraceLog trace) : INotificationHandler<GreetingSaved>
+{
+    public Task Handle(GreetingSaved notification, CancellationToken cancellationToken)
+    {
+        trace.Entries.Add("email");
+        return Task.CompletedTask;
+    }
+}
