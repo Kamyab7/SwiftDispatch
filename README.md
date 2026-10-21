@@ -24,10 +24,7 @@ using SwiftDispatch.Contracts;
 var services = new ServiceCollection();
 services.AddSwiftDispatch();
 
-await using var provider = services.BuildServiceProvider();
-await using var scope = provider.CreateAsyncScope();
-var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
+// Marks this project for source-generated handler registration and dispatch.
 [GenerateSwiftDispatch]
 internal static partial class DispatchRegistration;
 ```
@@ -50,9 +47,13 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 }
 ```
 
-Send it using the mediator resolved in the quick start:
+Build the configured services and resolve the mediator to send the request:
 
 ```csharp
+await using var provider = services.BuildServiceProvider();
+await using var scope = provider.CreateAsyncScope();
+var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
 string greeting = await mediator.Send(new Hello("Ada"));
 Console.WriteLine(greeting); // Hello, Ada!
 ```
