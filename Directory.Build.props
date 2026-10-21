@@ -4,5 +4,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <LangVersion>latest</LangVersion>
+        <Version>0.1.0</Version>
+        <Authors>Kamyab Valipour</Authors>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/Kamyab7/SwiftDispatch</RepositoryUrl>
     </PropertyGroup>
 </Project>
