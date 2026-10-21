@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SwiftDispatch.Contracts/SwiftDispatch.Contracts.csproj" />
+    <Project Path="src/SwiftDispatch/SwiftDispatch.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
