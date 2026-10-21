@@ -1,3 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <IsAotCompatible>true</IsAotCompatible>
+    <Description>A free, source-generated, Native AOT-friendly mediator with ordered pipelines and notifications.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../SwiftDispatch.Contracts/SwiftDispatch.Contracts.csproj" />
+    <ProjectReference Include="../SwiftDispatch.SourceGenerator/SwiftDispatch.SourceGenerator.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <None Include="../SwiftDispatch.SourceGenerator/bin/$(Configuration)/netstandard2.0/SwiftDispatch.SourceGenerator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+  </ItemGroup>
 </Project>
