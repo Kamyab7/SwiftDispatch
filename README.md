@@ -4,15 +4,6 @@ A free, lightweight **MediatR alternative** for .NET 10 with **Native AOT suppor
 
 SwiftDispatch uses the same core interface names and handler patterns as MediatR, including `IMediator`, `IRequest`, `IRequestHandler`, `INotification`, and `IPipelineBehavior`. For these supported features, migration is straightforward: update your namespaces to `SwiftDispatch.Contracts` and replace your registration with the setup below.
 
-## Supported features
-
-- Requests with or without responses using `Task`-based handlers.
-- Ordered pipeline behaviors with short-circuiting, retries, and exception handling.
-- Notifications with multiple handlers, executed sequentially.
-- Source-generated registration and dispatch with Native AOT and trimming support.
-- Microsoft dependency injection integration and cancellation token forwarding.
-- Handler discovery in explicitly included assemblies and constrained generic pipeline behaviors.
-
 ## Quick start
 
 Requires .NET 10. The `SwiftDispatch` package includes the source generator automatically.
@@ -67,6 +58,15 @@ Console.WriteLine(greeting); // Hello, Ada!
 ```
 
 Use `mediator.Publish(...)` for notifications. See the [sample](samples/SwiftDispatch.Sample/Program.cs) for pipeline and notification examples.
+
+## Supported features
+
+- Requests with or without responses using `Task`-based handlers.
+- Ordered pipeline behaviors with short-circuiting, retries, and exception handling.
+- Notifications with multiple handlers, executed sequentially.
+- Source-generated registration and dispatch with Native AOT and trimming support.
+- Microsoft dependency injection integration and cancellation token forwarding.
+- Handler discovery in explicitly included assemblies and constrained generic pipeline behaviors.
 
 ## License
 
