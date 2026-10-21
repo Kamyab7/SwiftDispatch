@@ -4,8 +4,10 @@
     <IsAotCompatible>true</IsAotCompatible>
     <Description>Dependency-free contracts for SwiftDispatch requests, pipelines, and notifications.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>swiftdispatch-icon-128.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../assets/logo/swiftdispatch-icon-128.png" Pack="true" PackagePath="/" />
   </ItemGroup>
 </Project>

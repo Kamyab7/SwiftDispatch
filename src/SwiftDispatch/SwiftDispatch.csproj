@@ -4,6 +4,7 @@
     <IsAotCompatible>true</IsAotCompatible>
     <Description>A free, source-generated, Native AOT-friendly mediator with ordered pipelines and notifications.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>swiftdispatch-icon-128.png</PackageIcon>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../SwiftDispatch.Contracts/SwiftDispatch.Contracts.csproj" />
@@ -11,5 +12,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <None Include="../SwiftDispatch.SourceGenerator/bin/$(Configuration)/netstandard2.0/SwiftDispatch.SourceGenerator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../assets/logo/swiftdispatch-icon-128.png" Pack="true" PackagePath="/" />
   </ItemGroup>
 </Project>
