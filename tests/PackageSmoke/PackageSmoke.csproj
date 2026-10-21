@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <PublishAot>true</PublishAot>
+    <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SwiftDispatch" VersionOverride="0.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <Compile Include="../../samples/SwiftDispatch.Sample/**/*.cs"
+             Exclude="../../samples/SwiftDispatch.Sample/bin/**/*.cs;../../samples/SwiftDispatch.Sample/obj/**/*.cs;../../samples/SwiftDispatch.Sample/Program.cs"
+             LinkBase="Sample" />
+  </ItemGroup>
+</Project>
