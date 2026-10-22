@@ -149,9 +149,7 @@ const faqs = [
       <section class="hero wrap">
         <h1>Your requests.<br /><span>A clearer path.</span></h1>
         <p class="hero-description">
-          A free, lightweight mediator for modern .NET.<br />Source-generated
-          dispatch. Native AOT ready.<br class="mobile-break" />
-          Built to stay out of your way.
+          A free, lightweight MediatR alternative with Native AOT support.
         </p>
         <button class="install-command" @click="copyCommand">
           <span aria-hidden="true">$</span><code>{{ command }}</code>
