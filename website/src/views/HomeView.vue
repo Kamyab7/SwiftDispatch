@@ -153,7 +153,16 @@ const faqs = [
         </p>
         <button class="install-command" @click="copyCommand">
           <span aria-hidden="true">$</span><code>{{ command }}</code>
-          <span class="copy-label">{{ copied ? "Copied ✓" : "Copy ⧉" }}</span>
+          <span class="copy-label" aria-live="polite">
+            {{ copied ? "Copied" : "Copy" }}
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path v-if="copied" d="m5 12 4 4L19 6" />
+              <template v-else>
+                <rect x="8" y="8" width="12" height="12" rx="2" />
+                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+              </template>
+            </svg>
+          </span>
         </button>
         <p v-if="copyError" role="status">
           Select and copy the command above to install.
@@ -168,10 +177,6 @@ const faqs = [
           ><a class="button secondary" href="#/docs/getting-started"
             >Documentation <span aria-hidden="true">→</span></a
           >
-        </div>
-        <div class="hero-notes">
-          <span>✓ Free & open source</span><span>✓ .NET Standard 2.0 / .NET 8 / .NET 10</span
-          ><span>✓ MIT licensed</span>
         </div>
 
         <div id="how-it-works" class="simulation">
@@ -314,13 +319,6 @@ const faqs = [
             </p>
           </div>
         </div>
-        <div class="tech-strip">
-          <span>SMALL FOOTPRINT. CLEAR INTENT.</span>
-          <div>
-            C# <i> / </i> .NET 8 & 10 <i> / </i> Source generators <i> / </i> Native
-            AOT
-          </div>
-        </div>
       </section>
 
       <section id="features" class="features wrap section-space">
@@ -415,7 +413,16 @@ const faqs = [
         <p>Explore the guides and build your first request handler.</p>
         <button class="install-command" @click="copyCommand">
           <span aria-hidden="true">$</span><code>{{ command }}</code
-          ><span class="copy-label">{{ copied ? "Copied ✓" : "Copy ⧉" }}</span>
+          ><span class="copy-label" aria-live="polite">
+            {{ copied ? "Copied" : "Copy" }}
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path v-if="copied" d="m5 12 4 4L19 6" />
+              <template v-else>
+                <rect x="8" y="8" width="12" height="12" rx="2" />
+                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+              </template>
+            </svg>
+          </span>
         </button>
         <p v-if="copyError" class="copy-error" role="status">
           Select and copy the command above to install.

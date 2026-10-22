@@ -745,10 +745,24 @@ details p {
   color: #c4d7e9;
 }
 .copy-label {
-  font-size: 9px;
-  color: #7f95ad;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #d6e8fa;
   border-left: 1px solid #27364a;
   padding-left: 17px;
+}
+.copy-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.install-command:hover .copy-label,
+.install-command:focus-visible .copy-label {
+  color: #5ee7e1;
 }
 .cta .copy-error {
   color: #e1b478;
@@ -1018,7 +1032,7 @@ details p {
   }
   .copy-label {
     padding-left: 8px;
-    font-size: 8px;
+    font-size: 11px;
   }
   .footer {
     margin-top: 37px;
