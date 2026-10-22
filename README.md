@@ -4,9 +4,11 @@
 
 A free, lightweight MediatR alternative with Native AOT support.
 
+Supports `netstandard2.0`, `net8.0`, and `net10.0`. Native AOT is supported on .NET 8 and .NET 10. Building this repository requires the .NET 10 SDK.
+
 ## Quick start
 
-Requires .NET 10. The `SwiftDispatch` package includes the source generator automatically.
+The `SwiftDispatch` package includes the source generator automatically.
 
 Packages are currently built locally. Run `bash eng/verify.sh` to create them in `artifacts/packages`, then install:
 

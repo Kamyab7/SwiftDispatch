@@ -40,7 +40,9 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 10.0.x
+          dotnet-version: |
+            8.0.x
+            10.0.x
 
       - name: Build
         run: dotnet build SwiftDispatch.slnx -c Release -p:Version="$PACKAGE_VERSION" --disable-build-servers -m:1

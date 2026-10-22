@@ -97,7 +97,7 @@ const features = [
 const faqs = [
   {
     q: "What is SwiftDispatch?",
-    a: "SwiftDispatch is a free, lightweight mediator library for .NET 10. It connects requests to handlers, publishes notifications, and supports ordered pipeline behaviors using source-generated registration and dispatch.",
+    a: "SwiftDispatch is a free, lightweight mediator library targeting .NET Standard 2.0, .NET 8, and .NET 10. It connects requests to handlers, publishes notifications, and supports ordered pipeline behaviors using source-generated registration and dispatch.",
   },
   {
     q: "How is it different from MediatR?",
@@ -109,7 +109,7 @@ const faqs = [
   },
   {
     q: "Which .NET versions are supported?",
-    a: "SwiftDispatch currently targets .NET 10. The source generator is included automatically with the SwiftDispatch package.",
+    a: "SwiftDispatch targets .NET Standard 2.0, .NET 8, and .NET 10. The source generator is included automatically with the SwiftDispatch package.",
   },
   {
     q: "Is it free for commercial projects?",
@@ -170,7 +170,7 @@ const faqs = [
           >
         </div>
         <div class="hero-notes">
-          <span>✓ Free & open source</span><span>✓ .NET 10</span
+          <span>✓ Free & open source</span><span>✓ .NET Standard 2.0 / .NET 8 / .NET 10</span
           ><span>✓ MIT licensed</span>
         </div>
 
@@ -317,7 +317,7 @@ const faqs = [
         <div class="tech-strip">
           <span>SMALL FOOTPRINT. CLEAR INTENT.</span>
           <div>
-            C# <i> / </i> .NET 10 <i> / </i> Source generators <i> / </i> Native
+            C# <i> / </i> .NET 8 & 10 <i> / </i> Source generators <i> / </i> Native
             AOT
           </div>
         </div>

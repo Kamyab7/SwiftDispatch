@@ -1,6 +1,6 @@
 # Getting started
 
-SwiftDispatch is a free, lightweight mediator for **.NET 10**. Source generation handles registration and dispatch without runtime reflection, with support for Native AOT and trimming.
+SwiftDispatch is a free, lightweight mediator targeting **.NET Standard 2.0, .NET 8, and .NET 10**. Source generation handles registration and dispatch without runtime reflection, with support for Native AOT and trimming.
 
 ## Installation
 

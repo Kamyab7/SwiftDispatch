@@ -395,7 +395,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         code.Append(configuration.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public ? "public" : "internal")
             .Append(" static partial class @").Append(configuration.Name).AppendLine("\n{");
         code.AppendLine("    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddSwiftDispatch(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)\n    {");
-        code.AppendLine("        global::System.ArgumentNullException.ThrowIfNull(services);");
+        code.AppendLine("        if (services is null) throw new global::System.ArgumentNullException(nameof(services));");
         foreach (KeyValuePair<INamedTypeSymbol, IMethodSymbol> component in constructors.OrderBy(static pair => Name(pair.Key), StringComparer.Ordinal))
         {
             string type = Name(component.Key);

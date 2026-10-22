@@ -6,7 +6,7 @@ public sealed class Mediator(IServiceProvider services, DispatchTable dispatchTa
 {
     public IAsyncEnumerable<TResponse> CreateStream<TResponse>(IStreamRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null) throw new ArgumentNullException(nameof(request));
         return Enumerate(request, cancellationToken);
     }
 
@@ -30,21 +30,21 @@ public sealed class Mediator(IServiceProvider services, DispatchTable dispatchTa
 
     public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null) throw new ArgumentNullException(nameof(request));
         cancellationToken.ThrowIfCancellationRequested();
         return GetDispatcher<TResponse>(request).Invoke(request, services, cancellationToken);
     }
 
     public async Task Send<TRequest>(TRequest request, CancellationToken cancellationToken = default) where TRequest : IRequest
     {
-        ArgumentNullException.ThrowIfNull(request);
+        if (request is null) throw new ArgumentNullException(nameof(request));
         cancellationToken.ThrowIfCancellationRequested();
         await GetDispatcher<Unit>(request).Invoke(request, services, cancellationToken).ConfigureAwait(false);
     }
 
     public Task Publish(INotification notification, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(notification);
+        if (notification is null) throw new ArgumentNullException(nameof(notification));
         cancellationToken.ThrowIfCancellationRequested();
         return dispatchTable.Notifications.TryGetValue(notification.GetType(), out NotificationDispatcher? dispatcher)
             ? dispatcher.Invoke(notification, services, cancellationToken)
