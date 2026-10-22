@@ -145,9 +145,6 @@ const faqs = [
 
     <main>
       <section class="hero wrap">
-        <div class="eyebrow pill">
-          <span class="status-dot"></span> LESS CEREMONY. MORE MOMENTUM.
-        </div>
         <h1>Your requests.<br /><span>A clearer path.</span></h1>
         <p class="hero-description">
           A lightweight mediator for modern .NET.<br />Source-generated
