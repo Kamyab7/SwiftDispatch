@@ -149,7 +149,7 @@ const faqs = [
       <section class="hero wrap">
         <h1>Your requests.<br /><span>A clearer path.</span></h1>
         <p class="hero-description">
-          A lightweight mediator for modern .NET.<br />Source-generated
+          A free, lightweight mediator for modern .NET.<br />Source-generated
           dispatch. Native AOT ready.<br class="mobile-break" />
           Built to stay out of your way.
         </p>
