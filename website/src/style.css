@@ -228,15 +228,6 @@ h1 > span {
   align-items: center;
   gap: 9px;
 }
-.simulation-bar button {
-  background: #111c2a;
-  border: 1px solid #273449;
-  border-radius: 4px;
-  padding: 5px 9px;
-  font-size: 10px;
-  color: #a5b1c4;
-  letter-spacing: 0;
-}
 .routing {
   height: 310px;
   position: relative;
@@ -434,10 +425,6 @@ h1 > span {
   to {
     transform: rotate(360deg);
   }
-}
-.paused .packet,
-.paused .core-halo {
-  animation-play-state: paused;
 }
 .pipeline-row {
   display: flex;
@@ -1058,5 +1045,153 @@ details p {
   }
   .packet {
     display: none;
+  }
+}
+
+.pipeline-demo {
+  border-top: 1px solid #ffffff09;
+  padding: 22px;
+  text-align: left;
+}
+.pipeline-heading,
+.pipeline-request,
+.stage-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.pipeline-heading .pipeline-label {
+  font:
+    9px ui-monospace,
+    monospace;
+}
+.pipeline-request {
+  margin: 20px 0 14px;
+}
+.pipeline-request code {
+  color: #d4e5f5;
+  font-size: 12px;
+}
+.pipeline-request > span {
+  color: #75cfcf;
+  font-size: 10px;
+}
+.pipeline-stages {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pipeline-stage {
+  position: relative;
+  border: 1px solid #233349;
+  border-radius: 7px;
+  background: #0d1623;
+  padding: 15px;
+  transition:
+    border-color 0.3s,
+    background 0.3s,
+    box-shadow 0.3s;
+}
+.pipeline-stage:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -15px;
+  top: 50%;
+  color: #47748e;
+  font-size: 12px;
+}
+.stage-icon {
+  color: #6c8da9;
+  font-size: 18px;
+}
+.stage-number {
+  font:
+    9px ui-monospace,
+    monospace;
+  color: #5a6e89;
+}
+.pipeline-stage strong {
+  display: block;
+  margin: 12px 0 7px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.stage-detail {
+  display: block;
+  min-height: 26px;
+  color: #8192a9;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.stage-progress {
+  display: block;
+  height: 2px;
+  background: #1d2c3e;
+  margin-top: 12px;
+  overflow: hidden;
+}
+.stage-progress i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #00d9df, #367dff);
+}
+.pipeline-stage.is-active {
+  border-color: #09bfda88;
+  background: #0b2633;
+  box-shadow: 0 0 24px #00bddb0c;
+}
+.is-active .stage-icon,
+.is-active .stage-detail {
+  color: #66e7ef;
+}
+.is-active .stage-progress i {
+  width: 100%;
+  animation: stage-fill 1.2s linear both;
+}
+.is-complete .stage-icon {
+  color: #2bdcba;
+}
+.is-complete .stage-progress i {
+  width: 100%;
+  background: #259f99;
+}
+.pipeline-explainer {
+  color: #7c90ab;
+  font-size: 10px;
+  line-height: 1.8;
+  margin: 15px 0 0;
+}
+@keyframes stage-fill {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (max-width: 600px) {
+  .pipeline-demo {
+    padding: 16px 12px;
+  }
+  .pipeline-stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .pipeline-stage {
+    padding: 12px;
+  }
+  .pipeline-stage:not(:last-child)::after {
+    display: none;
+  }
+  .pipeline-stage strong {
+    font-size: 11px;
+  }
+  .pipeline-request > span {
+    font-size: 9px;
   }
 }

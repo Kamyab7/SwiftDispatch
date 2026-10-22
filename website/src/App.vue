@@ -1,9 +1,61 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import logo from "./assets/logo.png";
 
 const github = "https://github.com/Kamyab7/SwiftDispatch";
-const paused = ref(false);
+const reducedMotion = ref(false);
+const pipelineTick = ref(0);
+const pipelineStages = [
+  {
+    title: "Validation",
+    detail: "Checking request data",
+    done: "Request validated",
+    icon: "✓",
+  },
+  {
+    title: "Authentication",
+    detail: "Checking identity",
+    done: "Identity authenticated",
+    icon: "◇",
+  },
+  {
+    title: "Logging",
+    detail: "Recording request",
+    done: "Request logged",
+    icon: "≡",
+  },
+  {
+    title: "Handler",
+    detail: "Executing handler",
+    done: "Response returned",
+    icon: "↗",
+  },
+];
+const demoRequests = ["CreateOrder", "GetCustomer"];
+const activeStage = computed(() =>
+  reducedMotion.value ? 4 : pipelineTick.value % 5,
+);
+const activeRequest = computed(
+  () => demoRequests[Math.floor(pipelineTick.value / 5) % demoRequests.length],
+);
+let pipelineTimer: ReturnType<typeof setInterval> | undefined;
+let motionPreference: MediaQueryList | undefined;
+function updateMotionPreference() {
+  reducedMotion.value = motionPreference?.matches ?? false;
+}
+onMounted(() => {
+  motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  updateMotionPreference();
+  motionPreference.addEventListener("change", updateMotionPreference);
+  pipelineTimer = window.setInterval(() => {
+    if (!reducedMotion.value) pipelineTick.value += 1;
+  }, 1200);
+});
+onUnmounted(() => {
+  window.clearInterval(pipelineTimer);
+  motionPreference?.removeEventListener("change", updateMotionPreference);
+});
+
 const copied = ref(false);
 const copyError = ref(false);
 const command = "dotnet add package SwiftDispatch";
@@ -88,8 +140,7 @@ const faqs = [
             fill="currentColor"
             d="M12 .8a11.3 11.3 0 0 0-3.6 22c.6.1.8-.2.8-.5v-2c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.4-1.3-5.4-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.1 1.2a10.8 10.8 0 0 1 5.7 0c2.2-1.5 3.1-1.2 3.1-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.8 5.4-5.4 5.7.4.4.8 1.1.8 2.2v3c0 .3.2.6.8.5A11.3 11.3 0 0 0 12 .8Z"
           /></svg
-        ></a
-      >
+      ></a>
     </header>
 
     <main>
@@ -126,18 +177,9 @@ const faqs = [
           ><span>✓ MIT licensed</span>
         </div>
 
-        <div id="how-it-works" class="simulation" :class="{ paused }">
+        <div id="how-it-works" class="simulation">
           <div class="simulation-bar">
-            <span><i class="status-dot"></i> DISPATCH IN MOTION</span
-            ><button
-              @click="paused = !paused"
-              :aria-pressed="paused"
-              :aria-label="
-                paused ? 'Play routing animation' : 'Pause routing animation'
-              "
-            >
-              {{ paused ? "▶ Play" : "Ⅱ Pause" }}
-            </button>
+            <span><i class="status-dot"></i> DISPATCH IN MOTION</span>
           </div>
           <div
             class="routing"
@@ -227,11 +269,52 @@ const faqs = [
               </div>
             </div>
           </div>
-          <div class="pipeline-row">
-            <span class="pipeline-label">PIPELINE BEHAVIORS</span
-            ><span>Validation</span><b>→</b><span>Logging</span><b>→</b
-            ><span>Your handler</span
-            ><span class="simulation-note">Illustrative simulation</span>
+          <div
+            class="pipeline-demo"
+            aria-label="Illustrative custom request pipeline"
+          >
+            <div class="pipeline-heading">
+              <span class="pipeline-label">INSIDE THE REQUEST PIPELINE</span>
+              <span class="simulation-note">Illustrative custom behaviors</span>
+            </div>
+            <div class="pipeline-request">
+              <code>{{ activeRequest }}</code>
+              <span>{{
+                activeStage === 4 ? "✓ Response returned" : "Processing request"
+              }}</span>
+            </div>
+            <ol class="pipeline-stages">
+              <li
+                v-for="(stage, index) in pipelineStages"
+                :key="stage.title"
+                class="pipeline-stage"
+                :class="{
+                  'is-active': activeStage === index,
+                  'is-complete': activeStage > index,
+                }"
+                :aria-current="activeStage === index ? 'step' : undefined"
+              >
+                <div class="stage-top">
+                  <span class="stage-icon" aria-hidden="true">{{
+                    activeStage > index ? "✓" : stage.icon
+                  }}</span
+                  ><span class="stage-number">0{{ index + 1 }}</span>
+                </div>
+                <strong>{{ stage.title }}</strong>
+                <span class="stage-detail">{{
+                  activeStage > index
+                    ? stage.done
+                    : activeStage === index
+                      ? stage.detail
+                      : "Waiting for request"
+                }}</span>
+                <span class="stage-progress" aria-hidden="true"><i></i></span>
+              </li>
+            </ol>
+            <p class="pipeline-explainer">
+              Example behaviors you compose: validate the payload, authenticate
+              the caller, log the request, then execute the handler.
+            </p>
           </div>
         </div>
         <div class="tech-strip">
