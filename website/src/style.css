@@ -1309,6 +1309,44 @@ details p {
   border-radius: 8px;
   padding: 20px;
   margin-block: 22px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+.markdown-body pre,
+.markdown-body table {
+  color-scheme: dark;
+  scrollbar-color: #38778b #0a111d;
+  scrollbar-width: thin;
+}
+.markdown-body pre:hover,
+.markdown-body pre:focus-within,
+.markdown-body table:hover,
+.markdown-body table:focus-within {
+  scrollbar-color: #43cfe3 #0a111d;
+}
+.markdown-body pre::-webkit-scrollbar,
+.markdown-body table::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+.markdown-body pre::-webkit-scrollbar-track,
+.markdown-body table::-webkit-scrollbar-track {
+  background: #0a111d;
+  border-radius: 8px;
+}
+.markdown-body pre::-webkit-scrollbar-thumb,
+.markdown-body table::-webkit-scrollbar-thumb {
+  background: #38778b;
+  border: 2px solid #0a111d;
+  border-radius: 8px;
+}
+.markdown-body pre::-webkit-scrollbar-thumb:hover,
+.markdown-body table::-webkit-scrollbar-thumb:hover {
+  background: #43cfe3;
+}
+.markdown-body pre::-webkit-scrollbar-corner,
+.markdown-body table::-webkit-scrollbar-corner {
+  background: #0a111d;
 }
 .markdown-body :not(pre) > code {
   font-size: 0.88em;
@@ -1339,6 +1377,39 @@ details p {
 }
 .markdown-body img {
   max-width: 100%;
+}
+.docs-pagination {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 36px;
+}
+.docs-page-link {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid #2a3a50;
+  border-radius: 8px;
+  background: #0c1420;
+  overflow-wrap: anywhere;
+}
+.docs-page-link > span {
+  font-size: 13px;
+  color: #9eb3cc;
+}
+.docs-page-link > strong {
+  font-size: 15px;
+  color: #edf3ff;
+}
+.docs-page-link:hover,
+.docs-page-link:focus-visible {
+  border-color: #5ee7e1;
+  background: #102330;
+}
+.docs-page-next {
+  grid-column: 2;
+  text-align: right;
 }
 .docs-edit {
   display: block;

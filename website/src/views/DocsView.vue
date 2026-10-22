@@ -8,6 +8,9 @@ const route = useRoute();
 const page = computed(() =>
   documents.find((doc) => doc.slug === route.params.slug),
 );
+const pageIndex = computed(() => documents.findIndex((doc) => doc.slug === route.params.slug));
+const previousPage = computed(() => pageIndex.value > 0 ? documents[pageIndex.value - 1] : undefined);
+const nextPage = computed(() => pageIndex.value >= 0 ? documents[pageIndex.value + 1] : undefined);
 const rendered = computed(() =>
   renderDocument(
     page.value?.source ??
@@ -58,6 +61,16 @@ watchEffect(() => {
       <main id="doc-content" class="docs-main" tabindex="-1">
         <p class="eyebrow">SWIFTDISPATCH / GUIDES</p>
         <article class="markdown-body" v-html="rendered.html"></article>
+        <nav v-if="previousPage || nextPage" class="docs-pagination" aria-label="Guide pagination">
+          <RouterLink v-if="previousPage" class="docs-page-link" :to="`/docs/${previousPage.slug}`" rel="prev">
+            <span>← Previous</span>
+            <strong>{{ previousPage.title }}</strong>
+          </RouterLink>
+          <RouterLink v-if="nextPage" class="docs-page-link docs-page-next" :to="`/docs/${nextPage.slug}`" rel="next">
+            <span>Next →</span>
+            <strong>{{ nextPage.title }}</strong>
+          </RouterLink>
+        </nav>
         <a
           v-if="page"
           class="docs-edit text-link"
