@@ -1195,3 +1195,196 @@ details p {
     font-size: 9px;
   }
 }
+
+/* Markdown documentation */
+.docs-site {
+  min-height: 100vh;
+}
+.docs-badge {
+  color: #718da9;
+  font:
+    10px ui-monospace,
+    monospace;
+  letter-spacing: 2px;
+}
+.docs-layout {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr) 155px;
+  gap: 38px;
+  align-items: start;
+  padding-block: 45px 100px;
+}
+.docs-sidebar,
+.docs-toc {
+  position: sticky;
+  top: 28px;
+}
+.docs-sidebar nav,
+.docs-toc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.docs-sidebar nav > a {
+  padding: 11px 12px;
+  border-radius: 5px;
+  color: #a4b4ca;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.docs-sidebar nav > a:hover,
+.docs-sidebar .router-link-active {
+  background: #0c2635;
+  color: #4de0eb;
+}
+.docs-home {
+  display: inline-block;
+  margin-top: 30px;
+  color: #788fa9;
+  font-size: 11px;
+}
+.docs-toc > a {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #91a5bc;
+  padding-block: 5px;
+}
+.docs-toc > a:hover {
+  color: #39d8e6;
+}
+.docs-main {
+  min-width: 0;
+}
+.markdown-body {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #afbed2;
+  overflow-wrap: anywhere;
+}
+.markdown-body h1 {
+  font-size: 38px;
+  line-height: 1.2;
+  letter-spacing: -1.4px;
+  color: #edf3ff;
+  margin: 20px 0 24px;
+}
+.markdown-body h2 {
+  color: #e3ecf9;
+  font-size: 24px;
+  letter-spacing: -0.6px;
+  margin: 40px 0 15px;
+  padding-top: 8px;
+  border-top: 1px solid #1e293a;
+}
+.markdown-body h3 {
+  color: #e3ecf9;
+  font-size: 18px;
+  margin-top: 30px;
+}
+.markdown-body a {
+  color: #43cfe3;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.markdown-body strong {
+  color: #e3ecf9;
+}
+.markdown-body pre {
+  background: #0d1625;
+  border: 1px solid #25364d;
+  border-radius: 8px;
+  padding: 20px;
+  margin-block: 22px;
+}
+.markdown-body :not(pre) > code {
+  font-size: 0.88em;
+  background: #172538;
+  color: #78dce7;
+  border-radius: 4px;
+  padding: 3px 5px;
+}
+.markdown-body pre code {
+  white-space: pre;
+  overflow-wrap: normal;
+}
+.markdown-body blockquote {
+  border-left: 3px solid #19bacd;
+  margin-inline: 0;
+  padding: 2px 20px;
+  background: #0d2634;
+}
+.markdown-body table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.markdown-body th,
+.markdown-body td {
+  padding: 10px 15px;
+  border: 1px solid #28384e;
+}
+.markdown-body img {
+  max-width: 100%;
+}
+.docs-edit {
+  display: block;
+  border-top: 1px solid #24344a;
+  margin-top: 45px;
+  padding-top: 22px;
+}
+.docs-skip {
+  position: fixed;
+  top: -80px;
+  left: 20px;
+  z-index: 10;
+  padding: 12px;
+  background: #0b2635;
+  color: #53e0ed;
+}
+.docs-skip:focus {
+  top: 12px;
+}
+@media (max-width: 1000px) {
+  .docs-layout {
+    grid-template-columns: 165px minmax(0, 1fr);
+    gap: 28px;
+  }
+  .docs-toc {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .docs-layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 24px;
+  }
+  .docs-sidebar {
+    position: static;
+    border-bottom: 1px solid #24344a;
+    padding-bottom: 20px;
+  }
+  .docs-sidebar nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .docs-sidebar nav .eyebrow {
+    width: 100%;
+  }
+  .docs-sidebar nav > a {
+    font-size: 11px;
+    padding: 8px;
+  }
+  .docs-home {
+    margin-top: 14px;
+  }
+  .docs-badge {
+    display: none;
+  }
+  .markdown-body h1 {
+    font-size: 32px;
+  }
+  .markdown-body {
+    font-size: 13px;
+  }
+}
