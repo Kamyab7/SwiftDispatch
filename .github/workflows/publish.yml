@@ -1,0 +1,66 @@
+name: Publish NuGet packages
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nuget-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_PROCESSOR_COUNT: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate release tag and master ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+            echo "::error::Use a version tag such as v1.2.3 or v1.2.3-rc.1."
+            exit 1
+          fi
+          git fetch origin master
+          if ! git merge-base --is-ancestor HEAD origin/master; then
+            echo "::error::The tagged commit must belong to master."
+            exit 1
+          fi
+          echo "PACKAGE_VERSION=$version" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build
+        run: dotnet build SwiftDispatch.slnx -c Release -p:Version="$PACKAGE_VERSION" --disable-build-servers -m:1
+
+      - name: Test
+        run: dotnet test tests/SwiftDispatch.Tests -c Release --no-build
+
+      - name: Pack
+        run: |
+          dotnet pack src/SwiftDispatch.Contracts -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
+          dotnet pack src/SwiftDispatch -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
+
+      - name: Publish to NuGet.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$NUGET_API_KEY" ]]; then
+            echo "::error::Configure the NUGET_API_KEY repository secret before publishing."
+            exit 1
+          fi
+          dotnet nuget push "artifacts/release/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
