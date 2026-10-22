@@ -1,7 +1,7 @@
 using SwiftDispatch.Contracts;
-using SwiftDispatch.Sample.Infrastructure;
+using SwiftDispatch.Sample.Console.Infrastructure;
 
-namespace SwiftDispatch.Sample.Requests;
+namespace SwiftDispatch.Sample.Console.Requests;
 
 public sealed record SaveGreeting(string Greeting) : IRequest;
 

@@ -1,7 +1,7 @@
 using SwiftDispatch.Contracts;
-using SwiftDispatch.Sample.Infrastructure;
+using SwiftDispatch.Sample.Console.Infrastructure;
 
-namespace SwiftDispatch.Sample.Notifications.Handlers;
+namespace SwiftDispatch.Sample.Console.Notifications.Handlers;
 
 public sealed class AuditObserver(TraceLog trace) : INotificationHandler<GreetingSaved>
 {

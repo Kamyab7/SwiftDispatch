@@ -12,6 +12,7 @@
     <Project Path="tests/SwiftDispatch.Tests/SwiftDispatch.Tests.csproj" />
   </Folder>
   <Folder Name="/samples/">
-    <Project Path="samples/SwiftDispatch.Sample/SwiftDispatch.Sample.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.WebApi/SwiftDispatch.Sample.WebApi.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.Console/SwiftDispatch.Sample.Console.csproj" />
   </Folder>
 </Solution>

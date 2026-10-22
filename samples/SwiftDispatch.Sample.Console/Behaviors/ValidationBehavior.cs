@@ -1,7 +1,7 @@
 using SwiftDispatch.Contracts;
-using SwiftDispatch.Sample.Requests;
+using SwiftDispatch.Sample.Console.Requests;
 
-namespace SwiftDispatch.Sample.Behaviors;
+namespace SwiftDispatch.Sample.Console.Behaviors;
 
 public sealed class ValidationBehavior : IPipelineBehavior<Hello, string>
 {

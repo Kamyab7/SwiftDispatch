@@ -1,7 +1,7 @@
 using SwiftDispatch.Contracts;
-using SwiftDispatch.Sample.Infrastructure;
+using SwiftDispatch.Sample.Console.Infrastructure;
 
-namespace SwiftDispatch.Sample.Behaviors;
+namespace SwiftDispatch.Sample.Console.Behaviors;
 
 public sealed class LoggingBehavior<TRequest, TResponse>(TraceLog trace) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

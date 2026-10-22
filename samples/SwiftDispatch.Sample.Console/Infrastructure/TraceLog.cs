@@ -1,4 +1,4 @@
-namespace SwiftDispatch.Sample.Infrastructure;
+namespace SwiftDispatch.Sample.Console.Infrastructure;
 
 public sealed class TraceLog
 {

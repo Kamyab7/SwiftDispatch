@@ -58,7 +58,12 @@ string greeting = await mediator.Send(new Hello("Ada"));
 Console.WriteLine(greeting); // Hello, Ada!
 ```
 
-Use `mediator.Publish(...)` for notifications. See the [sample](samples/SwiftDispatch.Sample/Program.cs) for pipeline and notification examples.
+Use `mediator.Publish(...)` for notifications. See the [sample](samples/SwiftDispatch.Sample.Console/Program.cs) for pipeline and notification examples.
+
+## Samples
+
+- [Console](samples/SwiftDispatch.Sample.Console/Program.cs): requests, pipeline behaviors, and notifications. Run `dotnet run --project samples/SwiftDispatch.Sample.Console`.
+- [ASP.NET Core Web API](samples/SwiftDispatch.Sample.WebApi/README.md): a minimal API endpoint that dispatches a request through an injected mediator. Run `dotnet run --project samples/SwiftDispatch.Sample.WebApi -- --urls http://localhost:5080`.
 
 ## Migrating from MediatR
 

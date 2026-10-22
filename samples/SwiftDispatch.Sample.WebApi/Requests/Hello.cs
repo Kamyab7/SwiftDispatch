@@ -1,15 +1,14 @@
 using SwiftDispatch.Contracts;
-using SwiftDispatch.Sample.Infrastructure;
 
-namespace SwiftDispatch.Sample.Requests;
+namespace SwiftDispatch.Sample.WebApi.Requests;
 
 public sealed record Hello(string Name) : IRequest<string>;
 
-public sealed class HelloHandler(TraceLog trace) : IRequestHandler<Hello, string>
+public sealed class HelloHandler(ILogger<HelloHandler> logger) : IRequestHandler<Hello, string>
 {
     public Task<string> Handle(Hello request, CancellationToken cancellationToken)
     {
-        trace.Entries.Add("hello");
+        logger.LogInformation("Greeting {Name}", request.Name);
         return Task.FromResult($"Hello, {request.Name}!");
     }
 }
