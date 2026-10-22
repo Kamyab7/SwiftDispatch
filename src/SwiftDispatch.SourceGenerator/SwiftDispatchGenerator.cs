@@ -68,11 +68,13 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         }
 
         INamedTypeSymbol? responseHandler = compilation.GetTypeByMetadataName(Contracts + "IRequestHandler`2");
+        INamedTypeSymbol? streamHandler = compilation.GetTypeByMetadataName(Contracts + "IStreamRequestHandler`2");
+        INamedTypeSymbol? streamPipeline = compilation.GetTypeByMetadataName(Contracts + "IStreamPipelineBehavior`2");
         INamedTypeSymbol? voidHandler = compilation.GetTypeByMetadataName(Contracts + "IRequestHandler`1");
         INamedTypeSymbol? notificationHandler = compilation.GetTypeByMetadataName(Contracts + "INotificationHandler`1");
         INamedTypeSymbol? pipeline = compilation.GetTypeByMetadataName(Contracts + "IPipelineBehavior`2");
         INamedTypeSymbol? unit = compilation.GetTypeByMetadataName(Contracts + "Unit");
-        if (responseHandler == null || voidHandler == null || notificationHandler == null || pipeline == null || unit == null)
+        if (streamHandler == null || streamPipeline == null || responseHandler == null || voidHandler == null || notificationHandler == null || pipeline == null || unit == null)
         {
             Error(Configuration, configuration, "Reference SwiftDispatch and SwiftDispatch.Contracts before generating dispatch.");
             return;
@@ -81,6 +83,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         AttributeData attribute = configuration.GetAttributes().First(item => item.AttributeClass?.ToDisplayString() == Contracts + "GenerateSwiftDispatchAttribute");
         var assemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default) { compilation.Assembly };
         var configuredBehaviors = new List<INamedTypeSymbol>();
+        var configuredStreamBehaviors = new List<INamedTypeSymbol>();
         foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
         {
             if (argument.Value.IsNull)
@@ -100,6 +103,10 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
                 if (argument.Key == "HandlerAssemblyMarkers")
                 {
                     assemblies.Add(type.ContainingAssembly);
+                }
+                else if (argument.Key == "StreamPipelineBehaviors")
+                {
+                    configuredStreamBehaviors.Add(type);
                 }
                 else if (argument.Key == "PipelineBehaviors")
                 {
@@ -123,9 +130,10 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
                 foreach (INamedTypeSymbol implemented in type.AllInterfaces)
                 {
                     bool returnsResponse = SymbolEqualityComparer.Default.Equals(implemented.OriginalDefinition, responseHandler);
+                    bool streams = SymbolEqualityComparer.Default.Equals(implemented.OriginalDefinition, streamHandler);
                     bool returnsVoid = SymbolEqualityComparer.Default.Equals(implemented.OriginalDefinition, voidHandler);
                     bool observes = SymbolEqualityComparer.Default.Equals(implemented.OriginalDefinition, notificationHandler);
-                    if (!returnsResponse && !returnsVoid && !observes)
+                    if (!returnsResponse && !returnsVoid && !observes && !streams)
                     {
                         continue;
                     }
@@ -142,7 +150,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
                     }
                     else
                     {
-                        requests.Add(new Request(implemented.TypeArguments[0].WithNullableAnnotation(NullableAnnotation.NotAnnotated), returnsResponse ? implemented.TypeArguments[1] : unit, type, returnsVoid));
+                        requests.Add(new Request(implemented.TypeArguments[0].WithNullableAnnotation(NullableAnnotation.NotAnnotated), (returnsResponse || streams) ? implemented.TypeArguments[1] : unit, type, returnsVoid, streams));
                     }
                 }
             }
@@ -160,42 +168,46 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
             }
         }
 
-        foreach (INamedTypeSymbol behavior in configuredBehaviors)
+        foreach (var configurationGroup in new[] { (Behaviors: configuredBehaviors, Contract: pipeline, Streams: false), (Behaviors: configuredStreamBehaviors, Contract: streamPipeline, Streams: true) })
         {
-            INamedTypeSymbol definition = behavior.IsUnboundGenericType ? behavior.OriginalDefinition : behavior;
-            if (definition.TypeKind != TypeKind.Class || definition.IsAbstract || definition.IsStatic
-                || (IsOpen(definition) && (!behavior.IsUnboundGenericType || definition.Arity != 2 || definition.ContainingType != null))
-                || !definition.AllInterfaces.Any(item => SymbolEqualityComparer.Default.Equals(item.OriginalDefinition, pipeline))
-                || behavior.IsUnboundGenericType && !definition.AllInterfaces.Any(item => SymbolEqualityComparer.Default.Equals(item.OriginalDefinition, pipeline)
-                    && SymbolEqualityComparer.Default.Equals(item.TypeArguments[0], definition.TypeParameters[0])
-                    && SymbolEqualityComparer.Default.Equals(item.TypeArguments[1], definition.TypeParameters[1])))
+            foreach (INamedTypeSymbol behavior in configurationGroup.Behaviors)
             {
-                Error(Behavior, behavior, $"Behavior '{Name(behavior)}' must be a concrete closed class or an open two-parameter class implementing IPipelineBehavior<TRequest,TResponse>.");
-                continue;
-            }
-
-            foreach (Request request in requests)
-            {
-                INamedTypeSymbol closed = definition;
-                if (behavior.IsUnboundGenericType)
+                INamedTypeSymbol behaviorContract = configurationGroup.Contract;
+                INamedTypeSymbol definition = behavior.IsUnboundGenericType ? behavior.OriginalDefinition : behavior;
+                if (definition.TypeKind != TypeKind.Class || definition.IsAbstract || definition.IsStatic
+                    || (IsOpen(definition) && (!behavior.IsUnboundGenericType || definition.Arity != 2 || definition.ContainingType != null))
+                    || !definition.AllInterfaces.Any(item => SymbolEqualityComparer.Default.Equals(item.OriginalDefinition, behaviorContract))
+                    || behavior.IsUnboundGenericType && !definition.AllInterfaces.Any(item => SymbolEqualityComparer.Default.Equals(item.OriginalDefinition, behaviorContract)
+                        && SymbolEqualityComparer.Default.Equals(item.TypeArguments[0], definition.TypeParameters[0])
+                        && SymbolEqualityComparer.Default.Equals(item.TypeArguments[1], definition.TypeParameters[1])))
                 {
-                    ITypeSymbol[] arguments = { request.Message, request.Response };
-                    if (!SatisfiesConstraints(compilation, definition, arguments))
+                    Error(Behavior, behavior, $"Behavior '{Name(behavior)}' must be a concrete closed class or an open two-parameter class implementing {behaviorContract.Name}<TRequest,TResponse>.");
+                    continue;
+                }
+
+                foreach (Request request in requests.Where(item => item.Streams == configurationGroup.Streams))
+                {
+                    INamedTypeSymbol closed = definition;
+                    if (behavior.IsUnboundGenericType)
                     {
-                        continue;
+                        ITypeSymbol[] arguments = { request.Message, request.Response };
+                        if (!SatisfiesConstraints(compilation, definition, arguments))
+                        {
+                            continue;
+                        }
+                        closed = definition.Construct(arguments);
                     }
-                    closed = definition.Construct(arguments);
-                }
 
-                if (closed.AllInterfaces.Any(item => SymbolEqualityComparer.Default.Equals(item.OriginalDefinition, pipeline)
-                    && SymbolEqualityComparer.Default.Equals(item.TypeArguments[0], request.Message)
-                    && SymbolEqualityComparer.Default.Equals(item.TypeArguments[1], request.Response)))
-                {
-                    request.Behaviors.Add(closed);
-                }
-                else if (behavior.IsUnboundGenericType)
-                {
-                    Error(Behavior, behavior, $"Open behavior '{Name(behavior)}' must implement IPipelineBehavior<TRequest,TResponse> using its type parameters in that order.");
+                    if (closed.AllInterfaces.Any(item => SymbolEqualityComparer.Default.Equals(item.OriginalDefinition, behaviorContract)
+                        && SymbolEqualityComparer.Default.Equals(item.TypeArguments[0], request.Message)
+                        && SymbolEqualityComparer.Default.Equals(item.TypeArguments[1], request.Response)))
+                    {
+                        request.Behaviors.Add(closed);
+                    }
+                    else if (behavior.IsUnboundGenericType)
+                    {
+                        Error(Behavior, behavior, $"Open behavior '{Name(behavior)}' must implement {behaviorContract.Name}<TRequest,TResponse> using its type parameters in that order.");
+                    }
                 }
             }
         }
@@ -421,12 +433,17 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
             Request request = requests[index];
             string message = Name(request.Message);
             string response = Name(request.Response);
+            string resultType = request.Streams ? "global::System.Collections.Generic.IAsyncEnumerable<" : "global::System.Threading.Tasks.Task<";
+            string dispatcherContract = request.Streams ? "IStreamRequestDispatcher" : "IRequestDispatcher";
+            string handlerContract = request.Streams ? "IStreamRequestHandler" : "IRequestHandler";
+            string behaviorContract = request.Streams ? "IStreamPipelineBehavior" : "IPipelineBehavior";
+            string delegateContract = request.Streams ? "StreamHandlerDelegate" : "RequestHandlerDelegate";
             code.Append("    private sealed class __SwiftDispatchRequest").Append(index)
-                .Append(" : global::SwiftDispatch.IRequestDispatcher<").Append(response).AppendLine(">\n    {");
-            code.Append("        public global::System.Threading.Tasks.Task<").Append(response)
+                .Append(" : global::SwiftDispatch.").Append(dispatcherContract).Append("<").Append(response).AppendLine(">\n    {");
+            code.Append("        public ").Append(resultType).Append(response)
                 .AppendLine("> Invoke(object value, global::System.IServiceProvider sp, global::System.Threading.CancellationToken cancellationToken)\n        {");
             code.Append("            var request = (").Append(message).AppendLine(")value;");
-            string handlerInterface = "global::SwiftDispatch.Contracts.IRequestHandler<" + message + (request.ReturnsVoid ? "" : ", " + response) + ">";
+            string handlerInterface = "global::SwiftDispatch.Contracts." + handlerContract + "<" + message + (request.ReturnsVoid ? "" : ", " + response) + ">";
             code.Append("            ").Append(handlerInterface).Append(" handler = ").Append(Resolve(request.Handler)).AppendLine(";");
             if (request.ReturnsVoid)
             {
@@ -434,12 +451,12 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
             }
             else
             {
-                code.Append("            global::System.Threading.Tasks.Task<").Append(response).AppendLine("> InvokeHandler()\n            {\n                cancellationToken.ThrowIfCancellationRequested();\n                return handler.Handle(request, cancellationToken);\n            }");
+                code.Append("            ").Append(resultType).Append(response).AppendLine("> InvokeHandler()\n            {\n                cancellationToken.ThrowIfCancellationRequested();\n                return handler.Handle(request, cancellationToken);\n            }");
             }
-            code.Append("            global::SwiftDispatch.Contracts.RequestHandlerDelegate<").Append(response).AppendLine("> next = InvokeHandler;");
+            code.Append("            global::SwiftDispatch.Contracts.").Append(delegateContract).Append("<").Append(response).AppendLine("> next = InvokeHandler;");
             for (int behaviorIndex = request.Behaviors.Count - 1; behaviorIndex >= 0; behaviorIndex--)
             {
-                code.Append("            global::SwiftDispatch.Contracts.IPipelineBehavior<").Append(message).Append(", ").Append(response)
+                code.Append("            global::SwiftDispatch.Contracts.").Append(behaviorContract).Append("<").Append(message).Append(", ").Append(response)
                     .Append("> behavior").Append(behaviorIndex).Append(" = ").Append(Resolve(request.Behaviors[behaviorIndex])).AppendLine(";");
                 code.Append("            var continuation").Append(behaviorIndex).AppendLine(" = next;");
                 code.Append("            next = () =>\n            {\n                cancellationToken.ThrowIfCancellationRequested();\n                return behavior")
@@ -476,11 +493,12 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         return resolver + "<" + Name(type.WithNullableAnnotation(NullableAnnotation.NotAnnotated)) + ">(sp)";
     }
 
-    private sealed class Request(ITypeSymbol message, ITypeSymbol response, INamedTypeSymbol handler, bool returnsVoid)
+    private sealed class Request(ITypeSymbol message, ITypeSymbol response, INamedTypeSymbol handler, bool returnsVoid, bool streams)
     {
         public ITypeSymbol Message { get; } = message;
         public ITypeSymbol Response { get; } = response;
         public INamedTypeSymbol Handler { get; } = handler;
+        public bool Streams { get; } = streams;
         public bool ReturnsVoid { get; } = returnsVoid;
         public List<INamedTypeSymbol> Behaviors { get; } = new();
     }

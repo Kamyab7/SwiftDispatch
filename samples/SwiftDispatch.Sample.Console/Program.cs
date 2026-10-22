@@ -20,3 +20,8 @@ await mediator.Publish(new GreetingSaved(greeting));
 System.Console.WriteLine(greeting);
 TraceLog trace = scope.ServiceProvider.GetRequiredService<TraceLog>();
 System.Console.WriteLine(string.Join(" -> ", trace.Entries));
+
+await foreach (int value in mediator.CreateStream(new Count(3)))
+{
+    System.Console.WriteLine(value);
+}
