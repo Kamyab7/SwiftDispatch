@@ -27,6 +27,8 @@ src/
           GetTodo.cs
           GetTodoHandler.cs
       TodoResponse.cs
+      Notifications/TodoCompleted.cs
+      EventHandlers/TodoCompletedEventHandler.cs
     DependencyInjection.cs
   Infrastructure/
     Persistence/InMemoryTodoRepository.cs
@@ -45,6 +47,16 @@ Application owns the pipeline because logging and validation apply to use cases 
 `src/Application/DependencyInjection.cs` configures the SwiftDispatch source generator and exposes `AddApplicationServices()`. The generator discovers handlers in Application itself. `AddInfrastructureServices()` registers persistence, and Web's `Program.cs` calls both methods before mapping the endpoints.
 
 The host registers the repository as a singleton so data survives across HTTP request scopes. Reads and writes copy domain objects to avoid sharing mutable instances between requests. This store is for demonstration: data is lost on restart, and it does not provide transactions or optimistic concurrency.
+
+## Notifications
+
+`CompleteTodoHandler` publishes `TodoCompleted` through the injected `IPublisher` after saving the completed item. The notification is an application event under `TodoItems/Notifications`; Domain remains independent of SwiftDispatch.
+
+`TodoItems/EventHandlers/TodoCompletedEventHandler.cs` implements `INotificationHandler<TodoCompleted>` and logs the completed item's ID and title. The source generator discovers and registers it automatically. Add more handlers for the same notification to react independently; SwiftDispatch awaits them sequentially.
+
+To try it in Scalar, create a todo, then call `POST /todos/{id}/complete`. Logs show `Handling CompleteTodo`, `Todo completed: ...`, and `Handled CompleteTodo in ... ms`. Repeating completion for an already completed item returns the existing result without saving or publishing again. Missing IDs return `404` without a notification.
+
+Publication runs in process and is awaited before returning the HTTP response. It is separate from persistence: if a notification handler fails, the todo remains saved. The in-memory store does not guarantee exactly-once publication across concurrent requests.
 
 ## Pipeline behaviors
 
