@@ -72,7 +72,7 @@ The open generic `LoggingBehaviour<,>` in `Application/Common/Behaviours` wraps 
 
 The generic `ValidationBehaviour<TRequest, TResponse>` resolves all registered FluentValidation `IValidator<TRequest>` implementations and calls `ValidateAsync` with the request cancellation token before invoking the handler. Validators run sequentially so they can share scoped dependencies. Requests without validators proceed directly to their handlers.
 
-`CreateTodoValidator` lives beside the create request and handler. Its `NotEmpty()` rule rejects missing, empty, and whitespace-only titles. Application registers it explicitly as `IValidator<CreateTodo>` in `DependencyInjection.cs`, without assembly scanning. Register additional validators there when adding use cases.
+`CreateTodoValidator` lives beside the create request and handler. Its `NotEmpty()` rule rejects missing, empty, and whitespace-only titles. Like Jason Taylor's template, `DependencyInjection.cs` calls `AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())` to discover all public validators in Application and register them with scoped lifetimes. Add new public validators beside their requests; no individual registrations are needed.
 
 The pipeline collects failures from every validator and throws `RequestValidationException`, grouping distinct messages by property name. The API returns `400 Bad Request` with validation problem details, including `errors.Title`. Validation also applies to callers outside HTTP; Domain retains its own title invariant.
 

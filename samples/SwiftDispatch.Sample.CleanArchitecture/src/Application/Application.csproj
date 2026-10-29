@@ -8,5 +8,6 @@
     <ProjectReference Include="../../../../src/SwiftDispatch.SourceGenerator/SwiftDispatch.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
   </ItemGroup>
 </Project>
