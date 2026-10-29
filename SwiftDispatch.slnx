@@ -13,7 +13,9 @@
     <Project Path="tests/SwiftDispatch.Tests/SwiftDispatch.Tests.csproj" />
   </Folder>
   <Folder Name="/samples/">
-    <Project Path="samples/SwiftDispatch.Sample.WebApi/SwiftDispatch.Sample.WebApi.csproj" />
-    <Project Path="samples/SwiftDispatch.Sample.Console/SwiftDispatch.Sample.Console.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/src/Domain/Domain.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/src/Application/Application.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/src/Infrastructure/Infrastructure.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/src/Web/Web.csproj" />
   </Folder>
 </Solution>

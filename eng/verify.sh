@@ -10,7 +10,5 @@ dotnet pack src/SwiftDispatch -c Release --no-build --disable-build-servers -m:1
 package_cache="$(mktemp -d "$task_root/artifacts/package-cache.XXXXXX")"
 dotnet restore tests/PackageSmoke --packages "$package_cache" --source "$task_root/artifacts/packages" --source https://api.nuget.org/v3/index.json
 dotnet run --project tests/PackageSmoke -c Release --no-restore --disable-build-servers
-dotnet publish samples/SwiftDispatch.Sample.Console -c Release -r linux-x64 --disable-build-servers -m:1 -o artifacts/native
-./artifacts/native/SwiftDispatch.Sample.Console
 dotnet publish tests/PackageSmoke -c Release -r linux-x64 --disable-build-servers -m:1 -p:RestorePackagesPath="$package_cache" -o artifacts/package-native --source "$task_root/artifacts/packages" --source https://api.nuget.org/v3/index.json
 ./artifacts/package-native/PackageSmoke

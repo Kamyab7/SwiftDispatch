@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using SwiftDispatch.Contracts;
-using SwiftDispatch.Sample.Console.Configuration;
-using SwiftDispatch.Sample.Console.Infrastructure;
-using SwiftDispatch.Sample.Console.Notifications;
-using SwiftDispatch.Sample.Console.Requests;
+using SwiftDispatch.PackageSmoke.Configuration;
+using SwiftDispatch.PackageSmoke.Infrastructure;
+using SwiftDispatch.PackageSmoke.Notifications;
+using SwiftDispatch.PackageSmoke.Requests;
 
 var services = new ServiceCollection();
 services.AddScoped(static _ => new TraceLog());

@@ -31,4 +31,4 @@ Register services and configure a generated registration class as described in [
 await mediator.Publish(new OrderPlaced("order-123"));
 ```
 
-See the [notification sample](https://github.com/Kamyab7/SwiftDispatch/tree/master/samples/SwiftDispatch.Sample.Console/Notifications) for multiple handlers.
+See the [package smoke test handlers](https://github.com/Kamyab7/SwiftDispatch/tree/master/tests/PackageSmoke/Notifications/Handlers) for multiple handlers.
