@@ -63,7 +63,7 @@ Use `mediator.Publish(...)` for notifications.
 
 ## Samples
 
-- [Clean architecture](samples/SwiftDispatch.Sample.CleanArchitecture/README.md): separate domain, application, infrastructure, and API projects with application pipeline behaviors. Run `dotnet run --project samples/SwiftDispatch.Sample.CleanArchitecture/src/Web -- --urls http://localhost:5081`.
+- [Clean architecture](samples/SwiftDispatch.Sample.CleanArchitecture): separate domain, application, infrastructure, and API projects with application pipeline behaviors. Run `dotnet run --project samples/SwiftDispatch.Sample.CleanArchitecture/src/Web -- --urls http://localhost:5081`.
 
 ## Migrating from MediatR
 
