@@ -8,14 +8,13 @@ Supports `netstandard2.0`, `net8.0`, and `net10.0`. Native AOT is supported on .
 
 ## Quick start
 
-The `SwiftDispatch` package includes the source generator automatically.
-
-Packages are currently built locally. Run `bash eng/verify.sh` to create them in `artifacts/packages`, then install:
+Install [SwiftDispatch from NuGet](https://www.nuget.org/packages/SwiftDispatch/0.1.0-beta.1). The package includes the source generator automatically and references `SwiftDispatch.Contracts`.
 
 ```sh
-dotnet add package Microsoft.Extensions.DependencyInjection
-dotnet add package SwiftDispatch --source /path/to/SwiftDispatch/artifacts/packages
+dotnet add package SwiftDispatch --version 0.1.0-beta.1
 ```
+
+`0.1.0-beta.1` is a prerelease; APIs may change before the stable release.
 
 Configure your application's services:
 
