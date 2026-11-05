@@ -358,7 +358,7 @@ const faqs = [
           </p>
           <a
             class="text-link"
-            :href="`${github}/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture`"
+            :href="`${github}/tree/master/sample/SwiftDispatch.Sample.CleanArchitecture`"
             target="_blank"
             rel="noopener noreferrer"
             >Explore the sample <span>↗</span></a
