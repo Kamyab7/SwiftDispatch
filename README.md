@@ -41,9 +41,7 @@ services.AddSwiftDispatch(options =>
 });
 ```
 
-Place this registration in the assembly containing your handlers, such as your Application-layer service-registration extension. `Assembly.GetExecutingAssembly()` identifies that assembly. Use `typeof(SomeHandler).Assembly` to include public handlers from another assembly; no dedicated marker class is required. The existing `AddHandlersFromAssemblyContaining<T>()` API is also available.
-
-Configuration is read at build time. Use one direct lambda per assembly, either a fluent expression or a block containing registration calls on its options parameter. Supported calls are `RegisterServicesFromAssembly(...)`, `AddHandlersFromAssemblyContaining<T>()`, `AddOpenBehavior(typeof(...))`, `AddPipelineBehavior(typeof(...))`, and `AddStreamPipelineBehavior(typeof(...))`. The lambda is not executed at runtime; variables, arbitrary assembly expressions, helper methods inside the lambda, and conditions are unsupported and produce a generator diagnostic. To register repeatedly, put that single call in a helper and invoke the helper multiple times.
+Register once in your Application layer. For another assembly, use `typeof(SomeHandler).Assembly`. Keep configuration explicit: use assembly expressions and `typeof(...)` directly, without variables or conditions.
 
 ## Example
 
