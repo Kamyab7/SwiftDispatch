@@ -17,7 +17,7 @@ public sealed class Mediator(IServiceProvider services, DispatchTable dispatchTa
         if (!dispatchTable.Requests.TryGetValue(request.GetType(), out object? dispatcher)
             || dispatcher is not IStreamRequestDispatcher<TResponse> streamDispatcher)
         {
-            throw new InvalidOperationException($"No generated stream handler for '{request.GetType()}'. Include its assembly in GenerateSwiftDispatch.HandlerAssemblyMarkers and call the generated AddSwiftDispatch method.");
+            throw new InvalidOperationException($"No generated stream handler for '{request.GetType()}'. Include its assembly with AddHandlersFromAssemblyContaining<T>() and call the generated AddSwiftDispatch method.");
         }
 
         await foreach (TResponse item in streamDispatcher.Invoke(request, services, cancellationToken)
@@ -59,6 +59,6 @@ public sealed class Mediator(IServiceProvider services, DispatchTable dispatchTa
             return typedDispatcher;
         }
 
-        throw new InvalidOperationException($"No generated request handler for '{request.GetType()}'. Include its assembly in GenerateSwiftDispatch.HandlerAssemblyMarkers and call the generated AddSwiftDispatch method.");
+        throw new InvalidOperationException($"No generated request handler for '{request.GetType()}'. Include its assembly with AddHandlersFromAssemblyContaining<T>() and call the generated AddSwiftDispatch method.");
     }
 }

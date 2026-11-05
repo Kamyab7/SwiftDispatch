@@ -11,11 +11,10 @@ public sealed class ReferencedAssemblyTests
     public void ReferencedAssembliesAreIncludedOnlyWhenExplicitlyConfigured()
     {
         PortableExecutableReference library = Library("public");
-        string omitted = SuccessfulSource("[GenerateSwiftDispatch] public static partial class Registration {}", library);
+        string omitted = SuccessfulSource("public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }", library);
         Assert.DoesNotContain("Lib.Handler", omitted);
         string included = SuccessfulSource("""
-            [GenerateSwiftDispatch(HandlerAssemblyMarkers = new[] { typeof(Lib.Marker), typeof(Lib.Marker) })]
-            public static partial class Registration {}
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>().AddHandlersFromAssemblyContaining<Lib.Marker>().AddHandlersFromAssemblyContaining<Lib.Marker>()); }
             """, library);
         Assert.Contains("new global::Lib.Handler()", included);
         Assert.Contains("typeof(global::Lib.Ping)", included);
@@ -25,8 +24,7 @@ public sealed class ReferencedAssemblyTests
     public void InaccessibleReferencedHandlersAreDiagnosed()
     {
         (GeneratorDriverRunResult result, _) = Generate("""
-            [GenerateSwiftDispatch(HandlerAssemblyMarkers = new[] { typeof(Lib.Marker) })]
-            public static partial class Registration {}
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>().AddHandlersFromAssemblyContaining<Lib.Marker>()); }
             """, Library("internal"));
         Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "SD002");
     }
@@ -46,8 +44,7 @@ public sealed class ReferencedAssemblyTests
             {
                 public Task Handle(Lib.Notice notification, CancellationToken ct) => Task.CompletedTask;
             }
-            [GenerateSwiftDispatch(HandlerAssemblyMarkers = new[] { typeof(Lib.Marker) })]
-            public static partial class Registration {}
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>().AddHandlersFromAssemblyContaining<Lib.Marker>()); }
             """, library);
         Assert.True(generated.IndexOf("handler0 = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::Lib.ZObserver>", StringComparison.Ordinal) >= 0);
         Assert.True(generated.IndexOf("handler1 = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::AObserver>", StringComparison.Ordinal) >= 0);

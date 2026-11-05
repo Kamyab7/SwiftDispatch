@@ -1,8 +1,16 @@
-using SwiftDispatch.Contracts;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using SwiftDispatch.PackageSmoke.Behaviors;
 
 namespace SwiftDispatch.PackageSmoke.Configuration;
 
-[GenerateSwiftDispatch(
-    PipelineBehaviors = new[] { typeof(LoggingBehavior<,>), typeof(ValidationBehavior) })]
-internal static partial class DispatchRegistration;
+internal static class DispatchRegistration
+{
+    internal static IServiceCollection AddPackageDispatch(this IServiceCollection services) =>
+        services.AddSwiftDispatch(options =>
+        {
+            options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            options.AddOpenBehavior(typeof(LoggingBehavior<,>));
+            options.AddPipelineBehavior(typeof(ValidationBehavior));
+        });
+}

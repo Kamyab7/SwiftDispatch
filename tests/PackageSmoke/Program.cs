@@ -7,8 +7,8 @@ using SwiftDispatch.PackageSmoke.Requests;
 
 var services = new ServiceCollection();
 services.AddScoped(static _ => new TraceLog());
-services.AddSwiftDispatch();
-services.AddSwiftDispatch(); // Verify idempotency: repeated registration must not duplicate services or notification delivery.
+services.AddPackageDispatch();
+services.AddPackageDispatch(); // Verify idempotency: repeated registration must not duplicate services or notification delivery.
 
 await using ServiceProvider provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
 await using AsyncServiceScope scope = provider.CreateAsyncScope();

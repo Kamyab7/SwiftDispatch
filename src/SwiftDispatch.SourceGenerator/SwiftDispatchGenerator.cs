@@ -23,13 +23,15 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValueProvider<ImmutableArray<INamedTypeSymbol>> configurations = context.SyntaxProvider
-            .ForAttributeWithMetadataName(Contracts + "GenerateSwiftDispatchAttribute",
-                static (node, _) => node is ClassDeclarationSyntax,
-                static (attribute, _) => (INamedTypeSymbol)attribute.TargetSymbol)
-            .Collect();
+        var registrations = context.SyntaxProvider.CreateSyntaxProvider(
+            static (node, _) => node is InvocationExpressionSyntax
+            {
+                Expression: MemberAccessExpressionSyntax { Name.Identifier.ValueText: "AddSwiftDispatch" },
+                ArgumentList.Arguments.Count: 1
+            },
+            static (syntax, _) => (InvocationExpressionSyntax)syntax.Node).Collect();
 
-        context.RegisterSourceOutput(configurations.Combine(context.CompilationProvider),
+        context.RegisterSourceOutput(registrations.Combine(context.CompilationProvider),
             static (output, input) => Generate(output, input.Right, input.Left));
     }
 
@@ -40,30 +42,25 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         .WithMiscellaneousOptions(SymbolDisplayFormat.FullyQualifiedFormat.MiscellaneousOptions
             | SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier));
 
-    private static void Generate(SourceProductionContext output, Compilation compilation, ImmutableArray<INamedTypeSymbol> configurations)
+    private static void Generate(SourceProductionContext output, Compilation compilation, ImmutableArray<InvocationExpressionSyntax> registrations)
     {
-        if (configurations.Length == 0)
-        {
-            return;
-        }
+        var fluentCalls = registrations.Where(call => IsServiceRegistration(compilation, call)).ToArray();
+        if (fluentCalls.Length == 0) return;
 
         bool failed = false;
-        INamedTypeSymbol configuration = configurations[0];
+        ISymbol accessContext = compilation.Assembly;
+        Location configurationLocation = fluentCalls[0].GetLocation();
         void Error(DiagnosticDescriptor rule, ISymbol symbol, string message)
         {
             failed = true;
-            Location location = symbol.Locations.FirstOrDefault(static item => item.IsInSource)
-                ?? configuration.Locations.FirstOrDefault() ?? Location.None;
+            Location location = symbol is IAssemblySymbol ? configurationLocation
+                : symbol.Locations.FirstOrDefault(static item => item.IsInSource) ?? configurationLocation;
             output.ReportDiagnostic(Diagnostic.Create(rule, location, message));
         }
 
-        if (configurations.Length != 1 || !configuration.IsStatic || configuration.Arity != 0
-            || configuration.ContainingType != null || configuration.IsFileLocal
-            || configuration.GetMembers("AddSwiftDispatch").Length != 0
-            || configuration.DeclaringSyntaxReferences.Any(reference => reference.GetSyntax(output.CancellationToken)
-                is not ClassDeclarationSyntax declaration || !declaration.Modifiers.Any(SyntaxKind.PartialKeyword)))
+        if (fluentCalls.Length > 1)
         {
-            Error(Configuration, configuration, "Use exactly one top-level, non-generic static partial configuration class per host, with no existing AddSwiftDispatch member.");
+            Error(Configuration, accessContext, "Use one fluent AddSwiftDispatch registration per assembly. To register repeatedly, wrap that call in a helper method.");
             return;
         }
 
@@ -76,45 +73,19 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         INamedTypeSymbol? unit = compilation.GetTypeByMetadataName(Contracts + "Unit");
         if (streamHandler == null || streamPipeline == null || responseHandler == null || voidHandler == null || notificationHandler == null || pipeline == null || unit == null)
         {
-            Error(Configuration, configuration, "Reference SwiftDispatch and SwiftDispatch.Contracts before generating dispatch.");
+            Error(Configuration, accessContext, "Reference SwiftDispatch and SwiftDispatch.Contracts before generating dispatch.");
             return;
         }
 
-        AttributeData attribute = configuration.GetAttributes().First(item => item.AttributeClass?.ToDisplayString() == Contracts + "GenerateSwiftDispatchAttribute");
         var assemblies = new HashSet<IAssemblySymbol>(SymbolEqualityComparer.Default) { compilation.Assembly };
         var configuredBehaviors = new List<INamedTypeSymbol>();
         var configuredStreamBehaviors = new List<INamedTypeSymbol>();
-        foreach (KeyValuePair<string, TypedConstant> argument in attribute.NamedArguments)
+        if (!ReadFluentConfiguration(compilation, fluentCalls[0], assemblies,
+            configuredBehaviors, configuredStreamBehaviors, out string? error))
         {
-            if (argument.Value.IsNull)
-            {
-                Error(Configuration, configuration, argument.Key + " must be a non-null array of types.");
-                continue;
-            }
-
-            foreach (TypedConstant value in argument.Value.Values)
-            {
-                if (value.Value is not INamedTypeSymbol type)
-                {
-                    Error(Configuration, configuration, argument.Key + " must contain named types.");
-                    continue;
-                }
-
-                if (argument.Key == "HandlerAssemblyMarkers")
-                {
-                    assemblies.Add(type.ContainingAssembly);
-                }
-                else if (argument.Key == "StreamPipelineBehaviors")
-                {
-                    configuredStreamBehaviors.Add(type);
-                }
-                else if (argument.Key == "PipelineBehaviors")
-                {
-                    configuredBehaviors.Add(type);
-                }
-            }
+            Error(Configuration, accessContext, error!);
+            return;
         }
-
         var requests = new List<Request>();
         var notifications = new List<Observer>();
         foreach (IAssemblySymbol assembly in assemblies.OrderBy(static item => item.Identity.ToString(), StringComparer.Ordinal))
@@ -230,7 +201,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         foreach (INamedTypeSymbol component in components)
         {
             bool referenced = !SymbolEqualityComparer.Default.Equals(component.ContainingAssembly, compilation.Assembly);
-            if (!compilation.IsSymbolAccessibleWithin(component, configuration)
+            if (!compilation.IsSymbolAccessibleWithin(component, accessContext)
                 || (referenced && !PubliclyAccessible(component)))
             {
                 Error(Accessibility, component, $"Component '{Name(component)}' must be accessible from the host configuration; components in referenced assemblies must be public.");
@@ -238,7 +209,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
             }
 
             IMethodSymbol[] accessible = component.InstanceConstructors
-                .Where(item => compilation.IsSymbolAccessibleWithin(item, configuration)).ToArray();
+                .Where(item => compilation.IsSymbolAccessibleWithin(item, accessContext)).ToArray();
             if (accessible.Length != 1 || accessible[0].Parameters.Any(static parameter => parameter.RefKind != RefKind.None
                 || parameter.Type.TypeKind is TypeKind.Pointer or TypeKind.FunctionPointer || parameter.Type.IsRefLikeType)
                 || HasRequiredMembers(component))
@@ -252,9 +223,9 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         foreach (ITypeSymbol message in requests.Select(static item => item.Message)
             .Concat(requests.Select(static item => item.Response)).Concat(notifications.Select(static item => item.Message)))
         {
-            if (!compilation.IsSymbolAccessibleWithin(message, configuration))
+            if (!compilation.IsSymbolAccessibleWithin(message, accessContext))
             {
-                Error(Accessibility, configuration, $"Message/response '{Name(message)}' is inaccessible from the host configuration.");
+                Error(Accessibility, accessContext, $"Message/response '{Name(message)}' is inaccessible from the host configuration.");
             }
         }
 
@@ -263,7 +234,107 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
             return;
         }
 
-        output.AddSource("SwiftDispatch.Registration.g.cs", SourceText.From(Emit(configuration, requests, notifications, constructors), Encoding.UTF8));
+        output.AddSource("SwiftDispatch.Registration.g.cs", SourceText.From(Emit(requests, notifications, constructors), Encoding.UTF8));
+    }
+
+    private static bool IsServiceRegistration(Compilation compilation, InvocationExpressionSyntax call)
+    {
+        var member = (MemberAccessExpressionSyntax)call.Expression;
+        ITypeSymbol? receiver = compilation.GetSemanticModel(call.SyntaxTree).GetTypeInfo(member.Expression).Type;
+        return receiver?.ToDisplayString() == "Microsoft.Extensions.DependencyInjection.IServiceCollection"
+            || receiver?.AllInterfaces.Any(type => type.ToDisplayString() == "Microsoft.Extensions.DependencyInjection.IServiceCollection") == true;
+    }
+
+    private static bool ReadFluentConfiguration(Compilation compilation, InvocationExpressionSyntax call,
+        HashSet<IAssemblySymbol> assemblies, List<INamedTypeSymbol> behaviors,
+        List<INamedTypeSymbol> streamBehaviors, out string? error)
+    {
+        error = "Use a direct lambda containing registration calls on its options parameter. Assemblies must use Assembly.GetExecutingAssembly() or typeof(T).Assembly, and behaviors must use typeof(T). Variables, helper calls and conditional configuration are unsupported.";
+        ExpressionSyntax expression = call.ArgumentList.Arguments[0].Expression;
+        string parameter;
+        CSharpSyntaxNode body;
+        if (expression is SimpleLambdaExpressionSyntax simple)
+        {
+            parameter = simple.Parameter.Identifier.ValueText;
+            body = simple.Body;
+        }
+        else if (expression is ParenthesizedLambdaExpressionSyntax lambda && lambda.ParameterList.Parameters.Count == 1)
+        {
+            parameter = lambda.ParameterList.Parameters[0].Identifier.ValueText;
+            body = lambda.Body;
+        }
+        else return false;
+
+        var expressions = new List<ExpressionSyntax>();
+        if (body is ExpressionSyntax expressionBody) expressions.Add(expressionBody);
+        else if (body is BlockSyntax block)
+        {
+            foreach (StatementSyntax statement in block.Statements)
+            {
+                if (statement is not ExpressionStatementSyntax expressionStatement) return false;
+                expressions.Add(expressionStatement.Expression);
+            }
+        }
+        else return false;
+
+        var calls = new List<InvocationExpressionSyntax>();
+        foreach (ExpressionSyntax statement in expressions)
+        {
+            var steps = new Stack<InvocationExpressionSyntax>();
+            ExpressionSyntax receiver = statement;
+            while (receiver is InvocationExpressionSyntax step && step.Expression is MemberAccessExpressionSyntax member)
+            {
+                steps.Push(step);
+                receiver = member.Expression;
+            }
+            if (receiver is not IdentifierNameSyntax identifier || identifier.Identifier.ValueText != parameter || steps.Count == 0)
+                return false;
+            calls.AddRange(steps);
+        }
+
+        SemanticModel model = compilation.GetSemanticModel(call.SyntaxTree);
+        foreach (InvocationExpressionSyntax step in calls)
+        {
+            var member = (MemberAccessExpressionSyntax)step.Expression;
+            if (member.Name is GenericNameSyntax { Identifier.ValueText: "AddHandlersFromAssemblyContaining", TypeArgumentList.Arguments.Count: 1 } generic
+                && step.ArgumentList.Arguments.Count == 0)
+            {
+                if (model.GetTypeInfo(generic.TypeArgumentList.Arguments[0]).Type is not INamedTypeSymbol marker
+                    || marker.TypeKind == TypeKind.Error || marker.IsStatic || IsOpen(marker)) return false;
+                assemblies.Add(marker.ContainingAssembly);
+            }
+            else if (member.Name.Identifier.ValueText == "RegisterServicesFromAssembly"
+                && step.ArgumentList.Arguments.Count == 1)
+            {
+                ExpressionSyntax assemblyExpression = step.ArgumentList.Arguments[0].Expression;
+                if (assemblyExpression is InvocationExpressionSyntax assemblyCall
+                    && assemblyCall.ArgumentList.Arguments.Count == 0
+                    && model.GetSymbolInfo(assemblyCall).Symbol is IMethodSymbol assemblyMethod
+                    && assemblyMethod.Name == "GetExecutingAssembly"
+                    && assemblyMethod.ContainingType.ToDisplayString() == "System.Reflection.Assembly")
+                {
+                    assemblies.Add(compilation.Assembly);
+                }
+                else if (assemblyExpression is MemberAccessExpressionSyntax { Expression: TypeOfExpressionSyntax typeOfAssembly, Name.Identifier.ValueText: "Assembly" }
+                    && model.GetTypeInfo(typeOfAssembly.Type).Type is INamedTypeSymbol assemblyType
+                    && assemblyType.TypeKind != TypeKind.Error)
+                {
+                    assemblies.Add(assemblyType.ContainingAssembly);
+                }
+                else return false;
+            }
+            else if (member.Name is IdentifierNameSyntax name
+                && (name.Identifier.ValueText == "AddPipelineBehavior" || name.Identifier.ValueText == "AddOpenBehavior" || name.Identifier.ValueText == "AddStreamPipelineBehavior")
+                && step.ArgumentList.Arguments.Count == 1
+                && step.ArgumentList.Arguments[0].Expression is TypeOfExpressionSyntax typeOf
+                && model.GetTypeInfo(typeOf.Type).Type is INamedTypeSymbol behavior && behavior.TypeKind != TypeKind.Error)
+            {
+                (name.Identifier.ValueText == "AddStreamPipelineBehavior" ? streamBehaviors : behaviors).Add(behavior);
+            }
+            else return false;
+        }
+        error = null;
+        return true;
     }
 
     private static bool PubliclyAccessible(INamedTypeSymbol type)
@@ -384,17 +455,14 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         return type;
     }
 
-    private static string Emit(INamedTypeSymbol configuration, List<Request> requests, List<Observer> notifications,
+    private static string Emit(List<Request> requests, List<Observer> notifications,
         Dictionary<INamedTypeSymbol, IMethodSymbol> constructors)
     {
         var code = new StringBuilder("// <auto-generated/>\n#nullable enable\n");
-        if (!configuration.ContainingNamespace.IsGlobalNamespace)
-        {
-            code.Append("namespace ").Append(configuration.ContainingNamespace.ToDisplayString()).AppendLine(";");
-        }
-        code.Append(configuration.DeclaredAccessibility == Microsoft.CodeAnalysis.Accessibility.Public ? "public" : "internal")
-            .Append(" static partial class @").Append(configuration.Name).AppendLine("\n{");
-        code.AppendLine("    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddSwiftDispatch(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)\n    {");
+        code.AppendLine("namespace Microsoft.Extensions.DependencyInjection;");
+        code.AppendLine("internal static class SwiftDispatchGeneratedServiceCollectionExtensions\n{");
+        code.AppendLine("    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddSwiftDispatch(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.Extensions.DependencyInjection.SwiftDispatchOptions> configure)\n    {");
+        code.AppendLine("        if (configure is null) throw new global::System.ArgumentNullException(nameof(configure));");
         code.AppendLine("        if (services is null) throw new global::System.ArgumentNullException(nameof(services));");
         foreach (KeyValuePair<INamedTypeSymbol, IMethodSymbol> component in constructors.OrderBy(static pair => Name(pair.Key), StringComparer.Ordinal))
         {

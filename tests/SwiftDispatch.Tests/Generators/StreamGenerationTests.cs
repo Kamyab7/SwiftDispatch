@@ -22,8 +22,7 @@ public sealed class StreamGenerationTests
             {
                 public System.Collections.Generic.IAsyncEnumerable<TResponse> Handle(TRequest request, StreamHandlerDelegate<TResponse> next, CancellationToken ct) => next();
             }
-            [GenerateSwiftDispatch(StreamPipelineBehaviors = new[] { typeof(Behavior<,>) })]
-            internal static partial class Registration;
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>().AddStreamPipelineBehavior(typeof(Behavior<,>))); }
             """);
         Assert.Contains("IStreamRequestDispatcher<int>", source);
         Assert.Contains("IStreamPipelineBehavior<global::Stream, int>", source);
@@ -38,7 +37,7 @@ public sealed class StreamGenerationTests
             {
                 public System.Collections.Generic.IAsyncEnumerable<int> Handle(Stream request, CancellationToken ct) => null!;
             }
-            [GenerateSwiftDispatch] internal static partial class Registration;
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
             """);
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Id == "SD004");
     }
@@ -51,8 +50,7 @@ public sealed class StreamGenerationTests
             {
                 public Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct) => next();
             }
-            [GenerateSwiftDispatch(StreamPipelineBehaviors = new[] { typeof(Behavior<,>) })]
-            internal static partial class Registration;
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>().AddStreamPipelineBehavior(typeof(Behavior<,>))); }
             """);
         Assert.Contains(result.Diagnostics, diagnostic => diagnostic.Id == "SD006");
     }

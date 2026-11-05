@@ -30,12 +30,19 @@ public sealed class LoggingBehavior<TRequest, TResponse>
 
 ## Configure the order
 
-Set `PipelineBehaviors` on your registration attribute. Behaviors are ordered **outermost first**.
+Use `AddOpenBehavior` for open generic behaviors, or `AddPipelineBehavior` for open or closed behaviors. Behaviors are ordered **outermost first**.
+
+Add registration to the Application-layer `AddApplicationServices` extension:
 
 ```csharp
-[GenerateSwiftDispatch(
-    PipelineBehaviors = new[] { typeof(LoggingBehavior<,>) })]
-internal static partial class DispatchRegistration;
+using System.Reflection;
+
+// Inside AddApplicationServices:
+return services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    options.AddOpenBehavior(typeof(LoggingBehavior<,>));
+});
 ```
 
 With validation, authentication, and logging registered in that order, a request enters validation first, then authentication, then logging, then its handler. After the handler returns, the pipeline unwinds in reverse order.

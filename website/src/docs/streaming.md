@@ -36,11 +36,17 @@ Execution starts when enumeration begins. Keep the dependency injection scope al
 
 Implement `IStreamPipelineBehavior<TRequest, TResponse>` with a `Handle` method returning `IAsyncEnumerable<TResponse>` and accepting `StreamHandlerDelegate<TResponse> next`. Call `next()` to enumerate the next behavior or handler.
 
-Configure behaviors in outermost-first order:
+Inside `AddApplicationServices`, configure stream behaviors in outermost-first order:
 
 ```csharp
-[GenerateSwiftDispatch(StreamPipelineBehaviors = new[] { typeof(StreamLoggingBehavior<,>) })]
-internal static partial class DispatchRegistration;
+using System.Reflection;
+
+// Inside AddApplicationServices:
+return services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    options.AddStreamPipelineBehavior(typeof(StreamLoggingBehavior<,>));
+});
 ```
 
-Stream behaviors are separate from the `PipelineBehaviors` used by `Send`.
+Stream behaviors are separate from the `AddOpenBehavior` and `AddPipelineBehavior` registrations used by `Send`.

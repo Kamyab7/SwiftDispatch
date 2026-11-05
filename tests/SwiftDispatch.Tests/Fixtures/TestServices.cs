@@ -9,8 +9,8 @@ internal static class TestServices
         var services = new ServiceCollection();
         services.AddScoped(static _ => new State());
         services.AddScoped(static _ => new DisposableDependency());
-        services.AddSwiftDispatch();
-        services.AddSwiftDispatch();
+        services.AddTestDispatch();
+        services.AddTestDispatch();
         return services.BuildServiceProvider(new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true });
     }
 }

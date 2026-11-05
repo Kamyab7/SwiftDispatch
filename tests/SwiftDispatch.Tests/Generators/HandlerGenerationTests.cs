@@ -15,7 +15,7 @@ public sealed class HandlerGenerationTests
             {
                 public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(2);
             }
-            [GenerateSwiftDispatch] public static partial class Registration {}
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
             """);
         Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "SD004");
     }
@@ -33,7 +33,7 @@ public sealed class HandlerGenerationTests
             """ + constructor + """
                 public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
             }
-            [GenerateSwiftDispatch] public static partial class Registration {}
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
             """);
         Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "SD003");
     }
@@ -47,7 +47,7 @@ public sealed class HandlerGenerationTests
             {
                 public Task<T> Handle(Ping<T> request, CancellationToken ct) => Task.FromResult(default(T)!);
             }
-            [GenerateSwiftDispatch] public static partial class Registration {}
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
             """);
         Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "SD005");
     }
@@ -61,7 +61,7 @@ public sealed class HandlerGenerationTests
             {
                 Task<int> IRequestHandler<Ping,int>.Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
             }
-            [GenerateSwiftDispatch] internal static partial class Registration {}
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
             """);
     }
 
@@ -75,7 +75,7 @@ public sealed class HandlerGenerationTests
                 public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
             }
             public class Handler : Base<int>;
-            [GenerateSwiftDispatch] internal static partial class Registration {}
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
             """);
     }
 
@@ -89,7 +89,7 @@ public sealed class HandlerGenerationTests
                 public Handler(IServiceProvider? services, int? value) {}
                 public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
             }
-            [GenerateSwiftDispatch] internal static partial class Registration {}
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
             """);
     }
 
@@ -103,7 +103,7 @@ public sealed class HandlerGenerationTests
             {
                 public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
             }
-            [GenerateSwiftDispatch] internal static partial class Registration {}
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
             """);
         Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "SD003");
     }

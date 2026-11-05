@@ -15,6 +15,7 @@ internal static class GeneratorTestHelper
         global using System.Threading;
         global using System.Threading.Tasks;
         global using SwiftDispatch.Contracts;
+        global using Microsoft.Extensions.DependencyInjection;
         """;
 
     internal const string Handler = """

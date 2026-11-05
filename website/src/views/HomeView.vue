@@ -105,7 +105,7 @@ const faqs = [
   },
   {
     q: "Can I migrate an existing application?",
-    a: "For supported features, update your namespaces to SwiftDispatch.Contracts and register your handlers with AddSwiftDispatch and GenerateSwiftDispatch. Check the repository README for setup details and supported behavior before migrating.",
+    a: "For supported features, update your namespaces to SwiftDispatch.Contracts and configure AddSwiftDispatch in your Application layer, then call AddApplicationServices from Program.cs. Check the repository README for setup details and supported behavior before migrating.",
   },
   {
     q: "Which .NET versions are supported?",

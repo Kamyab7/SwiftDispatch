@@ -10,7 +10,7 @@ public sealed class CompilationTests
     [Fact]
     public void GeneratedCodeCompilesAndIsDeterministic()
     {
-        string source = Handler + "\n[GenerateSwiftDispatch] public static partial class Registration {}";
+        string source = Handler + "\npublic class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }";
         string first = SuccessfulSource(source);
         Assert.Equal(first, SuccessfulSource(source));
         Assert.Contains("new global::Handler()", first);
@@ -32,7 +32,7 @@ public sealed class CompilationTests
     [Fact]
     public void EmptyConfigurationCompiles()
     {
-        SuccessfulSource("[GenerateSwiftDispatch] internal static partial class Registration {}");
+        SuccessfulSource("internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>()); }");
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public sealed class CompilationTests
             {
                 public Task<int> Handle(@class request, CancellationToken ct) => Task.FromResult(1);
             }
-            [GenerateSwiftDispatch] internal static partial class @static {}
+            internal class @static { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<@static>()); }
             """);
     }
 }

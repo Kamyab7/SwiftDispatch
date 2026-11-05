@@ -13,21 +13,48 @@ dotnet add package SwiftDispatch
 
 The SwiftDispatch package includes the source generator automatically. If a package has not yet been published, build local packages with `bash eng/verify.sh` and use `--source /path/to/SwiftDispatch/artifacts/packages` when installing SwiftDispatch.
 
-## Register services
+## Register services in the Application layer
+
+Create `DependencyInjection.cs` in the project containing your handlers:
 
 ```csharp
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using SwiftDispatch.Contracts;
 
-var services = new ServiceCollection();
-services.AddSwiftDispatch();
+namespace MyApp.Application;
 
-// Place this declaration after your top-level statements.
-[GenerateSwiftDispatch]
-internal static partial class DispatchRegistration;
+public static class DependencyInjection
+{
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        return services.AddSwiftDispatch(options =>
+        {
+            options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+        });
+    }
+}
 ```
 
-The registration class must be a top-level, non-generic `static partial` class. Handlers in the current project are discovered automatically.
+Then call your Application-layer extension from the Web project's `Program.cs`:
+
+```csharp
+using MyApp.Application;
+
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddApplicationServices();
+```
+
+`Assembly.GetExecutingAssembly()` identifies the Application assembly because the registration method is defined there. It includes all its handlers; no per-handler registration or marker class is needed. To include public handlers from a referenced assembly, use `typeof(SomeHandler).Assembly`.
+
+The source generator reads the configuration at build time; the lambda is not executed at runtime. Use one direct registration lambda per assembly, with calls on its options parameter. Assemblies must use `Assembly.GetExecutingAssembly()` or `typeof(T).Assembly`; behavior arguments must use `typeof(...)`. Variables, helper calls inside the lambda, and conditional configuration are unsupported.
+
+If you use FluentValidation, register all Application validators inside `AddApplicationServices`, before `AddSwiftDispatch`:
+
+```csharp
+services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+```
+
+This requires the `FluentValidation.DependencyInjectionExtensions` package and `using FluentValidation;`. Add your validation pipeline behavior explicitly, as shown in [pipeline behaviors](pipeline-behaviors.md).
 
 ## Send your first request
 
@@ -45,9 +72,16 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 }
 ```
 
-After registration, build a service provider and send the request before the registration class declaration:
+To try the Application-layer registration outside the Web host, create a service collection and send the request:
 
 ```csharp
+using Microsoft.Extensions.DependencyInjection;
+using MyApp.Application;
+using SwiftDispatch.Contracts;
+
+var services = new ServiceCollection();
+services.AddApplicationServices();
+
 await using var provider = services.BuildServiceProvider();
 await using var scope = provider.CreateAsyncScope();
 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();

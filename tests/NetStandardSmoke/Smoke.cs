@@ -4,9 +4,6 @@ using SwiftDispatch.Contracts;
 
 namespace SwiftDispatch.NetStandardSmoke;
 
-[GenerateSwiftDispatch(StreamPipelineBehaviors = new[] { typeof(StreamBehavior<,>) })]
-internal static partial class Registration;
-
 public sealed class Ping : IRequest<int>;
 
 public sealed class PingHandler : IRequestHandler<Ping, int>
@@ -37,7 +34,9 @@ public static class Smoke
     public static async Task Run()
     {
         var services = new ServiceCollection();
-        services.AddSwiftDispatch();
+        services.AddSwiftDispatch(options => options
+            .AddHandlersFromAssemblyContaining<Ping>()
+            .AddStreamPipelineBehavior(typeof(StreamBehavior<,>)));
         using var provider = services.BuildServiceProvider();
         using var scope = provider.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();

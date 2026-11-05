@@ -1,8 +1,17 @@
-using SwiftDispatch.Contracts;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using SwiftDispatch.Tests.Fixtures.Behaviors;
 
 namespace SwiftDispatch.Tests.Fixtures;
 
-[GenerateSwiftDispatch(PipelineBehaviors = new[] { typeof(Outer<,>), typeof(Inner<,>) },
-    StreamPipelineBehaviors = new[] { typeof(SwiftDispatch.Tests.Runtime.StreamBehavior) })]
-internal static partial class TestRegistration;
+internal static class TestRegistration
+{
+    internal static IServiceCollection AddTestDispatch(this IServiceCollection services) =>
+        services.AddSwiftDispatch(options =>
+        {
+            options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            options.AddOpenBehavior(typeof(Outer<,>));
+            options.AddOpenBehavior(typeof(Inner<,>));
+            options.AddStreamPipelineBehavior(typeof(SwiftDispatch.Tests.Runtime.StreamBehavior));
+        });
+}

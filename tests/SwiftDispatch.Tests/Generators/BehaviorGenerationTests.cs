@@ -29,8 +29,7 @@ public sealed class BehaviorGenerationTests
             {
                 public Task<R> Handle(T request, RequestHandlerDelegate<R> next, CancellationToken ct) => next();
             }
-            [GenerateSwiftDispatch(PipelineBehaviors = new[] { typeof(ReferenceBehavior<,>), typeof(ValueBehavior<,>), typeof(SpecialBehavior<,>) })]
-            internal static partial class Registration {}
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>().AddPipelineBehavior(typeof(ReferenceBehavior<,>)).AddPipelineBehavior(typeof(ValueBehavior<,>)).AddPipelineBehavior(typeof(SpecialBehavior<,>))); }
             """);
         Assert.Contains("ReferenceBehavior<global::Text, string>", generated);
         Assert.DoesNotContain("ReferenceBehavior<global::Ping", generated);
@@ -52,8 +51,7 @@ public sealed class BehaviorGenerationTests
             {
                 public Task<R> Handle(T request, RequestHandlerDelegate<R> next, CancellationToken ct) => next();
             }
-            [GenerateSwiftDispatch(PipelineBehaviors = new[] { typeof(Behavior<,>) })]
-            internal static partial class Registration {}
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>().AddPipelineBehavior(typeof(Behavior<,>))); }
             """);
         Assert.Contains("IRequestDispatcher<string?>", generated);
         Assert.DoesNotContain("new global::Behavior", generated);
@@ -67,8 +65,7 @@ public sealed class BehaviorGenerationTests
             {
                 public Task<T> Handle(R request, RequestHandlerDelegate<T> next, CancellationToken ct) => next();
             }
-            [GenerateSwiftDispatch(PipelineBehaviors = new[] { typeof(Reversed<,>) })]
-            internal static partial class Registration {}
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddSwiftDispatch(options => options.AddHandlersFromAssemblyContaining<Registration>().AddPipelineBehavior(typeof(Reversed<,>))); }
             """);
         Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "SD006");
     }
