@@ -6,7 +6,7 @@
     <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SwiftDispatch" VersionOverride="0.1.0-beta.2" />
+    <PackageReference Include="SwiftDispatch" VersionOverride="1.0.0-rc.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 </Project>
