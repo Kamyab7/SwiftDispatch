@@ -85,7 +85,7 @@ SwiftDispatch uses the same core interface names and handler patterns as MediatR
 - Requests with or without responses using `Task`-based handlers.
 - Streaming requests using `IStreamRequest<T>`, `IStreamRequestHandler<TRequest, T>`, and `mediator.CreateStream(...)`, with separate stream pipeline behaviors.
 - Ordered pipeline behaviors with short-circuiting, retries, and exception handling.
-- Notifications with multiple handlers, executed sequentially.
+- Notifications with multiple handlers and pluggable sequential (default) or parallel execution strategies.
 - Source-generated registration and dispatch with Native AOT and trimming support.
 - Microsoft dependency injection integration and cancellation token forwarding.
 - Handler discovery in explicitly included assemblies and constrained generic pipeline behaviors.

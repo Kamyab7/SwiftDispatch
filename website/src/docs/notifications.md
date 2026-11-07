@@ -1,6 +1,6 @@
 # Notifications
 
-Notifications publish an event to multiple handlers. SwiftDispatch executes notification handlers sequentially.
+Notifications publish an event to multiple handlers. SwiftDispatch executes notification handlers sequentially by default.
 
 ## Define a notification
 
@@ -32,3 +32,19 @@ await mediator.Publish(new OrderPlaced("order-123"));
 ```
 
 See the [package smoke test handlers](https://github.com/Kamyab7/SwiftDispatch/tree/master/tests/PackageSmoke/Notifications/Handlers) for multiple handlers.
+
+## Execution strategies
+
+Select parallel execution inside `AddSwiftDispatch`:
+
+```csharp
+using SwiftDispatch;
+
+services.AddSwiftDispatch(options => options
+    .AddHandlersFromAssemblyContaining<OrderPlaced>()
+    .UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>());
+```
+
+`SequentialNotificationExecutionStrategy` awaits handlers in stable generated order and stops on the first failure or cancellation. `ParallelNotificationExecutionStrategy` starts every handler and awaits them all, including when a handler throws synchronously. Parallel execution overlaps asynchronous work; it does not move handlers onto background threads. Handlers share the publication's service scope, so their dependencies must support concurrent use.
+
+Implement `INotificationExecutionStrategy` and select it with `UseNotificationExecutionStrategy<MyStrategy>()` to provide custom execution behavior. Selected strategies support constructor injection and are resolved from the publication scope. Each callback resolves and invokes its handler when called, using the cancellation token supplied by the strategy.

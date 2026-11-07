@@ -9,6 +9,10 @@ public sealed class SwiftDispatchOptions
 {
     private SwiftDispatchOptions() { }
 
+    /// <summary>Selects the notification execution strategy. Sequential execution is the default.</summary>
+    public SwiftDispatchOptions UseNotificationExecutionStrategy<TStrategy>()
+        where TStrategy : class, SwiftDispatch.INotificationExecutionStrategy => this;
+
     /// <summary>Includes handlers from the assembly containing the marker type.</summary>
     public SwiftDispatchOptions AddHandlersFromAssemblyContaining<T>() => this;
 

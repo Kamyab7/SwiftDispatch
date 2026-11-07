@@ -15,6 +15,42 @@ public sealed class FluentRegistrationTests
         }
         """;
 
+    [Theory]
+    [InlineData("ParallelNotificationExecutionStrategy")]
+    [InlineData("SequentialNotificationExecutionStrategy")]
+    public void SelectsNotificationStrategyInOptions(string strategy)
+    {
+        string generated = SuccessfulSource(Handler + """
+            public static class Setup
+            {
+                public static IServiceCollection Register(IServiceCollection services) =>
+                    services.AddSwiftDispatch(options => options
+                        .AddHandlersFromAssemblyContaining<Ping>()
+                        .UseNotificationExecutionStrategy<SwiftDispatch.
+            """ + strategy + ">()); }");
+        Assert.Contains("TryAddScoped<global::SwiftDispatch.INotificationExecutionStrategy>", generated);
+        Assert.Contains("new global::SwiftDispatch." + strategy + "()", generated);
+    }
+
+    [Fact]
+    public void SelectedCustomStrategySupportsConstructorInjection()
+    {
+        string generated = SuccessfulSource(Handler + """
+            public class Strategy : SwiftDispatch.INotificationExecutionStrategy
+            {
+                public Strategy(IServiceProvider services) { }
+                public Task Execute(System.Collections.Generic.IEnumerable<Func<CancellationToken, Task>> handlers,
+                    CancellationToken token) => Task.CompletedTask;
+            }
+            public static class Setup
+            {
+                public static IServiceCollection Register(IServiceCollection services) =>
+                    services.AddSwiftDispatch(options => options.UseNotificationExecutionStrategy<Strategy>());
+            }
+            """);
+        Assert.Contains("new global::Strategy(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::System.IServiceProvider>(sp))", generated);
+    }
+
     [Fact]
     public void FluentRegistrationCompilesWithoutAttributeOrPartialClass()
     {

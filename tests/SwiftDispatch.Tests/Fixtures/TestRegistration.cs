@@ -9,6 +9,7 @@ internal static class TestRegistration
     internal static IServiceCollection AddTestDispatch(this IServiceCollection services) =>
         services.AddSwiftDispatch(options =>
         {
+            options.UseNotificationExecutionStrategy<SequentialNotificationExecutionStrategy>();
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             options.AddOpenBehavior(typeof(Outer<,>));
             options.AddOpenBehavior(typeof(Inner<,>));

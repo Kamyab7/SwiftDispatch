@@ -8,6 +8,8 @@ namespace SwiftDispatch.Tests.Generators;
 public sealed class ConfigurationDiagnosticTests
 {
     [Theory]
+    [InlineData("options => options.UseNotificationExecutionStrategy<string>()", "SD001")]
+    [InlineData("options => options.UseNotificationExecutionStrategy<SwiftDispatch.ParallelNotificationExecutionStrategy>().UseNotificationExecutionStrategy<SwiftDispatch.SequentialNotificationExecutionStrategy>()", "SD001")]
     [InlineData("null!", "SD001")]
     [InlineData("Configure", "SD001")]
     [InlineData("options => options.AddPipelineBehavior(typeof(string))", "SD006")]
