@@ -7,9 +7,6 @@ internal static class RegistrationEmitter
     internal static void Emit(StringBuilder code, DispatchModel model)
     {
         code.AppendLine("""
-            namespace Microsoft.Extensions.DependencyInjection;
-            internal static class SwiftDispatchGeneratedServiceCollectionExtensions
-            {
                 public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddSwiftDispatch(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services, global::System.Action<global::Microsoft.Extensions.DependencyInjection.SwiftDispatchOptions> configure)
                 {
                     if (configure is null) throw new global::System.ArgumentNullException(nameof(configure));

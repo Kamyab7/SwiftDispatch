@@ -48,9 +48,12 @@ internal static class GeneratorTestHelper
         (GeneratorDriverRunResult result, Compilation output) = Generate(source, extra);
         Assert.Empty(result.Diagnostics);
         Assert.Empty(output.GetDiagnostics().Where(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error));
-        Assert.Empty(output.GetDiagnostics().Where(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Warning
-            && diagnostic.Location.SourceTree?.FilePath.EndsWith("SwiftDispatch.Registration.g.cs", StringComparison.Ordinal) == true));
-        return Assert.Single(Assert.Single(result.Results).GeneratedSources).SourceText.ToString();
+        var sources = Assert.Single(result.Results).GeneratedSources;
+        var generatedTrees = sources.Select(source => source.SyntaxTree).ToHashSet();
+        Assert.Empty(output.GetDiagnostics().Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Warning
+            && diagnostic.Location.SourceTree is { } tree && generatedTrees.Contains(tree)));
+        Assert.NotEmpty(sources);
+        return string.Join(Environment.NewLine, sources.Select(source => source.SourceText.ToString()));
     }
 
     internal static PortableExecutableReference Library(string accessibility, string extra = "", string assembly = "Library")

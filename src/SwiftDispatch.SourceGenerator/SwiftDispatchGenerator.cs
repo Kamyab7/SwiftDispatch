@@ -85,6 +85,10 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         }
 
         DispatchModel model = DispatchModelBuilder.Build(requests, notifications, constructors, notificationStrategy);
-        output.AddSource("SwiftDispatch.Registration.g.cs", SourceText.From(SourceEmitter.Emit(model), Encoding.UTF8));
+        foreach (GeneratedSource source in SourceEmitter.Emit(model))
+        {
+            output.CancellationToken.ThrowIfCancellationRequested();
+            output.AddSource(source.HintName, SourceText.From(source.Text, Encoding.UTF8));
+        }
     }
 }
