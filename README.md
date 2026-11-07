@@ -21,21 +21,28 @@ Configure your application's services:
 ```csharp
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using SwiftDispatch;
 using SwiftDispatch.Contracts;
 
 var services = new ServiceCollection();
 services.AddSwiftDispatch(options =>
 {
     options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    options.UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>();
 });
 ```
 
-Handlers in the current project are registered automatically. Register an assembly and add behaviors in outermost-first execution order:
+The example selects parallel notification execution: all handlers are started and awaited together. Omit `UseNotificationExecutionStrategy` to use sequential execution, which awaits handlers in order and stops on the first failure or cancellation. You can also select `SequentialNotificationExecutionStrategy` explicitly or supply your own implementation of `INotificationExecutionStrategy`.
+
+Parallel handlers share the publication's service scope, so their dependencies must support concurrent use.
+
+Handlers in the current project are registered automatically. Add behaviors in outermost-first execution order to the same registration:
 
 ```csharp
 services.AddSwiftDispatch(options =>
 {
     options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    options.UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>();
     options.AddOpenBehavior(typeof(LoggingBehaviour<,>));
     options.AddOpenBehavior(typeof(ValidationBehaviour<,>));
 });
