@@ -12,37 +12,63 @@ internal static class RequestEmitter
             RequestDispatchModel request = requests[index];
             string message = request.Message;
             string response = request.Response;
-            string resultType = request.Streams ? "global::System.Collections.Generic.IAsyncEnumerable<" : "global::System.Threading.Tasks.Task<";
+            string resultType = request.Streams
+                ? $"global::System.Collections.Generic.IAsyncEnumerable<{response}>"
+                : $"global::System.Threading.Tasks.Task<{response}>";
             string dispatcherContract = request.Streams ? "IStreamRequestDispatcher" : "IRequestDispatcher";
             string handlerContract = request.Streams ? "IStreamRequestHandler" : "IRequestHandler";
             string behaviorContract = request.Streams ? "IStreamPipelineBehavior" : "IPipelineBehavior";
             string delegateContract = request.Streams ? "StreamHandlerDelegate" : "RequestHandlerDelegate";
-            code.Append("    private sealed class __SwiftDispatchRequest").Append(index)
-                .Append(" : global::SwiftDispatch.").Append(dispatcherContract).Append("<").Append(response).AppendLine(">\n    {");
-            code.Append("        public ").Append(resultType).Append(response)
-                .AppendLine("> Invoke(object value, global::System.IServiceProvider sp, global::System.Threading.CancellationToken cancellationToken)\n        {");
-            code.Append("            var request = (").Append(message).AppendLine(")value;");
-            string handlerInterface = "global::SwiftDispatch.Contracts." + handlerContract + "<" + message + (request.ReturnsVoid ? "" : ", " + response) + ">";
-            code.Append("            ").Append(handlerInterface).Append(" handler = ").Append(request.HandlerResolution).AppendLine(";");
+            string handlerArguments = request.ReturnsVoid ? message : $"{message}, {response}";
+            code.AppendLine($$"""
+                    private sealed class __SwiftDispatchRequest{{index}} : global::SwiftDispatch.{{dispatcherContract}}<{{response}}>
+                    {
+                        public {{resultType}} Invoke(object value, global::System.IServiceProvider sp, global::System.Threading.CancellationToken cancellationToken)
+                        {
+                            var request = ({{message}})value;
+                            global::SwiftDispatch.Contracts.{{handlerContract}}<{{handlerArguments}}> handler = {{request.HandlerResolution}};
+                """);
             if (request.ReturnsVoid)
             {
-                code.AppendLine("            async global::System.Threading.Tasks.Task<global::SwiftDispatch.Contracts.Unit> InvokeHandler()\n            {\n                cancellationToken.ThrowIfCancellationRequested();\n                await handler.Handle(request, cancellationToken).ConfigureAwait(false);\n                return global::SwiftDispatch.Contracts.Unit.Value;\n            }");
+                code.AppendLine("""
+                                async global::System.Threading.Tasks.Task<global::SwiftDispatch.Contracts.Unit> InvokeHandler()
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    await handler.Handle(request, cancellationToken).ConfigureAwait(false);
+                                    return global::SwiftDispatch.Contracts.Unit.Value;
+                                }
+                    """);
             }
             else
             {
-                code.Append("            ").Append(resultType).Append(response).AppendLine("> InvokeHandler()\n            {\n                cancellationToken.ThrowIfCancellationRequested();\n                return handler.Handle(request, cancellationToken);\n            }");
+                code.AppendLine($$"""
+                                {{resultType}} InvokeHandler()
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    return handler.Handle(request, cancellationToken);
+                                }
+                    """);
             }
-            code.Append("            global::SwiftDispatch.Contracts.").Append(delegateContract).Append("<").Append(response).AppendLine("> next = InvokeHandler;");
+            code.AppendLine($$"""
+                            global::SwiftDispatch.Contracts.{{delegateContract}}<{{response}}> next = InvokeHandler;
+                """);
             for (int behaviorIndex = request.BehaviorResolutions.Count - 1; behaviorIndex >= 0; behaviorIndex--)
             {
-                code.Append("            global::SwiftDispatch.Contracts.").Append(behaviorContract).Append("<").Append(message).Append(", ").Append(response)
-                    .Append("> behavior").Append(behaviorIndex).Append(" = ").Append(request.BehaviorResolutions[behaviorIndex]).AppendLine(";");
-                code.Append("            var continuation").Append(behaviorIndex).AppendLine(" = next;");
-                code.Append("            next = () =>\n            {\n                cancellationToken.ThrowIfCancellationRequested();\n                return behavior")
-                    .Append(behaviorIndex).Append(".Handle(request, continuation").Append(behaviorIndex).AppendLine(", cancellationToken);\n            };");
+                code.AppendLine($$"""
+                                global::SwiftDispatch.Contracts.{{behaviorContract}}<{{message}}, {{response}}> behavior{{behaviorIndex}} = {{request.BehaviorResolutions[behaviorIndex]}};
+                                var continuation{{behaviorIndex}} = next;
+                                next = () =>
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    return behavior{{behaviorIndex}}.Handle(request, continuation{{behaviorIndex}}, cancellationToken);
+                                };
+                    """);
             }
-            code.AppendLine("            return next();\n        }\n    }");
+            code.AppendLine("""
+                            return next();
+                        }
+                    }
+                """);
         }
-
     }
 }
