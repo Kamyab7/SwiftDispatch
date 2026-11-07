@@ -84,6 +84,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
             return;
         }
 
-        output.AddSource("SwiftDispatch.Registration.g.cs", SourceText.From(SourceEmitter.Emit(requests, notifications, constructors, notificationStrategy), Encoding.UTF8));
+        DispatchModel model = DispatchModelBuilder.Build(requests, notifications, constructors, notificationStrategy);
+        output.AddSource("SwiftDispatch.Registration.g.cs", SourceText.From(SourceEmitter.Emit(model), Encoding.UTF8));
     }
 }

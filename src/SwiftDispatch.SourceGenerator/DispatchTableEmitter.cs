@@ -1,28 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Microsoft.CodeAnalysis;
-using static SwiftDispatch.SourceGenerator.SymbolHelpers;
 
 namespace SwiftDispatch.SourceGenerator;
 
 internal static class DispatchTableEmitter
 {
-    internal static void Emit(StringBuilder code, List<Request> requests, List<Observer> notifications)
+    internal static void Emit(StringBuilder code, DispatchModel model)
     {
-        var groups = notifications.GroupBy<Observer, ITypeSymbol>(static item => item.Message, SymbolEqualityComparer.Default)
-            .OrderBy(static group => Name(group.Key!), StringComparer.Ordinal).ToList();
         code.AppendLine("    private static global::SwiftDispatch.DispatchTable CreateSwiftDispatchTable() => new(\n        new global::System.Collections.Generic.Dictionary<global::System.Type, object>\n        {");
-        for (int index = 0; index < requests.Count; index++)
+        for (int index = 0; index < model.Requests.Count; index++)
         {
-            code.Append("            [typeof(").Append(Name(requests[index].Message)).Append(")] = new __SwiftDispatchRequest")
+            code.Append("            [typeof(").Append(model.Requests[index].Message).Append(")] = new __SwiftDispatchRequest")
                 .Append(index).AppendLine("(),");
         }
         code.AppendLine("        },\n        new global::System.Collections.Generic.Dictionary<global::System.Type, global::SwiftDispatch.NotificationDispatcher>\n        {");
-        for (int index = 0; index < groups.Count; index++)
+        for (int index = 0; index < model.Notifications.Count; index++)
         {
-            code.Append("            [typeof(").Append(Name(groups[index].Key!)).Append(")] = new __SwiftDispatchNotification")
+            code.Append("            [typeof(").Append(model.Notifications[index].Message).Append(")] = new __SwiftDispatchNotification")
                 .Append(index).AppendLine("(),");
         }
         code.AppendLine("        });");
