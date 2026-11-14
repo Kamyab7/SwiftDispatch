@@ -8,13 +8,13 @@ Supports `netstandard2.0`, `net8.0`, and `net10.0`. Native AOT is supported on .
 
 ## Quick start
 
-Install [SwiftDispatch from NuGet](https://www.nuget.org/packages/SwiftDispatch/1.0.0-rc.1). The package includes the source generator automatically and references `SwiftDispatch.Contracts`.
+Install [SwiftDispatch from NuGet](https://www.nuget.org/packages/SwiftDispatch/1.0.0). The package includes the source generator automatically and references `SwiftDispatch.Contracts`.
 
 ```sh
-dotnet add package SwiftDispatch --version 1.0.0-rc.1
+dotnet add package SwiftDispatch --version 1.0.0
 ```
 
-`1.0.0-rc.1` is the first release candidate for the stable 1.0 release.
+`1.0.0` is the first stable release of SwiftDispatch.
 
 Configure your application's services:
 
