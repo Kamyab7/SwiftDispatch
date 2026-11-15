@@ -1,0 +1,59 @@
+name: Sync documentation to wiki
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - website/src/docs/**
+      - eng/prepare-wiki.py
+      - .github/workflows/sync-wiki.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wiki
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Publish wiki
+        env:
+          WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$WIKI_TOKEN" ]; then
+            echo '::error::Add the WIKI_TOKEN repository secret before syncing the wiki.'
+            exit 1
+          fi
+          export GIT_ASKPASS="$RUNNER_TEMP/wiki-askpass.sh"
+          export GIT_TERMINAL_PROMPT=0
+          cat > "$GIT_ASKPASS" <<'EOF'
+          #!/usr/bin/env bash
+          case "$1" in
+            *Username*) echo x-access-token ;;
+            *Password*) echo "$WIKI_TOKEN" ;;
+          esac
+          EOF
+          chmod 700 "$GIT_ASKPASS"
+          trap 'rm -f "$GIT_ASKPASS"' EXIT
+          wiki_dir="$RUNNER_TEMP/wiki"
+          git clone "https://github.com/${GITHUB_REPOSITORY}.wiki.git" "$wiki_dir"
+          python3 eng/prepare-wiki.py website/src/docs "$wiki_dir"
+          cd "$wiki_dir"
+          git add --all
+          if git diff --cached --quiet; then
+            echo 'Wiki is already up to date.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "docs: sync from ${GITHUB_SHA}"
+          git push origin HEAD
