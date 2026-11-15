@@ -97,6 +97,10 @@ SwiftDispatch uses the same core interface names and handler patterns as MediatR
 - Microsoft dependency injection integration and cancellation token forwarding.
 - Handler discovery in explicitly included assemblies and constrained generic pipeline behaviors.
 
+## Contributing
+
+See [Contributing to SwiftDispatch](CONTRIBUTING.md) for setup, coding conventions, testing, and pull request guidelines.
+
 ## License
 
 Licensed under [MIT](LICENSE). Free for personal and commercial use.
