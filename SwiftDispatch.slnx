@@ -12,10 +12,13 @@
     </Project>
     <Project Path="tests/SwiftDispatch.Tests/SwiftDispatch.Tests.csproj" />
   </Folder>
-  <Folder Name="/sample/">
-    <Project Path="sample/SwiftDispatch.Sample.CleanArchitecture/Domain/Domain.csproj" />
-    <Project Path="sample/SwiftDispatch.Sample.CleanArchitecture/Application/Application.csproj" />
-    <Project Path="sample/SwiftDispatch.Sample.CleanArchitecture/Infrastructure/Infrastructure.csproj" />
-    <Project Path="sample/SwiftDispatch.Sample.CleanArchitecture/Web/Web.csproj" />
+  <Folder Name="/samples/Console/">
+    <Project Path="samples/SwiftDispatch.Sample.Console/SwiftDispatch.Sample.Console.csproj" />
+  </Folder>
+  <Folder Name="/samples/CleanArchitecture/">
+    <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/Domain/Domain.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/Application/Application.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/Infrastructure/Infrastructure.csproj" />
+    <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/Web/Web.csproj" />
   </Folder>
 </Solution>

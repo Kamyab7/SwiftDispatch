@@ -43,7 +43,7 @@ dotnet test tests/SwiftDispatch.Tests -c Release --no-build
 | `tests/SwiftDispatch.Tests/` | xUnit runtime and source generator tests |
 | `tests/NetStandardSmoke/` | .NET Standard consumer compatibility coverage |
 | `tests/PackageSmoke/` | Packaged-library and Native AOT smoke checks |
-| `sample/` | Example applications |
+| `samples/` | Example applications |
 | `website/src/docs/` | Website documentation in Markdown |
 | `eng/verify.sh` | End-to-end verification used by CI |
 

@@ -95,4 +95,4 @@ Console.WriteLine(greeting);
 - Learn about [pipeline behaviors](pipeline-behaviors.md).
 - Publish [notifications](notifications.md) to multiple handlers.
 - Review [migration from MediatR](migration.md).
-- Explore the [complete sample](https://github.com/Kamyab7/SwiftDispatch/tree/master/sample/SwiftDispatch.Sample.CleanArchitecture).
+- Explore the [complete sample](https://github.com/Kamyab7/SwiftDispatch/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture).

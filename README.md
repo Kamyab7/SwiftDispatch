@@ -52,9 +52,10 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 }
 ```
 
-## Sample
+## Samples
 
-- [Clean architecture](sample/SwiftDispatch.Sample.CleanArchitecture): separate domain, application, infrastructure, and API projects with application pipeline behaviors. Run `dotnet run --project sample/SwiftDispatch.Sample.CleanArchitecture/Web -- --urls http://localhost:5081`.
+- [Console app](samples/SwiftDispatch.Sample.Console): a minimal request and notification example. Run `dotnet run --project samples/SwiftDispatch.Sample.Console -- Ada`.
+- [Clean architecture](samples/SwiftDispatch.Sample.CleanArchitecture): separate domain, application, infrastructure, and API projects with application pipeline behaviors. Run `dotnet run --project samples/SwiftDispatch.Sample.CleanArchitecture/Web -- --urls http://localhost:5081`.
 
 ## Supported features
 
