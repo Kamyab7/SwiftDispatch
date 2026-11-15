@@ -101,6 +101,8 @@ SwiftDispatch uses the same core interface names and handler patterns as MediatR
 
 See [Contributing to SwiftDispatch](CONTRIBUTING.md) for setup, coding conventions, testing, and pull request guidelines.
 
+Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) in all project spaces.
+
 ## License
 
 Licensed under [MIT](LICENSE). Free for personal and commercial use.

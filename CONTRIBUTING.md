@@ -2,6 +2,8 @@
 
 Contributions are welcome: bug reports, fixes, tests, documentation, and feature proposals all help improve SwiftDispatch.
 
+Everyone participating in this project is expected to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Before you start
 
 - Search existing issues and pull requests to avoid duplicate work.
