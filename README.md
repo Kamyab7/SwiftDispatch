@@ -14,10 +14,6 @@ Install [SwiftDispatch from NuGet](https://www.nuget.org/packages/SwiftDispatch/
 dotnet add package SwiftDispatch --version 1.0.0
 ```
 
-`1.0.0` is the first stable release of SwiftDispatch.
-
-Configure your application's services:
-
 ```csharp
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,35 +23,25 @@ using SwiftDispatch.Contracts;
 var services = new ServiceCollection();
 services.AddSwiftDispatch(options =>
 {
+    // Register once; use typeof(SomeHandler).Assembly for another assembly.
     options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    options.UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>();
+
+    // Optional: run notification handlers in parallel (sequential by default).
+    // Parallel handlers share a scope; dependencies must support concurrent use.
+    // options.UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>();
+
+    // Optional: add your pipeline behaviors in outermost-first order.
+    // options.AddOpenBehavior(typeof(LoggingBehaviour<,>));
+    // options.AddOpenBehavior(typeof(ValidationBehaviour<,>));
 });
-```
 
-The example selects parallel notification execution: all handlers are started and awaited together. Omit `UseNotificationExecutionStrategy` to use sequential execution, which awaits handlers in order and stops on the first failure or cancellation. You can also select `SequentialNotificationExecutionStrategy` explicitly or supply your own implementation of `INotificationExecutionStrategy`.
+await using var provider = services.BuildServiceProvider();
+await using var scope = provider.CreateAsyncScope();
+var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
-Parallel handlers share the publication's service scope, so their dependencies must support concurrent use.
-
-Handlers in the current project are registered automatically. Add behaviors in outermost-first execution order to the same registration:
-
-```csharp
-services.AddSwiftDispatch(options =>
-{
-    options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    options.UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>();
-    options.AddOpenBehavior(typeof(LoggingBehaviour<,>));
-    options.AddOpenBehavior(typeof(ValidationBehaviour<,>));
-});
-```
-
-Register once in your Application layer. For another assembly, use `typeof(SomeHandler).Assembly`. Keep configuration explicit: use assembly expressions and `typeof(...)` directly, without variables or conditions.
-
-## Example
-
-Define a request and its handler:
-
-```csharp
-using SwiftDispatch.Contracts;
+string greeting = await mediator.Send(new Hello("Ada"));
+Console.WriteLine(greeting); // Hello, Ada!
+// Use mediator.Publish(notification) for notifications.
 
 public sealed record Hello(string Name) : IRequest<string>;
 
@@ -66,36 +52,21 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 }
 ```
 
-Build the configured services and resolve the mediator to send the request:
-
-```csharp
-await using var provider = services.BuildServiceProvider();
-await using var scope = provider.CreateAsyncScope();
-var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
-string greeting = await mediator.Send(new Hello("Ada"));
-Console.WriteLine(greeting); // Hello, Ada!
-```
-
-Use `mediator.Publish(...)` for notifications.
-
 ## Sample
 
 - [Clean architecture](sample/SwiftDispatch.Sample.CleanArchitecture): separate domain, application, infrastructure, and API projects with application pipeline behaviors. Run `dotnet run --project sample/SwiftDispatch.Sample.CleanArchitecture/Web -- --urls http://localhost:5081`.
 
-## Migrating from MediatR
-
-SwiftDispatch uses the same core interface names and handler patterns as MediatR, including `IMediator`, `IRequest`, `IRequestHandler`, `INotification`, and `IPipelineBehavior`. For these supported features, migration is straightforward: update your namespaces to `SwiftDispatch.Contracts` and replace your registration with the setup in [Quick start](#quick-start).
-
 ## Supported features
 
-- Requests with or without responses using `Task`-based handlers.
-- Streaming requests using `IStreamRequest<T>`, `IStreamRequestHandler<TRequest, T>`, and `mediator.CreateStream(...)`, with separate stream pipeline behaviors.
-- Ordered pipeline behaviors with short-circuiting, retries, and exception handling.
-- Notifications with multiple handlers and pluggable sequential (default) or parallel execution strategies.
-- Source-generated registration and dispatch with Native AOT and trimming support.
-- Microsoft dependency injection integration and cancellation token forwarding.
-- Handler discovery in explicitly included assemblies and constrained generic pipeline behaviors.
+| Feature | Support |
+| --- | --- |
+| Requests | Requests with or without responses using `Task`-based handlers |
+| Streaming | `IStreamRequest<T>`, `IStreamRequestHandler<TRequest, T>`, and `mediator.CreateStream(...)` with separate stream pipeline behaviors |
+| Pipeline behaviors | Ordered execution, short-circuiting, retries, and exception handling |
+| Notifications | Multiple handlers with sequential (default), parallel, or custom execution strategies |
+| Native AOT and trimming | Source-generated registration and dispatch |
+| Dependency injection | Microsoft dependency injection integration and cancellation token forwarding |
+| Handler discovery | Explicitly included assemblies and constrained generic pipeline behaviors |
 
 ## Contributing
 
