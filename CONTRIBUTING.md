@@ -13,6 +13,8 @@ Everyone participating in this project is expected to follow our [Code of Conduc
 
 ## Report a bug or propose a feature
 
+For suspected security vulnerabilities, follow the private reporting process in [SECURITY.md](SECURITY.md) instead of opening a public issue.
+
 For bugs, include the SwiftDispatch version, .NET SDK and runtime versions (`dotnet --info`), operating system, steps to reproduce, expected behavior, and actual behavior. A minimal runnable example and relevant compiler diagnostics or stack traces are especially useful. Mention whether the issue occurs with Native AOT or trimming.
 
 For features, describe the problem, an example of the desired usage, and any alternatives you considered. Remove secrets and private data from examples and logs.

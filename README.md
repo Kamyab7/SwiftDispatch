@@ -103,6 +103,10 @@ See [Contributing to SwiftDispatch](CONTRIBUTING.md) for setup, coding conventio
 
 Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) in all project spaces.
 
+## Security
+
+See our [security policy](SECURITY.md) for supported versions and how to report vulnerabilities privately.
+
 ## License
 
 Licensed under [MIT](LICENSE). Free for personal and commercial use.
