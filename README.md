@@ -69,6 +69,28 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 | Dependency injection | Microsoft dependency injection integration and cancellation token forwarding |
 | Handler discovery | Explicitly included assemblies and constrained generic pipeline behaviors |
 
+## Benchmarks
+
+Speed and managed memory allocations for SwiftDispatch, MediatR, and Mediator on .NET 10.
+Lower values are better; results are from an exploratory short run.
+
+| Scenario | Library | Mean time | Allocated per operation |
+| --- | --- | ---: | ---: |
+| Completed request | MediatR | 47.57 ns | 200 B |
+| Completed request | Mediator | 29.20 ns | 88 B |
+| Completed request | SwiftDispatch | 25.11 ns | 136 B |
+| Notification | MediatR | 215.53 ns | 768 B |
+| Notification | Mediator | 36.72 ns | 56 B |
+| Notification | SwiftDispatch | 54.70 ns | 184 B |
+| Yielding async request | MediatR | 888.31 ns | 224 B |
+| Yielding async request | Mediator | 998.18 ns | 192 B |
+| Yielding async request | SwiftDispatch | 859.18 ns | 160 B |
+
+See the [full results and measurement errors](benchmarks/results/short-run.md),
+[all pairwise comparisons](benchmarks/results/comparison.md), and
+[benchmark instructions](benchmarks/README.md) to reproduce the measurements.
+Use the full job on an idle machine before drawing performance conclusions.
+
 ## Contributing
 
 See [Contributing to SwiftDispatch](CONTRIBUTING.md) for setup, coding conventions, testing, and pull request guidelines.

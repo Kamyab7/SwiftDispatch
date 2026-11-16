@@ -15,6 +15,10 @@
   <Folder Name="/samples/Console/">
     <Project Path="samples/SwiftDispatch.Sample.Console/SwiftDispatch.Sample.Console.csproj" />
   </Folder>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/SwiftDispatch.Benchmarks/SwiftDispatch.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/samples/" />
   <Folder Name="/samples/CleanArchitecture/">
     <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/Domain/Domain.csproj" />
     <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/Application/Application.csproj" />
