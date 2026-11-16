@@ -2,15 +2,22 @@
 import { computed, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { documents, renderDocument } from "../docs";
-import logo from "../assets/logo.png";
+import SiteHeader from "../components/SiteHeader.vue";
+import SiteFooter from "../components/SiteFooter.vue";
 
 const route = useRoute();
 const page = computed(() =>
   documents.find((doc) => doc.slug === route.params.slug),
 );
-const pageIndex = computed(() => documents.findIndex((doc) => doc.slug === route.params.slug));
-const previousPage = computed(() => pageIndex.value > 0 ? documents[pageIndex.value - 1] : undefined);
-const nextPage = computed(() => pageIndex.value >= 0 ? documents[pageIndex.value + 1] : undefined);
+const pageIndex = computed(() =>
+  documents.findIndex((doc) => doc.slug === route.params.slug),
+);
+const previousPage = computed(() =>
+  pageIndex.value > 0 ? documents[pageIndex.value - 1] : undefined,
+);
+const nextPage = computed(() =>
+  pageIndex.value >= 0 ? documents[pageIndex.value + 1] : undefined,
+);
 const rendered = computed(() =>
   renderDocument(
     page.value?.source ??
@@ -30,21 +37,7 @@ watchEffect(() => {
       :to="{ path: route.path, hash: '#doc-content' }"
       >Skip to content</RouterLink
     >
-    <header class="header wrap">
-      <RouterLink class="brand" to="/"
-        ><img :src="logo" width="38" height="38" alt="" /><span
-          >Swift<span class="brand-accent">Dispatch</span></span
-        ></RouterLink
-      >
-      <span class="docs-badge">DOCUMENTATION</span>
-      <a
-        class="text-link"
-        href="https://github.com/Kamyab7/SwiftDispatch"
-        target="_blank"
-        rel="noopener noreferrer"
-        >GitHub ↗</a
-      >
-    </header>
+    <SiteHeader />
     <div class="docs-layout wrap">
       <aside class="docs-sidebar">
         <nav aria-label="Documentation">
@@ -61,16 +54,61 @@ watchEffect(() => {
       <main id="doc-content" class="docs-main" tabindex="-1">
         <p class="eyebrow">SWIFTDISPATCH / GUIDES</p>
         <article class="markdown-body" v-html="rendered.html"></article>
-        <nav v-if="previousPage || nextPage" class="docs-pagination" aria-label="Guide pagination">
-          <RouterLink v-if="previousPage" class="docs-page-link" :to="`/docs/${previousPage.slug}`" rel="prev">
+        <nav
+          v-if="previousPage || nextPage"
+          class="docs-pagination"
+          aria-label="Guide pagination"
+        >
+          <RouterLink
+            v-if="previousPage"
+            class="docs-page-link"
+            :to="`/docs/${previousPage.slug}`"
+            rel="prev"
+          >
             <span>← Previous</span>
             <strong>{{ previousPage.title }}</strong>
           </RouterLink>
-          <RouterLink v-if="nextPage" class="docs-page-link docs-page-next" :to="`/docs/${nextPage.slug}`" rel="next">
+          <RouterLink
+            v-if="nextPage"
+            class="docs-page-link docs-page-next"
+            :to="`/docs/${nextPage.slug}`"
+            rel="next"
+          >
             <span>Next →</span>
             <strong>{{ nextPage.title }}</strong>
           </RouterLink>
         </nav>
+        <section
+          v-if="page"
+          class="docs-next-step"
+          aria-label="Put this guide into practice"
+        >
+          <h2>
+            {{
+              page.slug === "getting-started"
+                ? "Take the pattern into a real application."
+                : "Ready to try it in your application?"
+            }}
+          </h2>
+          <p>
+            {{
+              page.slug === "getting-started"
+                ? "Explore the clean architecture sample to see handlers, registration, and behaviors across project boundaries."
+                : "Start with one request and its handler, then verify the behavior your project needs."
+            }}
+          </p>
+          <a
+            v-if="page.slug === 'getting-started'"
+            class="button primary"
+            href="https://github.com/Kamyab7/SwiftDispatch/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Explore the sample ↗</a
+          >
+          <RouterLink v-else class="button primary" to="/docs/getting-started"
+            >Build your first handler →</RouterLink
+          >
+        </section>
         <a
           v-if="page"
           class="docs-edit text-link"
@@ -90,5 +128,6 @@ watchEffect(() => {
         >
       </aside>
     </div>
+    <SiteFooter />
   </div>
 </template>

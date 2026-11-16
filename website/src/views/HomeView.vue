@@ -1,403 +1,487 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
-import logo from "../assets/logo.png";
-
+import { computed, onUnmounted, ref } from "vue";
+import { emitConversion } from "../funnel";
+import SiteHeader from "../components/SiteHeader.vue";
+import SiteFooter from "../components/SiteFooter.vue";
 const github = "https://github.com/Kamyab7/SwiftDispatch";
-const reducedMotion = ref(false);
-const pipelineTick = ref(0);
-const pipelineStages = [
-  {
-    title: "Validation",
-    detail: "Checking request data",
-    done: "Request validated",
-    icon: "✓",
-  },
-  {
-    title: "Authentication",
-    detail: "Checking identity",
-    done: "Identity authenticated",
-    icon: "◇",
-  },
-  {
-    title: "Logging",
-    detail: "Recording request",
-    done: "Request logged",
-    icon: "≡",
-  },
-  {
-    title: "Handler",
-    detail: "Executing handler",
-    done: "Response returned",
-    icon: "↗",
-  },
-];
-const demoRequests = ["CreateOrder", "GetCustomer"];
-const activeStage = computed(() =>
-  reducedMotion.value ? 4 : pipelineTick.value % 5,
-);
-const activeRequest = computed(
-  () => demoRequests[Math.floor(pipelineTick.value / 5) % demoRequests.length],
-);
-let pipelineTimer: ReturnType<typeof setInterval> | undefined;
-let motionPreference: MediaQueryList | undefined;
-function updateMotionPreference() {
-  reducedMotion.value = motionPreference?.matches ?? false;
-}
-onMounted(() => {
-  document.title = "SwiftDispatch — A clearer path for your requests";
-  motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
-  updateMotionPreference();
-  motionPreference.addEventListener("change", updateMotionPreference);
-  pipelineTimer = window.setInterval(() => {
-    if (!reducedMotion.value) pipelineTick.value += 1;
-  }, 1200);
-});
-onUnmounted(() => {
-  window.clearInterval(pipelineTimer);
-  motionPreference?.removeEventListener("change", updateMotionPreference);
-});
-
-const copied = ref(false);
-const copyError = ref(false);
 const command = "dotnet add package SwiftDispatch";
+const copyState = ref("");
+let copyTimer: ReturnType<typeof setTimeout> | undefined;
 async function copyCommand() {
   try {
     await navigator.clipboard.writeText(command);
-    copied.value = true;
-    window.setTimeout(() => {
-      copied.value = false;
-    }, 2000);
+    copyState.value = "Copied to clipboard";
+    emitConversion("install_copy", "hero");
+    clearTimeout(copyTimer);
+    copyTimer = setTimeout(() => {
+      copyState.value = "";
+    }, 2500);
   } catch {
-    copyError.value = true;
+    copyState.value = "Select and copy the command to install.";
   }
 }
-const features = [
+onUnmounted(() => clearTimeout(copyTimer));
+const examples = [
   {
-    number: "01",
-    icon: "⌘",
-    title: "Generated. Not reflected.",
-    text: "Registration and dispatch are generated at compile time. Keep your runtime focused on the work that matters.",
-    tag: "SOURCE GENERATION",
+    title: "Requests",
+    label: "Hello.cs",
+    guide: "getting-started",
+    description: "One request. One handler. Business logic with a clear home.",
+    code: `// Define a request and its response.
+public sealed record Hello(string Name) : IRequest<string>;
+
+public sealed class HelloHandler : IRequestHandler<Hello, string>
+{
+    public Task<string> Handle(Hello request, CancellationToken ct)
+        => Task.FromResult($"Hello, {request.Name}!");
+}
+
+// After registering SwiftDispatch:
+var greeting = await mediator.Send(new Hello("Ada"));
+// Hello, Ada!`,
   },
   {
-    number: "02",
-    icon: "↗",
-    title: "Native AOT, naturally.",
-    text: "Built with trimming and Native AOT in mind. Take your mediator from source to a native executable.",
-    tag: "AOT COMPATIBLE",
+    title: "Notifications",
+    label: "OrderPlaced.cs",
+    guide: "notifications",
+    description: "Publish once. Let multiple handlers react independently.",
+    code: `public sealed record OrderPlaced(string OrderId) : INotification;
+
+public sealed class OrderAuditHandler
+    : INotificationHandler<OrderPlaced>
+{
+    public Task Handle(OrderPlaced notification, CancellationToken ct)
+    {
+        Console.WriteLine($"Order placed: {notification.OrderId}");
+        return Task.CompletedTask;
+    }
+}
+
+await mediator.Publish(new OrderPlaced("order-123"));`,
   },
   {
-    number: "03",
-    icon: "≋",
-    title: "Your pipeline. Your rules.",
-    text: "Compose ordered behaviors for validation, logging, retries, and more. Keep cross-cutting concerns out of your handlers.",
-    tag: "ORDERED BEHAVIORS",
+    title: "Streaming",
+    label: "Count.cs",
+    guide: "streaming",
+    description: "Consume results as they arrive with IAsyncEnumerable<T>.",
+    code: `public sealed record Count(int Limit) : IStreamRequest<int>;
+
+// Implement IStreamRequestHandler<Count, int>
+// to produce results as an IAsyncEnumerable<int>.
+
+await foreach (int value in mediator.CreateStream(
+    new Count(3), cancellationToken))
+{
+    Console.WriteLine(value);
+}
+
+// 1, 2, 3 — streamed from your handler.`,
   },
 ];
+const activeExample = ref(0);
+const example = computed(() => examples[activeExample.value]!);
+const scenarios = [
+  {
+    title: "Completed request",
+    rows: [
+      ["SwiftDispatch", "25.11 ns", "136 B"],
+      ["MediatR", "47.57 ns", "200 B"],
+      ["Mediator", "29.20 ns", "88 B"],
+    ],
+  },
+  {
+    title: "Notification",
+    rows: [
+      ["SwiftDispatch", "54.70 ns", "184 B"],
+      ["MediatR", "215.53 ns", "768 B"],
+      ["Mediator", "36.72 ns", "56 B"],
+    ],
+  },
+  {
+    title: "Yielding async request",
+    rows: [
+      ["SwiftDispatch", "859.18 ns", "160 B"],
+      ["MediatR", "888.31 ns", "224 B"],
+      ["Mediator", "998.18 ns", "192 B"],
+    ],
+  },
+];
+const scenarioIndex = ref(0);
+const scenario = computed(() => scenarios[scenarioIndex.value]!);
 const faqs = [
   {
-    q: "What is SwiftDispatch?",
-    a: "SwiftDispatch is a free, lightweight mediator library targeting .NET Standard 2.0, .NET 8, and .NET 10. It connects requests to handlers, publishes notifications, and supports ordered pipeline behaviors using source-generated registration and dispatch.",
+    q: "Is SwiftDispatch free for commercial use?",
+    a: "Yes. SwiftDispatch is MIT licensed and free for personal and commercial projects. The source is available on GitHub.",
   },
   {
-    q: "How is it different from MediatR?",
-    a: "SwiftDispatch uses familiar mediator interfaces while generating registration and dispatch at compile time instead of relying on runtime reflection. It is designed for Native AOT and trimming, and is available under the MIT license.",
+    q: "Is it a drop-in replacement for MediatR?",
+    a: "It uses familiar interfaces, but migration requires namespace and registration changes. Review your integrations, supported features, and pipeline behavior before switching. The migration guide walks through those checks.",
   },
   {
-    q: "Can I migrate an existing application?",
-    a: "For supported features, update your namespaces to SwiftDispatch.Contracts and configure AddSwiftDispatch in your Application layer, then call AddApplicationServices from Program.cs. Check the repository README for setup details and supported behavior before migrating.",
+    q: "Which .NET versions does it support?",
+    a: "The library targets .NET Standard 2.0, .NET 8, and .NET 10. Native AOT is supported on .NET 8 and .NET 10. Building this repository requires the .NET 10 SDK.",
   },
   {
-    q: "Which .NET versions are supported?",
-    a: "SwiftDispatch targets .NET Standard 2.0, .NET 8, and .NET 10. The source generator is included automatically with the SwiftDispatch package.",
+    q: "Do I install the source generator separately?",
+    a: "No. The SwiftDispatch NuGet package includes the source generator automatically and references SwiftDispatch.Contracts.",
   },
   {
-    q: "Is it free for commercial projects?",
-    a: "Yes. SwiftDispatch is licensed under MIT and is free for personal and commercial use.",
+    q: "Are validation and retries built in?",
+    a: "You implement these as pipeline behaviors and register them explicitly. SwiftDispatch composes the ordered pipeline; your behaviors supply the validation, logging, retry, or exception-handling logic.",
   },
 ];
 </script>
 
 <template>
   <div class="site-shell">
-    <header class="header wrap">
-      <a class="brand" href="#/" aria-label="SwiftDispatch home"
-        ><img :src="logo" alt="" width="38" height="38" /><span
-          >Swift<span class="brand-accent">Dispatch</span></span
-        ></a
-      >
-      <nav aria-label="Main navigation">
-        <a href="#/#features">Features</a
-        ><a href="#/#faq">FAQ</a>
-        <RouterLink to="/docs/getting-started">Documentation</RouterLink>
-      </nav>
-      <a
-        class="github-nav"
-        aria-label="SwiftDispatch on GitHub"
-        :href="github"
-        target="_blank"
-        rel="noopener noreferrer"
-        ><svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M12 .8a11.3 11.3 0 0 0-3.6 22c.6.1.8-.2.8-.5v-2c-3.3.7-4-1.4-4-1.4-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.4-1.3-5.4-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.1 1.2a10.8 10.8 0 0 1 5.7 0c2.2-1.5 3.1-1.2 3.1-1.2.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.8 5.4-5.4 5.7.4.4.8 1.1.8 2.2v3c0 .3.2.6.8.5A11.3 11.3 0 0 0 12 .8Z"
-          /></svg
-      ></a>
-    </header>
-
-    <main>
+    <RouterLink class="docs-skip" to="/#main-content"
+      >Skip to content</RouterLink
+    >
+    <SiteHeader />
+    <main id="main-content">
       <section class="hero wrap">
-        <h1>Your requests.<br /><span>A clearer path.</span></h1>
-        <p class="hero-description">
-          A free, lightweight MediatR alternative with Native AOT support.
-        </p>
-        <button class="install-command" @click="copyCommand">
-          <span aria-hidden="true">$</span><code>{{ command }}</code>
-          <span class="copy-label" aria-live="polite">
-            {{ copied ? "Copied" : "Copy" }}
-            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path v-if="copied" d="m5 12 4 4L19 6" />
-              <template v-else>
-                <rect x="8" y="8" width="12" height="12" rx="2" />
-                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
-              </template>
-            </svg>
-          </span>
-        </button>
-        <p v-if="copyError" role="status">
-          Select and copy the command above to install.
-        </p>
-        <div class="hero-actions">
-          <a
-            class="button primary"
-            href="#/docs/getting-started"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Get started <span aria-hidden="true">↗</span></a
-          ><a class="button secondary" href="#/docs/getting-started"
-            >Documentation <span aria-hidden="true">→</span></a
-          >
-        </div>
-
-        <div id="how-it-works" class="simulation">
-          <div class="simulation-bar">
-            <span><i class="status-dot"></i> DISPATCH IN MOTION</span>
-          </div>
-          <div
-            class="routing"
-            role="img"
-            aria-label="Illustrative routing: requests pass through SwiftDispatch and pipeline behaviors to their corresponding handlers."
-          >
-            <svg
-              class="routes"
-              viewBox="0 0 1000 310"
-              fill="none"
-              aria-hidden="true"
+        <div class="hero-copy">
+          <p class="eyebrow">THE SOURCE-GENERATED .NET MEDIATOR</p>
+          <h1>A .NET mediator.<br /><span>Ready for AOT.</span></h1>
+          <p class="hero-lead">
+            A lightweight MediatR alternative.<br />Built for Native AOT. Free
+            under MIT.
+          </p>
+          <p class="hero-description">
+            Connect requests to handlers, publish notifications, and compose
+            pipelines with registration and dispatch generated at compile time.
+          </p>
+          <div class="hero-actions">
+            <RouterLink class="button primary" to="/docs/getting-started"
+              >Build your first handler
+              <span aria-hidden="true">→</span></RouterLink
+            ><RouterLink class="button secondary" to="/docs/migration"
+              >Moving from MediatR?</RouterLink
             >
-              <defs>
-                <linearGradient
-                  id="route-color"
-                  gradientUnits="userSpaceOnUse"
-                  x1="170"
-                  y1="155"
-                  x2="830"
-                  y2="155"
-                >
-                  <stop stop-color="#00deeb" />
-                  <stop offset="1" stop-color="#3265ff" />
-                </linearGradient>
-              </defs>
-              <g class="route-lines">
-                <path
-                  d="M170 65 H260 Q290 65 290 95 V125 Q290 155 330 155 H425"
-                />
-                <path d="M170 155 H425" />
-                <path
-                  d="M170 245 H260 Q290 245 290 215 V185 Q290 155 330 155 H425"
-                />
-                <path
-                  d="M575 155 H660 Q700 155 700 125 V95 Q700 65 735 65 H830"
-                />
-                <path d="M575 155 H830" />
-                <path
-                  d="M575 155 H660 Q700 155 700 185 V215 Q700 245 735 245 H830"
-                />
-              </g>
-              <g class="packets">
-                <circle r="4" class="packet p1" />
-                <circle r="4" class="packet p2" />
-                <circle r="4" class="packet p3" />
-                <circle r="4" class="packet p4" />
-                <circle r="4" class="packet p5" />
-                <circle r="4" class="packet p6" />
-              </g>
-            </svg>
-            <div class="route-column requests">
-              <span class="route-caption">YOUR REQUESTS</span>
-              <div class="route-node">
-                <span class="node-symbol cyan">↗</span><code>CreateOrder</code
-                ><span class="node-light"></span>
-              </div>
-              <div class="route-node">
-                <span class="node-symbol blue">↗</span><code>GetCustomer</code
-                ><span class="node-light"></span>
-              </div>
-              <div class="route-node">
-                <span class="node-symbol violet">↗</span><code>OrderPlaced</code
-                ><span class="node-light"></span>
-              </div>
+          </div>
+          <div class="install-command">
+            <code>{{ command }}</code
+            ><button @click="copyCommand" aria-label="Copy install command">
+              {{ copyState === "Copied to clipboard" ? "Copied ✓" : "Copy" }}
+            </button>
+          </div>
+          <p class="copy-status" role="status">{{ copyState }}</p>
+          <p class="hero-note">Source generator included. No separate setup.</p>
+        </div>
+        <div class="hero-proof">
+          <div class="code-window">
+            <div class="code-bar">
+              <span class="file-dot"></span><span>Hello.cs</span
+              ><span>C# / .NET</span>
             </div>
-            <div class="dispatch-core">
-              <div class="core-halo"></div>
-              <div class="core-icon">
-                <img :src="logo" width="74" height="74" alt="" />
-              </div>
-              <strong>SwiftDispatch</strong><span>COMPILE-TIME ROUTING</span>
-            </div>
-            <div class="route-column handlers">
-              <span class="route-caption">THE RIGHT HANDLER</span>
-              <div class="route-node">
-                <span class="handler-mark">⌘</span><code>OrderHandler</code
-                ><span class="node-check">✓</span>
-              </div>
-              <div class="route-node">
-                <span class="handler-mark">⌘</span><code>CustomerHandler</code
-                ><span class="node-check">✓</span>
-              </div>
-              <div class="route-node">
-                <span class="handler-mark">⌘</span
-                ><code>NotificationHandlers</code
-                ><span class="node-check">✓</span>
-              </div>
+            <pre><code><span class="comment">// Your request.</span>
+<span class="purple">public sealed record</span> <span class="aqua">Hello</span>(<span class="purple">string</span> Name)
+    : <span class="aqua">IRequest</span>&lt;<span class="purple">string</span>&gt;;
+
+<span class="comment">// Your handler.</span>
+<span class="purple">public sealed class</span> <span class="aqua">HelloHandler</span>
+    : <span class="aqua">IRequestHandler</span>&lt;Hello, <span class="purple">string</span>&gt;
+{
+    <span class="purple">public</span> Task&lt;<span class="purple">string</span>&gt; Handle(
+        Hello request, CancellationToken ct)
+        =&gt; Task.FromResult(
+            <span class="green">$"Hello, {request.Name}!"</span>);
+}
+
+<span class="comment">// SwiftDispatch connects them.</span>
+<span class="purple">await</span> mediator.<span class="aqua">Send</span>(<span class="purple">new</span> Hello(<span class="green">"Ada"</span>));</code></pre>
+            <div class="code-footer">
+              <span class="status-dot"></span> Hello, Ada!
             </div>
           </div>
-          <div
-            class="pipeline-demo"
-            aria-label="Illustrative custom request pipeline"
+          <RouterLink class="example-caption" to="/docs/getting-started"
+            >See registration and the complete example
+            <span>→</span></RouterLink
           >
-            <div class="pipeline-heading">
-              <span class="pipeline-label">INSIDE THE REQUEST PIPELINE</span>
-              <span class="simulation-note">Illustrative custom behaviors</span>
-            </div>
-            <div class="pipeline-request">
-              <code>{{ activeRequest }}</code>
-              <span>{{
-                activeStage === 4 ? "✓ Response returned" : "Processing request"
-              }}</span>
-            </div>
-            <ol class="pipeline-stages">
-              <li
-                v-for="(stage, index) in pipelineStages"
-                :key="stage.title"
-                class="pipeline-stage"
-                :class="{
-                  'is-active': activeStage === index,
-                  'is-complete': activeStage > index,
-                }"
-                :aria-current="activeStage === index ? 'step' : undefined"
-              >
-                <div class="stage-top">
-                  <span class="stage-icon" aria-hidden="true">{{
-                    activeStage > index ? "✓" : stage.icon
-                  }}</span
-                  ><span class="stage-number">0{{ index + 1 }}</span>
-                </div>
-                <strong>{{ stage.title }}</strong>
-                <span class="stage-detail">{{
-                  activeStage > index
-                    ? stage.done
-                    : activeStage === index
-                      ? stage.detail
-                      : "Waiting for request"
-                }}</span>
-                <span class="stage-progress" aria-hidden="true"><i></i></span>
-              </li>
-            </ol>
-            <p class="pipeline-explainer">
-              Example behaviors you compose: validate the payload, authenticate
-              the caller, log the request, then execute the handler.
-            </p>
-          </div>
         </div>
       </section>
+      <div class="trust-strip wrap">
+        <span>MADE FOR YOUR .NET STACK</span>
+        <p>.NET Standard 2.0 <i>/</i> .NET 8 <i>/</i> .NET 10</p>
+        <a
+          :href="`${github}/blob/master/LICENSE`"
+          target="_blank"
+          rel="noopener noreferrer"
+          >MIT licensed ↗</a
+        >
+      </div>
 
-      <section id="features" class="features wrap section-space">
+      <section id="why-swiftdispatch" class="wrap section-space">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">BUILT FOR THE WAY YOU BUILD</p>
-            <h2>Less plumbing.<br />More possibility.</h2>
+            <p class="eyebrow">WHY SWIFTDISPATCH</p>
+            <h2>Keep the pattern.<br />Simplify the plumbing.</h2>
           </div>
           <p>
-            Keep your application decoupled.<br />Keep your code easy to follow.
+            You want handlers that do the work.<br />And a mediator that fits
+            how you deploy.
           </p>
         </div>
         <div class="feature-grid">
-          <article
-            v-for="feature in features"
-            :key="feature.number"
-            class="feature"
-          >
-            <div class="feature-top">
-              <span class="feature-icon">{{ feature.icon }}</span
-              ><span>{{ feature.number }}</span>
-            </div>
-            <h3>{{ feature.title }}</h3>
-            <p>{{ feature.text }}</p>
-            <span class="feature-tag">{{ feature.tag }}</span>
+          <article class="feature">
+            <span class="feature-number">01 / DEPLOY</span>
+            <h3>Take your mediator<br />to Native AOT.</h3>
+            <p>
+              Source-generated registration and dispatch support trimming and
+              Native AOT on .NET 8 and .NET 10.
+            </p>
+            <RouterLink class="text-link" to="/docs/evaluating"
+              >Check the fit →</RouterLink
+            >
+          </article>
+          <article class="feature">
+            <span class="feature-number">02 / BUILD</span>
+            <h3>Give business logic<br />a clear home.</h3>
+            <p>
+              Use requests and handlers for application logic. Compose logging,
+              validation, and retries as ordered behaviors.
+            </p>
+            <RouterLink class="text-link" to="/docs/pipeline-behaviors"
+              >Explore pipelines →</RouterLink
+            >
+          </article>
+          <article class="feature">
+            <span class="feature-number">03 / ADOPT</span>
+            <h3>Familiar interfaces.<br />An open license.</h3>
+            <p>
+              Work with familiar mediator patterns under MIT. Start a new
+              project or evaluate a migration with the source in reach.
+            </p>
+            <RouterLink class="text-link" to="/docs/migration"
+              >Read the migration guide →</RouterLink
+            >
           </article>
         </div>
       </section>
 
-      <section class="code-section wrap section-space">
-        <div class="code-copy">
-          <p class="eyebrow">FAMILIAR BY DESIGN</p>
-          <h2>One request.<br />One clear intention.</h2>
-          <p>
-            Send a request. Let the generated dispatcher find its handler. Keep
-            the business logic where it belongs.
-          </p>
-          <a
-            class="text-link"
-            :href="`${github}/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture`"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Explore the sample <span>↗</span></a
-          >
-        </div>
-        <div class="code-window">
-          <div class="code-bar">
-            <span><i></i><i></i><i></i></span><span>Program.cs</span
-            ><span>C#</span>
+      <section id="examples" class="wrap section-space examples-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">SMALL API. USEFUL BUILDING BLOCKS.</p>
+            <h2>Meet your next handler.</h2>
           </div>
-          <pre><code><span class="comment">// Define the intent.</span>
-<span class="purple">public sealed record</span> <span class="aqua">Hello</span>(<span class="purple">string</span> Name)
-    : <span class="aqua">IRequest</span>&lt;<span class="purple">string</span>&gt;;
-
-<span class="comment">// Send it to the right handler.</span>
-<span class="purple">var</span> greeting = <span class="purple">await</span> mediator.<span class="aqua">Send</span>(
-    <span class="purple">new</span> <span class="aqua">Hello</span>(<span class="green">"World"</span>));
-
-<span class="comment">// Simple on purpose.</span></code></pre>
-          <div class="code-footer">
-            <span class="status-dot"></span> Less runtime magic. More
-            compile-time clarity.
+          <p>
+            Requests, events, or a stream of results.<br />Choose the
+            interaction your feature needs.
+          </p>
+        </div>
+        <div class="example-layout">
+          <div class="example-options" role="group" aria-label="Code examples">
+            <button
+              v-for="(item, index) in examples"
+              :key="item.title"
+              :aria-pressed="activeExample === index"
+              @click="activeExample = index"
+            >
+              <span class="example-index">0{{ index + 1 }}</span
+              ><strong>{{ item.title }}</strong
+              ><span>{{ item.description }}</span
+              ><b aria-hidden="true">↗</b>
+            </button>
+          </div>
+          <div class="code-window">
+            <div class="code-bar">
+              <span>{{ example.label }}</span
+              ><RouterLink :to="`/docs/${example.guide}`"
+                >Full guide →</RouterLink
+              >
+            </div>
+            <pre
+              tabindex="0"
+              :aria-label="`${example.title} code example`"
+            ><code>{{ example.code }}</code></pre>
+            <div class="code-footer">
+              Examples use SwiftDispatch.Contracts; register services before
+              dispatch.
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="faq" class="faq-section wrap section-space">
-        <div>
-          <p class="eyebrow">A LITTLE MORE CONTEXT</p>
-          <h2>Good questions.<br />Clear answers.</h2>
+      <section id="benchmarks" class="wrap section-space benchmark-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">EVIDENCE YOU CAN INSPECT</p>
+            <h2>Show the measurements.<br />Keep the context.</h2>
+          </div>
           <p>
-            Something else on your mind?<br /><a
+            Compare execution time and allocations.<br />Then measure your own
+            application.
+          </p>
+        </div>
+        <div class="benchmark-panel">
+          <div class="benchmark-top">
+            <div>
+              <span class="feature-number">EXPLORATORY / .NET 10</span>
+              <h3>{{ scenario.title }}</h3>
+            </div>
+            <label
+              >Scenario<select v-model="scenarioIndex">
+                <option
+                  v-for="(item, index) in scenarios"
+                  :key="item.title"
+                  :value="index"
+                >
+                  {{ item.title }}
+                </option>
+              </select></label
+            >
+          </div>
+          <div
+            class="table-scroll"
+            tabindex="0"
+            aria-label="Benchmark comparison"
+          >
+            <table>
+              <caption class="sr-only">
+                {{
+                  scenario.title
+                }}: mean execution time and managed allocation per operation;
+                lower is better.
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Library</th>
+                  <th scope="col">Mean time ↓</th>
+                  <th scope="col">Allocated / operation ↓</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="row in scenario.rows"
+                  :key="row[0]"
+                  :class="{ 'highlight-row': row[0] === 'SwiftDispatch' }"
+                >
+                  <th scope="row">{{ row[0] }}</th>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[2] }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="benchmark-note">
+            Three measurement iterations on a shared development machine, with
+            some build/test overlap. These results are exploratory, not
+            publication-quality evidence. Async timing errors overlap; no
+            reliable async speed winner is established.
+          </p>
+          <div class="benchmark-links">
+            <a
               class="text-link"
-              :href="`${github}/issues`"
+              :href="`${github}/blob/master/benchmarks/results/short-run.md`"
               target="_blank"
               rel="noopener noreferrer"
-              >Start a conversation on GitHub ↗</a
+              >Results, versions &amp; measurement errors ↗</a
+            ><a
+              class="text-link"
+              :href="`${github}/blob/master/benchmarks/README.md`"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Reproduce the benchmarks ↗</a
             >
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap section-space pipeline-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">CROSS-CUTTING CONCERNS, IN ORDER</p>
+            <h2>Let your handler<br />focus on the feature.</h2>
+          </div>
+          <p>
+            Register behaviors in the order you need.<br />Each wraps the next
+            step in your pipeline.
           </p>
+        </div>
+        <div
+          class="pipeline-flow"
+          aria-label="Example custom pipeline: validation, logging, then handler"
+        >
+          <div>
+            <span>01 / YOUR BEHAVIOR</span>
+            <h3>Validation</h3>
+            <p>Check the request.</p>
+          </div>
+          <b aria-hidden="true">→</b>
+          <div>
+            <span>02 / YOUR BEHAVIOR</span>
+            <h3>Logging</h3>
+            <p>Record the operation.</p>
+          </div>
+          <b aria-hidden="true">→</b>
+          <div>
+            <span>03 / YOUR HANDLER</span>
+            <h3>Business logic</h3>
+            <p>Do the actual work.</p>
+          </div>
+        </div>
+        <div class="section-tail">
+          <p>
+            Illustrative behaviors you implement and register. Retries and
+            exception handling can live here, too.
+          </p>
+          <RouterLink class="text-link" to="/docs/pipeline-behaviors"
+            >Build your pipeline →</RouterLink
+          >
+        </div>
+      </section>
+
+      <section id="migration" class="wrap section-space">
+        <div class="migration-panel">
+          <div>
+            <p class="eyebrow">ALREADY USING MEDIATR?</p>
+            <h2>A familiar starting point.<br />A deliberate migration.</h2>
+            <p>
+              Keep the request-and-handler pattern. Review compatibility, update
+              your configuration, and verify your application’s behavior.
+            </p>
+            <RouterLink class="button primary" to="/docs/migration"
+              >Plan your migration <span aria-hidden="true">→</span></RouterLink
+            >
+          </div>
+          <ol class="migration-steps">
+            <li>
+              <span>01</span>
+              <div>
+                <h3>Check your requirements</h3>
+                <p>Review supported features and your MediatR integrations.</p>
+              </div>
+            </li>
+            <li>
+              <span>02</span>
+              <div>
+                <h3>Update namespaces and registration</h3>
+                <p>Use SwiftDispatch.Contracts and AddSwiftDispatch.</p>
+              </div>
+            </li>
+            <li>
+              <span>03</span>
+              <div>
+                <h3>Verify your application</h3>
+                <p>
+                  Test pipelines, notifications, and cancellation before
+                  rollout.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="faq" class="wrap section-space faq-section">
+        <div>
+          <p class="eyebrow">BEFORE YOU COMMIT</p>
+          <h2>A few things<br />worth knowing.</h2>
+          <p>Evaluate the details before you adopt.</p>
+          <RouterLink class="text-link" to="/docs/evaluating"
+            >Read the adoption checklist →</RouterLink
+          >
         </div>
         <div class="faq-list">
           <details v-for="item in faqs" :key="item.q">
@@ -407,54 +491,30 @@ const faqs = [
         </div>
       </section>
 
-      <section id="documentation" class="cta wrap">
-        <span class="eyebrow">BUILD SOMETHING THAT FLOWS</span>
-        <h2>Make room for your next idea.</h2>
-        <p>Explore the guides and build your first request handler.</p>
-        <button class="install-command" @click="copyCommand">
-          <span aria-hidden="true">$</span><code>{{ command }}</code
-          ><span class="copy-label" aria-live="polite">
-            {{ copied ? "Copied" : "Copy" }}
-            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path v-if="copied" d="m5 12 4 4L19 6" />
-              <template v-else>
-                <rect x="8" y="8" width="12" height="12" rx="2" />
-                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
-              </template>
-            </svg>
-          </span>
-        </button>
-        <p v-if="copyError" class="copy-error" role="status">
-          Select and copy the command above to install.
-        </p>
-        <span class="sr-only" role="status">{{
-          copied ? "Install command copied to clipboard" : ""
-        }}</span
-        ><a
-          class="text-link"
-          href="#/docs/getting-started"
+      <section class="cta wrap">
+        <p class="eyebrow">FROM EVALUATION TO YOUR FIRST REQUEST</p>
+        <h2>Put SwiftDispatch to work.</h2>
+        <p>Start with one handler. See how it fits your application.</p>
+        <div class="hero-actions">
+          <RouterLink class="button primary" to="/docs/getting-started"
+            >Follow the quick start →</RouterLink
+          ><a
+            class="button secondary"
+            :href="`${github}/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture`"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Explore a real sample ↗</a
+          >
+        </div>
+        <a
+          class="text-link cta-source"
+          :href="github"
           target="_blank"
           rel="noopener noreferrer"
-          >Read the quick start →</a
+          >Inspect the source on GitHub ↗</a
         >
       </section>
     </main>
-    <footer class="footer wrap">
-      <a class="brand" href="#/"
-        ><img :src="logo" alt="" width="29" height="29" /><span
-          >Swift<span class="brand-accent">Dispatch</span></span
-        ></a
-      ><span>Open source. Forward thinking.</span>
-      <div>
-        <a :href="github" target="_blank" rel="noopener noreferrer">GitHub ↗</a
-        ><a href="#/docs/getting-started">Documentation</a
-        ><a
-          :href="`${github}/blob/master/LICENSE`"
-          target="_blank"
-          rel="noopener noreferrer"
-          >MIT License</a
-        >
-      </div>
-    </footer>
+    <SiteFooter />
   </div>
 </template>

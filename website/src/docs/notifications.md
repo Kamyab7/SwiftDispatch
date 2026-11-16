@@ -40,9 +40,11 @@ Select parallel execution inside `AddSwiftDispatch`:
 ```csharp
 using SwiftDispatch;
 
-services.AddSwiftDispatch(options => options
-    .AddHandlersFromAssemblyContaining<OrderPlaced>()
-    .UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>());
+services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(typeof(OrderPlaced).Assembly);
+    options.UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>();
+});
 ```
 
 `SequentialNotificationExecutionStrategy` awaits handlers in stable generated order and stops on the first failure or cancellation. `ParallelNotificationExecutionStrategy` starts every handler and awaits them all, including when a handler throws synchronously. Parallel execution overlaps asynchronous work; it does not move handlers onto background threads. Handlers share the publication's service scope, so their dependencies must support concurrent use.

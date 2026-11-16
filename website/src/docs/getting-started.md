@@ -4,6 +4,13 @@ SwiftDispatch is a free, lightweight mediator targeting **.NET Standard 2.0, .NE
 
 ## Installation
 
+For a standalone console example, create a project first:
+
+```sh
+dotnet new console -n SwiftDispatchDemo
+cd SwiftDispatchDemo
+```
+
 Add the packages to your application:
 
 ```sh
@@ -11,7 +18,48 @@ dotnet add package Microsoft.Extensions.DependencyInjection
 dotnet add package SwiftDispatch
 ```
 
-The SwiftDispatch package includes the source generator automatically. If a package has not yet been published, build local packages with `bash eng/verify.sh` and use `--source /path/to/SwiftDispatch/artifacts/packages` when installing SwiftDispatch.
+The SwiftDispatch package includes the source generator automatically and references SwiftDispatch.Contracts.
+
+## Run your first handler
+
+Replace the console project's `Program.cs` with this complete example:
+
+```csharp
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using SwiftDispatch;
+using SwiftDispatch.Contracts;
+
+var services = new ServiceCollection();
+services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+});
+
+await using var provider = services.BuildServiceProvider();
+await using var scope = provider.CreateAsyncScope();
+var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+
+Console.WriteLine(await mediator.Send(new Hello("Ada")));
+
+public sealed record Hello(string Name) : IRequest<string>;
+
+public sealed class HelloHandler : IRequestHandler<Hello, string>
+{
+    public Task<string> Handle(Hello request, CancellationToken cancellationToken)
+        => Task.FromResult($"Hello, {request.Name}!");
+}
+```
+
+Run it:
+
+```sh
+dotnet run
+```
+
+Expected output: `Hello, Ada!`
+
+You have defined an intent, implemented its handler, and dispatched a request. Next, use the Application-layer registration below for a multi-project application, or explore [pipeline behaviors](pipeline-behaviors.md).
 
 ## Register services in the Application layer
 

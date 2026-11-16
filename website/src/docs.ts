@@ -16,7 +16,18 @@ export const documents = Object.entries(sources)
   .sort((a, b) => {
     if (a.slug === "getting-started") return -1;
     if (b.slug === "getting-started") return 1;
-    return a.title.localeCompare(b.title);
+    const order = [
+      "evaluating",
+      "migration",
+      "pipeline-behaviors",
+      "notifications",
+      "streaming",
+    ];
+    const rank = (slug: string) => {
+      const index = order.indexOf(slug);
+      return index < 0 ? order.length : index;
+    };
+    return rank(a.slug) - rank(b.slug) || a.title.localeCompare(b.title);
   });
 
 export function renderDocument(source: string, slug = "getting-started") {
@@ -26,7 +37,8 @@ export function renderDocument(source: string, slug = "getting-started") {
   tokens.forEach((token, index) => {
     token.children?.forEach((child) => {
       const href = child.attrGet("href");
-      if (child.type !== "link_open" || typeof href !== "string" || !href) return;
+      if (child.type !== "link_open" || typeof href !== "string" || !href)
+        return;
       if (href.startsWith("#")) {
         child.attrSet("href", `#/docs/${slug}${href}`);
       } else if (/^[\w./-]+\.md(?:#.*)?$/.test(href)) {

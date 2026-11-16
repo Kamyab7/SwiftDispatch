@@ -1,6 +1,6 @@
 # SwiftDispatch website
 
-Empty Vue 3 project using TypeScript and Vite.
+SwiftDispatch marketing site and documentation, built with Vue 3, TypeScript, and Vite.
 
 Requires Node.js `^22.18.0 || >=24.12.0` and npm.
 
@@ -13,6 +13,26 @@ npm run dev
 
 `npm run build` checks types and builds production files in `dist/`.
 `npm run preview` serves the production build locally.
+
+## Adoption funnel
+
+The home page moves visitors through the product promise, code examples, benefits, benchmark evidence, migration, adoption questions, and quick start. New projects go to the runnable console example; existing MediatR projects go to the migration guide. The evaluation guide supports compatibility decisions. Documentation points visitors onward to implementation and the clean architecture sample.
+
+Primary conversion intent: quick-start visits and successful install-command copies. Secondary intent: migration and evaluation visits, sample exploration, GitHub, and NuGet clicks. A click or clipboard copy does not prove a package install or successful adoption.
+
+`src/funnel.ts` emits local `swiftdispatch:conversion` CustomEvents with `name`, `placement`, and optional `destination`. Events are `quick_start_click`, `migration_click`, `evaluation_click`, `github_click`, `nuget_click`, and `install_copy`. No analytics provider, cookies, persistent identifiers, or network collection is configured. Connect your chosen analytics provider to this event before relying on conversion reports; handle consent as appropriate for that provider. Destination values omit query strings and are limited to recognized links.
+
+For example, a provider adapter can subscribe with:
+
+```js
+window.addEventListener("swiftdispatch:conversion", ({ detail }) => {
+  // Forward detail to your configured analytics provider.
+});
+```
+
+The existing hash router remains compatible with static hosting. It updates titles and descriptions during client navigation, but documentation does not have separate server-rendered metadata. For an organic-search acquisition campaign, prerendered pages with path-based URLs and matching hosting rewrites are a separate deployment requirement. The root HTML includes the landing page's title, description, and social metadata.
+
+Keep benchmark data synchronized with the linked repository reports and retain their methodology caveats. Do not present exploratory measurements as production guarantees.
 
 ## Documentation
 
