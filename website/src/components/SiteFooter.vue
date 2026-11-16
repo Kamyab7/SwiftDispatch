@@ -25,6 +25,7 @@ import logo from "../assets/logo.png";
         rel="noopener noreferrer"
         >MIT license ↗</a
       >
+      <RouterLink to="/privacy">Privacy</RouterLink>
     </nav>
   </footer>
 </template>

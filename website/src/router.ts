@@ -5,6 +5,7 @@ export const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     { path: "/", component: () => import("./views/HomeView.vue") },
+    { path: "/privacy", component: () => import("./views/PrivacyView.vue") },
     { path: "/docs", redirect: "/docs/getting-started" },
     {
       path: "/docs/:slug(.*)",
@@ -24,15 +25,19 @@ router.afterEach((to) => {
   const title =
     to.path === "/"
       ? "SwiftDispatch — Lightweight .NET mediator with Native AOT"
-      : `${page?.title ?? "Page not found"} · SwiftDispatch`;
+      : to.path === "/privacy"
+        ? "Privacy policy · SwiftDispatch"
+        : `${page?.title ?? "Page not found"} · SwiftDispatch`;
   const description =
     to.path === "/"
       ? "A lightweight, MIT-licensed MediatR alternative for .NET. Source-generated registration and dispatch, Native AOT support, requests, notifications, and streaming."
-      : (page?.source
-          .split("\n")
-          .find((line) => line.length > 60 && !line.startsWith("#"))
-          ?.replace(/\*\*/g, "") ??
-        "Explore SwiftDispatch documentation and examples.");
+      : to.path === "/privacy"
+        ? "How the SwiftDispatch website handles hosting logs, local interaction events, cookies, and privacy questions."
+        : (page?.source
+            .split("\n")
+            .find((line) => line.length > 60 && !line.startsWith("#"))
+            ?.replace(/\*\*/g, "") ??
+          "Explore SwiftDispatch documentation and examples.");
   document.title = title;
   document
     .querySelector('meta[name="description"]')

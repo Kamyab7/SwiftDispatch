@@ -262,3 +262,8 @@
     font-size: 13px;
   }
 }
+
+.privacy-content {
+  max-width: 780px;
+  padding-block: 55px 30px;
+}
