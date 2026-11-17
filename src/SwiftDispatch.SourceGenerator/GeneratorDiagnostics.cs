@@ -13,6 +13,8 @@ internal static class GeneratorDiagnostics
     internal static readonly DiagnosticDescriptor Behavior = Rule("SD006", "Invalid pipeline behavior");
     internal static readonly DiagnosticDescriptor MissingHandler = Rule("SD007", "Missing request handler");
 
+    internal static readonly DiagnosticDescriptor MissingNotificationHandler = Rule("SD008", "Missing notification handler");
+
     private static DiagnosticDescriptor Rule(string id, string title) => new(
         id, title, "{0}", "SwiftDispatch", DiagnosticSeverity.Error, isEnabledByDefault: true);
 }

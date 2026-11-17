@@ -70,16 +70,17 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         var configuredStreamBehaviors = new List<INamedTypeSymbol>();
         if (!ReadFluentConfiguration(compilation, fluentCalls[0], assemblies,
             configuredBehaviors, configuredStreamBehaviors, out INamedTypeSymbol? notificationStrategy,
-            out bool validateMissingHandlers, out string? error))
+            out bool validateMissingHandlers, out bool validateNotificationHandlers, out string? error))
         {
             Error(Configuration, accessContext, error!);
             return;
         }
         var (requests, notifications) = HandlerDiscovery.Discover(assemblies, responseHandler,
             streamHandler, voidHandler, notificationHandler, unit, output.CancellationToken, Error);
-        if (validateMissingHandlers)
+        if (validateMissingHandlers || validateNotificationHandlers)
         {
-            MissingHandlerValidator.Validate(compilation, assemblies, requests, output.CancellationToken, Error);
+            MissingHandlerValidator.Validate(compilation, assemblies, requests, notifications,
+                validateMissingHandlers, validateNotificationHandlers, output.CancellationToken, Error);
         }
         var constructors = DispatchModelValidator.Validate(compilation, accessContext, requests, notifications,
             configuredBehaviors, configuredStreamBehaviors, pipeline, streamPipeline, notificationStrategy, Error);

@@ -94,6 +94,24 @@ runtime. Abstract types, interfaces, open generic request definitions, and reque
 types in assemblies outside the registration scope are not checked. This validation
 does not inspect `Send` call sites or validate runtime dependency injection services.
 
+Notification handler validation is separate and **disabled by default**, because
+notifications can legitimately have no subscribers. Opt in to build error `SD008`
+when a concrete, closed notification in the same validation scope has no registered
+handler:
+
+```csharp
+services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
+    options.ValidateNotificationHandlers(true);
+});
+```
+
+At least one handler is required when enabled; multiple handlers remain valid.
+Pass `false` to disable this check. Both validation options accept compile-time
+Boolean constants and operate independently. Notification handlers must match the
+exact concrete notification type, consistent with runtime dispatch.
+
 ## Benchmarks
 
 Speed and managed memory allocations for SwiftDispatch, MediatR, and Mediator on .NET 10.

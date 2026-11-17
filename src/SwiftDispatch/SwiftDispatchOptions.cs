@@ -15,6 +15,12 @@ public sealed class SwiftDispatchOptions
     /// </summary>
     public SwiftDispatchOptions ValidateMissingHandlers(bool enabled) => this;
 
+    /// <summary>
+    /// Requires at least one handler for each concrete, closed notification in the current and
+    /// explicitly included assemblies at build time. Disabled by default. Pass a compile-time Boolean constant.
+    /// </summary>
+    public SwiftDispatchOptions ValidateNotificationHandlers(bool enabled) => this;
+
     /// <summary>Selects the notification execution strategy. Sequential execution is the default.</summary>
     public SwiftDispatchOptions UseNotificationExecutionStrategy<TStrategy>()
         where TStrategy : class, SwiftDispatch.INotificationExecutionStrategy => this;

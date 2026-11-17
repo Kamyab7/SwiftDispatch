@@ -10,7 +10,8 @@ namespace SwiftDispatch.SourceGenerator;
 internal static class MissingHandlerValidator
 {
     internal static void Validate(Compilation compilation, IEnumerable<IAssemblySymbol> assemblies,
-        List<Request> requests, CancellationToken cancellationToken,
+        List<Request> requests, List<Observer> notifications,
+        bool validateRequests, bool validateNotifications, CancellationToken cancellationToken,
         Action<DiagnosticDescriptor, ISymbol, string> reportError)
     {
         var contracts = new[]
@@ -19,6 +20,7 @@ internal static class MissingHandlerValidator
             compilation.GetTypeByMetadataName("SwiftDispatch.Contracts.IRequest`1"),
             compilation.GetTypeByMetadataName("SwiftDispatch.Contracts.IStreamRequest`1")
         };
+        INamedTypeSymbol? notificationContract = compilation.GetTypeByMetadataName("SwiftDispatch.Contracts.INotification");
         foreach (IAssemblySymbol assembly in assemblies.OrderBy(static item => item.Identity.ToString(), StringComparer.Ordinal))
         {
             foreach (INamedTypeSymbol type in Types(assembly.GlobalNamespace).OrderBy(Name, StringComparer.Ordinal))
@@ -29,6 +31,15 @@ internal static class MissingHandlerValidator
                     continue;
                 }
 
+                if (validateNotifications && notificationContract != null
+                    && type.AllInterfaces.Any(item => SymbolEqualityComparer.Default.Equals(item, notificationContract))
+                    && !notifications.Any(observer => SymbolEqualityComparer.Default.Equals(observer.Message, type)))
+                {
+                    reportError(GeneratorDiagnostics.MissingNotificationHandler, type,
+                        $"Notification '{Name(type)}' has no registered handler. Add a concrete handler and include its assembly in AddSwiftDispatch registration, or disable this check with ValidateNotificationHandlers(false).");
+                }
+
+                if (!validateRequests) continue;
                 foreach (INamedTypeSymbol contract in type.AllInterfaces.Where(item => contracts.Any(
                     definition => definition != null && SymbolEqualityComparer.Default.Equals(item.OriginalDefinition, definition))))
                 {

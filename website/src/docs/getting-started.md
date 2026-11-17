@@ -133,6 +133,24 @@ call sites or verify runtime dependency injection registrations. For separate
 contracts and handler projects, include both assemblies in the registration to
 validate all contract request types.
 
+Notification handler validation is separate and **disabled by default**, because
+notifications can legitimately have no subscribers. Opt in to build error `SD008`
+when a concrete, closed notification in the same validation scope has no registered
+handler:
+
+```csharp
+services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
+    options.ValidateNotificationHandlers(true);
+});
+```
+
+At least one handler is required when enabled; multiple handlers remain valid.
+Pass `false` to disable this check. Both validation options accept compile-time
+Boolean constants and operate independently. Notification handlers must match the
+exact concrete notification type, consistent with runtime dispatch.
+
 ## Send your first request
 
 Define a request and its handler:
