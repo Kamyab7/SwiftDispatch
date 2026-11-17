@@ -4,7 +4,7 @@ SwiftDispatch uses familiar mediator interfaces, including `IMediator`, `IReques
 
 ## Check your requirements
 
-SwiftDispatch targets .NET Standard 2.0, .NET 8, and .NET 10. Review the supported features before migrating: requests with or without responses, sequential notifications, ordered pipelines, cancellation token forwarding, and generated handler discovery.
+SwiftDispatch targets .NET Standard 2.0, .NET 8, .NET 10, and .NET 11. Review the supported features before migrating: requests with or without responses, sequential notifications, ordered pipelines, cancellation token forwarding, and generated handler discovery.
 
 Migration guidance applies to these supported features; check application-specific MediatR integrations separately.
 

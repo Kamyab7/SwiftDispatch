@@ -23,7 +23,7 @@ For features, describe the problem, an example of the desired usage, and any alt
 
 Fork the repository if you do not have write access, clone your fork, and create a descriptive branch for your change.
 
-Install the .NET 10 SDK to build the repository and the .NET 8 runtime to run the tests targeting .NET 8. The test suite targets both .NET 8 and .NET 10.
+Install the .NET 11 SDK to build the repository and the .NET 8 and .NET 10 runtimes to run the tests targeting those versions. The test suite targets .NET 8, .NET 10, and .NET 11.
 
 From the repository root:
 
@@ -51,7 +51,7 @@ dotnet test tests/SwiftDispatch.Tests -c Release --no-build
 
 - Follow [`.editorconfig`](.editorconfig) and the conventions in nearby code. C# uses four-space indentation and file-scoped namespaces.
 - Keep nullable reference types enabled and resolve build warnings; the repository treats warnings as errors.
-- Preserve support for `netstandard2.0`, `net8.0`, and `net10.0` where applicable. Check the affected project's target frameworks before using newer APIs.
+- Preserve support for `netstandard2.0`, `net8.0`, `net10.0`, and `net11.0` where applicable. Check the affected project's target frameworks before using newer APIs.
 - Preserve Native AOT and trimming compatibility. Changes to discovery or dispatch should account for generated code and avoid introducing runtime reflection requirements.
 - Add a regression test for bug fixes and tests for new behavior. Use the runtime or generator tests as appropriate; cover diagnostics and generated-code compilation when changing the source generator.
 - Consider cancellation, dependency injection lifetimes, behavior ordering, and notification concurrency when changing related behavior.
@@ -72,7 +72,7 @@ Before submitting library, generator, or packaging changes, run the same verific
 bash eng/verify.sh
 ```
 
-The script builds the solution, runs tests, creates NuGet packages, runs a package consumer, and publishes and executes a Native AOT binary. It requires Bash, the .NET SDK/runtime setup above, and native compilation prerequisites. On Ubuntu, CI installs these with:
+The script builds the solution, runs tests, creates NuGet packages, runs a package consumer, and publishes and executes a Native AOT binary for each of .NET 8, .NET 10, and .NET 11. It requires Bash, the .NET SDK/runtime setup above, and native compilation prerequisites. On Ubuntu, CI installs these with:
 
 ```sh
 sudo apt-get update

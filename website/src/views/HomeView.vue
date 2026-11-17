@@ -119,7 +119,7 @@ const faqs = [
   },
   {
     q: "Which .NET versions does it support?",
-    a: "The library targets .NET Standard 2.0, .NET 8, and .NET 10. Native AOT is supported on .NET 8 and .NET 10. Building this repository requires the .NET 10 SDK.",
+    a: "The library targets .NET Standard 2.0, .NET 8, .NET 10, and .NET 11. Native AOT is supported on .NET 8, .NET 10, and .NET 11. Building this repository requires the .NET 11 SDK.",
   },
   {
     q: "Do I install the source generator separately?",
@@ -202,7 +202,7 @@ const faqs = [
       </section>
       <div class="trust-strip wrap">
         <span>MADE FOR YOUR .NET STACK</span>
-        <p>.NET Standard 2.0 <i>/</i> .NET 8 <i>/</i> .NET 10</p>
+        <p>.NET Standard 2.0 <i>/</i> .NET 8 <i>/</i> .NET 10 <i>/</i> .NET 11</p>
         <a
           :href="`${github}/blob/master/LICENSE`"
           target="_blank"
@@ -228,7 +228,7 @@ const faqs = [
             <h3>Take your mediator<br />to Native AOT.</h3>
             <p>
               Source-generated registration and dispatch support trimming and
-              Native AOT on .NET 8 and .NET 10.
+              Native AOT on .NET 8, .NET 10, and .NET 11.
             </p>
             <RouterLink class="text-link" to="/docs/evaluating"
               >Check the fit →</RouterLink

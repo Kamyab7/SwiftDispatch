@@ -10,12 +10,12 @@ SwiftDispatch is a lightweight, MIT-licensed .NET mediator with source-generated
 | Multiple reactions to an event  | Notifications with sequential, parallel, or custom execution strategies                           |
 | Results produced over time      | Streaming requests with IAsyncEnumerable and separate stream pipeline behaviors                   |
 | Shared application concerns     | Ordered pipeline behaviors you implement for validation, logging, retries, and exception handling |
-| Native AOT publishing           | Generated registration and dispatch, with Native AOT support on .NET 8 and .NET 10                |
+| Native AOT publishing           | Generated registration and dispatch, with Native AOT support on .NET 8, .NET 10, and .NET 11                |
 | Commercial use                  | MIT license; free for personal and commercial projects                                            |
 
 ## Check framework and registration requirements
 
-SwiftDispatch targets .NET Standard 2.0, .NET 8, and .NET 10. Native AOT is supported on .NET 8 and .NET 10. Building the repository requires the .NET 10 SDK.
+SwiftDispatch targets .NET Standard 2.0, .NET 8, .NET 10, and .NET 11. Native AOT is supported on .NET 8, .NET 10, and .NET 11. Building the repository requires the .NET 11 SDK.
 
 The source generator is included in the SwiftDispatch NuGet package. It reads registration at build time. Use a direct configuration lambda and supported assembly and behavior expressions; dynamic or conditional runtime configuration is unsupported. See [getting started](getting-started.md) for the configuration rules.
 
