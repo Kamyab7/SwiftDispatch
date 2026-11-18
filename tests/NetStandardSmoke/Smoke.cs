@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using SwiftDispatch.Contracts;
+using SwiftDispatch.Diagnostics;
 
 namespace SwiftDispatch.NetStandardSmoke;
 
@@ -36,8 +37,12 @@ public static class Smoke
         var services = new ServiceCollection();
         services.AddSwiftDispatch(options => options
             .AddHandlersFromAssemblyContaining<Ping>()
+            .EnableDispatchCatalog(true)
             .AddStreamPipelineBehavior(typeof(StreamBehavior<,>)));
         using var provider = services.BuildServiceProvider();
+        var flow = provider.GetRequiredService<IDispatchCatalog>().Find(typeof(Ping));
+        if (flow.Count != 1 || flow[0].ResponseType != typeof(int) || flow[0].HandlerTypes[0] != typeof(PingHandler))
+            throw new InvalidOperationException("Catalog failed.");
         using var scope = provider.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         if (await mediator.Send(new Ping()) != 42) throw new InvalidOperationException("Request failed.");

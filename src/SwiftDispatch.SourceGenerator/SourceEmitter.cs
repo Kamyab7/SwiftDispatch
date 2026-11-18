@@ -11,6 +11,13 @@ internal static class SourceEmitter
         RegistrationEmitter.Emit(registration, model);
         yield return CompleteFile("SwiftDispatch.Registration.g.cs", registration);
 
+        if (model.CatalogEnabled)
+        {
+            var catalog = CreateFile();
+            CatalogEmitter.Emit(catalog, model);
+            yield return CompleteFile("SwiftDispatch.DispatchCatalog.g.cs", catalog);
+        }
+
         var table = CreateFile();
         DispatchTableEmitter.Emit(table, model);
         yield return CompleteFile("SwiftDispatch.DispatchTable.g.cs", table);

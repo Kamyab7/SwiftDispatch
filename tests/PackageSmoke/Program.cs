@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SwiftDispatch.Contracts;
+using SwiftDispatch.Diagnostics;
 using SwiftDispatch.PackageSmoke.Configuration;
 using SwiftDispatch.PackageSmoke.Infrastructure;
 using SwiftDispatch.PackageSmoke.Notifications;
@@ -17,6 +18,17 @@ if (!ReferenceEquals(mediator, scope.ServiceProvider.GetRequiredService<ISender>
     || !ReferenceEquals(mediator, scope.ServiceProvider.GetRequiredService<IPublisher>()))
 {
     throw new InvalidOperationException("Mediator aliases must share the scope.");
+}
+
+var catalog = provider.GetRequiredService<IDispatchCatalog>();
+var helloFlow = catalog.Find(typeof(Hello));
+if (helloFlow.Count != 1 || helloFlow[0].ResponseType != typeof(string)
+    || helloFlow[0].HandlerTypes.Count != 1 || helloFlow[0].BehaviorTypes.Count != 2
+    || catalog.Find(typeof(SaveGreeting))[0].ResponseType != null
+    || catalog.Find(typeof(GreetingSaved))[0].HandlerTypes.Count != 2
+    || !ReferenceEquals(catalog, scope.ServiceProvider.GetRequiredService<IDispatchCatalog>()))
+{
+    throw new InvalidOperationException("Generated dispatch catalog produced unexpected metadata.");
 }
 
 string greeting = await mediator.Send(new Hello("AOT"));

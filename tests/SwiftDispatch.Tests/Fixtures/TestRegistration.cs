@@ -11,6 +11,7 @@ internal static class TestRegistration
         {
             // Runtime tests intentionally send requests without handlers.
             options.ValidateMissingHandlers(false);
+            options.EnableDispatchCatalog(true);
             options.UseNotificationExecutionStrategy<SequentialNotificationExecutionStrategy>();
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             options.AddOpenBehavior(typeof(Outer<,>));

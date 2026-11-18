@@ -8,8 +8,11 @@ internal sealed class DispatchModel(
     ImmutableArray<RequestDispatchModel> requests,
     ImmutableArray<NotificationDispatchModel> notifications,
     ImmutableArray<ComponentRegistrationModel> components,
-    string? notificationStrategyResolution)
+    string? notificationStrategyResolution,
+    ImmutableArray<CatalogEntryModel> catalogEntries)
 {
+    public IReadOnlyList<CatalogEntryModel> CatalogEntries { get; } = catalogEntries.IsDefault ? ImmutableArray<CatalogEntryModel>.Empty : catalogEntries;
+    public bool CatalogEnabled { get; } = !catalogEntries.IsDefault;
     public IReadOnlyList<RequestDispatchModel> Requests { get; } = requests;
     public IReadOnlyList<NotificationDispatchModel> Notifications { get; } = notifications;
     public IReadOnlyList<ComponentRegistrationModel> Components { get; } = components;

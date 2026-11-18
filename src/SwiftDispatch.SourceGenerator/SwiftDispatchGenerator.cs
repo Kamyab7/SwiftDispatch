@@ -70,7 +70,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         var configuredStreamBehaviors = new List<INamedTypeSymbol>();
         if (!ReadFluentConfiguration(compilation, fluentCalls[0], assemblies,
             configuredBehaviors, configuredStreamBehaviors, out INamedTypeSymbol? notificationStrategy,
-            out bool validateMissingHandlers, out bool validateNotificationHandlers, out string? error))
+            out bool validateMissingHandlers, out bool validateNotificationHandlers, out bool enableDispatchCatalog, out string? error))
         {
             Error(Configuration, accessContext, error!);
             return;
@@ -90,7 +90,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
             return;
         }
 
-        DispatchModel model = DispatchModelBuilder.Build(requests, notifications, constructors, notificationStrategy);
+        DispatchModel model = DispatchModelBuilder.Build(requests, notifications, constructors, notificationStrategy, enableDispatchCatalog);
         foreach (GeneratedSource source in SourceEmitter.Emit(model))
         {
             output.CancellationToken.ThrowIfCancellationRequested();
