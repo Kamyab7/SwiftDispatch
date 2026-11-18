@@ -69,6 +69,21 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 | Dependency injection | Microsoft dependency injection integration and cancellation token forwarding |
 | Handler discovery | Explicitly included assemblies and constrained generic pipeline behaviors |
 
+## Dispatch catalog and flow view
+
+Enable `options.EnableDispatchCatalog(true)` inside `AddSwiftDispatch` to generate a
+read-only configured flow catalog. Resolve `SwiftDispatch.Diagnostics.IDispatchCatalog`
+from DI and call `catalog.Find(typeof(Hello))` to inspect concrete handlers and
+outermost-first behaviors without constructing or executing them. Requests, streams,
+and notification subscribers are included; void requests and notifications have no response type.
+
+After building, open `SwiftDispatch.DispatchCatalog.g.cs` under the source generator's
+generated documents in your IDE. Search for a message name to see its configured
+flow and available source locations. The catalog is disabled by default and describes
+configuration, not actual execution: behaviors can short-circuit or retry, and runtime
+service overrides can change execution. See the [catalog guide](website/src/docs/dispatch-catalog.md)
+for API usage and instructions for emitting generated files to disk.
+
 ## Build-time handler validation
 
 Missing request handlers fail the build with `SD007` by default. The generator checks
