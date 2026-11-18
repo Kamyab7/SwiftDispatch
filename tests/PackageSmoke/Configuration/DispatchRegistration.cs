@@ -9,6 +9,7 @@ internal static class DispatchRegistration
     internal static IServiceCollection AddPackageDispatch(this IServiceCollection services) =>
         services.AddSwiftDispatch(options =>
         {
+            options.EnableDispatchCatalog(true);
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             options.AddOpenBehavior(typeof(LoggingBehavior<,>));
             options.AddPipelineBehavior(typeof(ValidationBehavior));

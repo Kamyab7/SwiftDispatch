@@ -32,14 +32,17 @@ internal static class GeneratorTestHelper
         .Distinct(StringComparer.Ordinal)
         .Select(static path => MetadataReference.CreateFromFile(path)).ToImmutableArray<MetadataReference>();
 
-    private static CSharpCompilation Compilation(string source, IEnumerable<MetadataReference>? extra = null, string assembly = "Consumer") =>
-        CSharpCompilation.Create(assembly, [CSharpSyntaxTree.ParseText(Prelude + "\n" + source)],
+    private static CSharpCompilation Compilation(string source, IEnumerable<MetadataReference>? extra = null, string assembly = "Consumer", string path = "") =>
+        CSharpCompilation.Create(assembly, [CSharpSyntaxTree.ParseText(Prelude + "\n" + source, path: path)],
             References.Concat(extra ?? []), new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable));
 
     internal static (GeneratorDriverRunResult Result, Compilation Output) Generate(string source, params MetadataReference[] extra)
+        => GenerateAtPath(source, "", extra);
+
+    internal static (GeneratorDriverRunResult Result, Compilation Output) GenerateAtPath(string source, string path, params MetadataReference[] extra)
     {
         GeneratorDriver driver = CSharpGeneratorDriver.Create(new SwiftDispatchGenerator().AsSourceGenerator());
-        driver = driver.RunGeneratorsAndUpdateCompilation(Compilation(source, extra), out Compilation output, out _);
+        driver = driver.RunGeneratorsAndUpdateCompilation(Compilation(source, extra, path: path), out Compilation output, out _);
         return (driver.GetRunResult(), output);
     }
 
