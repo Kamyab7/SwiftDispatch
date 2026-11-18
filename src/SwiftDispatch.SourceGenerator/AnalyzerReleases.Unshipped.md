@@ -10,3 +10,5 @@ SD003 | SwiftDispatch | Error | Invalid constructor
 SD004 | SwiftDispatch | Error | Duplicate request handlers
 SD005 | SwiftDispatch | Error | Open generic handler
 SD006 | SwiftDispatch | Error | Invalid pipeline behavior
+SD007 | SwiftDispatch | Error | Missing request handler
+SD008 | SwiftDispatch | Error | Missing notification handler

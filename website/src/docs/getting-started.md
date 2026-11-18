@@ -104,6 +104,53 @@ services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
 This requires the `FluentValidation.DependencyInjectionExtensions` package and `using FluentValidation;`. Add your validation pipeline behavior explicitly, as shown in [pipeline behaviors](pipeline-behaviors.md).
 
+## Validate missing handlers at build time
+
+By default, SwiftDispatch reports build error `SD007` for every concrete, closed
+request type without a matching registered handler in the current assembly or any
+assembly explicitly included in the registration. This includes unused requests,
+requests without responses, and streaming requests. Handlers match exact concrete
+types, so a handler for a base request does not cover derived requests. Notifications
+can have zero handlers.
+
+If some requests are intentionally unhandled, turn off this check:
+
+```csharp
+services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
+    options.ValidateMissingHandlers(false);
+});
+```
+
+Pass a compile-time Boolean constant; `true` explicitly enables validation. Other
+generator errors remain enabled. With validation disabled, sending an unhandled
+request still throws `InvalidOperationException` at runtime.
+
+Interfaces, abstract types, open generic request definitions, and types in assemblies
+outside this registration's scope are excluded. The check does not analyze `Send`
+call sites or verify runtime dependency injection registrations. For separate
+contracts and handler projects, include both assemblies in the registration to
+validate all contract request types.
+
+Notification handler validation is separate and **disabled by default**, because
+notifications can legitimately have no subscribers. Opt in to build error `SD008`
+when a concrete, closed notification in the same validation scope has no registered
+handler:
+
+```csharp
+services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
+    options.ValidateNotificationHandlers(true);
+});
+```
+
+At least one handler is required when enabled; multiple handlers remain valid.
+Pass `false` to disable this check. Both validation options accept compile-time
+Boolean constants and operate independently. Notification handlers must match the
+exact concrete notification type, consistent with runtime dispatch.
+
 ## Send your first request
 
 Define a request and its handler:
