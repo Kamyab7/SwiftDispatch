@@ -21,6 +21,12 @@ public sealed class SwiftDispatchOptions
     /// </summary>
     public SwiftDispatchOptions ValidateNotificationHandlers(bool enabled) => this;
 
+    /// <summary>
+    /// Generates and registers a configured dispatch catalog. Disabled by default.
+    /// Pass a compile-time Boolean constant; the last call wins.
+    /// </summary>
+    public SwiftDispatchOptions EnableDispatchCatalog(bool enabled) => this;
+
     /// <summary>Selects the notification execution strategy. Sequential execution is the default.</summary>
     public SwiftDispatchOptions UseNotificationExecutionStrategy<TStrategy>()
         where TStrategy : class, SwiftDispatch.INotificationExecutionStrategy => this;

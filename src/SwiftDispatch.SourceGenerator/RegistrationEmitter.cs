@@ -12,6 +12,12 @@ internal static class RegistrationEmitter
                     if (configure is null) throw new global::System.ArgumentNullException(nameof(configure));
                     if (services is null) throw new global::System.ArgumentNullException(nameof(services));
             """);
+        if (model.CatalogEnabled)
+        {
+            code.AppendLine("""
+                    global::Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions.TryAddSingleton<global::SwiftDispatch.Diagnostics.IDispatchCatalog>(services, static _ => new __SwiftDispatchCatalog());
+                """);
+        }
         foreach (ComponentRegistrationModel component in model.Components)
         {
             string arguments = string.Join(", ", component.ConstructorArguments);
