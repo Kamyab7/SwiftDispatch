@@ -9,7 +9,7 @@
     <ProjectReference Include="../Domain/Domain.csproj" />
     <ProjectReference Include="../../../src/SwiftDispatch/SwiftDispatch.csproj" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
-    <PackageReference Include="FluentValidation" />
+    <ProjectReference Include="../../../src/SwiftDispatch.FluentValidation/SwiftDispatch.FluentValidation.csproj" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
   </ItemGroup>
 </Project>

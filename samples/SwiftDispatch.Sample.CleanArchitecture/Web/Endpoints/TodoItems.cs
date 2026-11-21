@@ -1,5 +1,5 @@
 using SwiftDispatch.Contracts;
-using SwiftDispatch.Sample.CleanArchitecture.Application.Common.Exceptions;
+using FluentValidation;
 using SwiftDispatch.Sample.CleanArchitecture.Application.TodoItems;
 using SwiftDispatch.Sample.CleanArchitecture.Application.TodoItems.Commands.CreateTodo;
 using SwiftDispatch.Sample.CleanArchitecture.Application.TodoItems.Commands.CompleteTodo;
@@ -20,9 +20,13 @@ public static class TodoItems
                 TodoResponse todo = await mediator.Send(new CreateTodo(body.Title ?? string.Empty), cancellationToken);
                 return Results.Created($"/todos/{todo.Id}", todo);
             }
-            catch (RequestValidationException exception)
+            catch (ValidationException exception)
             {
-                return Results.ValidationProblem(exception.Errors);
+                var errors = exception.Errors
+                    .GroupBy(failure => failure.PropertyName)
+                    .ToDictionary(group => group.Key,
+                        group => group.Select(failure => failure.ErrorMessage).Distinct().ToArray());
+                return Results.ValidationProblem(errors);
             }
         })
         .WithName("CreateTodo")

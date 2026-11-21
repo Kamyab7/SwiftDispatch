@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using SwiftDispatch.Contracts;
-using SwiftDispatch.Sample.CleanArchitecture.Application.Common.Exceptions;
+using FluentValidation;
 
 namespace SwiftDispatch.Sample.CleanArchitecture.Application.Common.Behaviours;
 
@@ -25,7 +25,7 @@ public sealed class LoggingBehaviour<TRequest, TResponse>(ILogger<LoggingBehavio
                 requestName, Stopwatch.GetElapsedTime(started).TotalMilliseconds);
             return response;
         }
-        catch (RequestValidationException exception)
+        catch (ValidationException exception)
         {
             logger.LogWarning("Validation failed for {RequestName}: {Reason}", requestName, exception.Message);
             throw;
