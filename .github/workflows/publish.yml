@@ -55,12 +55,14 @@ jobs:
         run: |
           dotnet test tests/SwiftDispatch.Tests -c Release --no-build
           dotnet test tests/SwiftDispatch.FluentValidation.Tests -c Release --no-build
+          dotnet test tests/SwiftDispatch.EntityFrameworkCore.Tests -c Release --no-build
 
       - name: Pack
         run: |
           dotnet pack src/SwiftDispatch.Contracts -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
           dotnet pack src/SwiftDispatch -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
           dotnet pack src/SwiftDispatch.FluentValidation -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
+          dotnet pack src/SwiftDispatch.EntityFrameworkCore -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
 
       - name: Log in to NuGet.org
         uses: NuGet/login@v1

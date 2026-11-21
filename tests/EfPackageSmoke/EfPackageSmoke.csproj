@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework />
+    <TargetFrameworks>net8.0;net10.0;net11.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="SwiftDispatch" VersionOverride="1.0.0" />
+    <PackageReference Include="SwiftDispatch.EntityFrameworkCore" VersionOverride="1.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <Compile Include="../../samples/SwiftDispatch.Sample.EntityFrameworkCore/**/*.cs"
+             Exclude="../../samples/SwiftDispatch.Sample.EntityFrameworkCore/obj/**/*.cs;../../samples/SwiftDispatch.Sample.EntityFrameworkCore/bin/**/*.cs"
+             Link="Sample/%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
