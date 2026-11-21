@@ -102,7 +102,7 @@ If you use FluentValidation, register all Application validators inside `AddAppl
 services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 ```
 
-This requires the `FluentValidation.DependencyInjectionExtensions` package and `using FluentValidation;`. Add your validation pipeline behavior explicitly, as shown in [pipeline behaviors](pipeline-behaviors.md).
+This scanning helper requires the `FluentValidation.DependencyInjectionExtensions` package and `using FluentValidation;`. For Native AOT, prefer explicit validator registration. Install `SwiftDispatch.FluentValidation` and add its behavior explicitly as shown in the [FluentValidation integration guide](fluentvalidation.md).
 
 ## Send your first request
 

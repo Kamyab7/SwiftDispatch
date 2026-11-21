@@ -69,6 +69,12 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 | Dependency injection | Microsoft dependency injection integration and cancellation token forwarding |
 | Handler discovery | Explicitly included assemblies and constrained generic pipeline behaviors |
 
+## FluentValidation integration
+
+Install `SwiftDispatch.FluentValidation` alongside `SwiftDispatch` for asynchronous request validation on .NET 8, .NET 10, and .NET 11. Register your `IValidator<TRequest>` implementations in DI and add `options.AddOpenBehavior(typeof(FluentValidationBehavior<,>))` with `using SwiftDispatch.FluentValidation;`.
+
+Validators run sequentially, aggregate failures into FluentValidation's `ValidationException`, and prevent invalid requests from reaching handlers. Core SwiftDispatch has no FluentValidation dependency. See the [integration guide](website/src/docs/fluentvalidation.md) for registration, ordering, HTTP mapping, and AOT guidance.
+
 ## Benchmarks
 
 Speed and managed memory allocations for SwiftDispatch, MediatR, and Mediator on .NET 10.

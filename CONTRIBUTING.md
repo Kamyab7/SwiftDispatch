@@ -31,6 +31,7 @@ From the repository root:
 dotnet restore SwiftDispatch.slnx
 dotnet build SwiftDispatch.slnx -c Release
 dotnet test tests/SwiftDispatch.Tests -c Release --no-build
+dotnet test tests/SwiftDispatch.FluentValidation.Tests -c Release --no-build
 ```
 
 ## Find the right place to contribute
@@ -39,8 +40,10 @@ dotnet test tests/SwiftDispatch.Tests -c Release --no-build
 | --- | --- |
 | `src/SwiftDispatch.Contracts/` | Public request, notification, streaming, and mediator contracts |
 | `src/SwiftDispatch/` | Runtime dispatch, dependency injection, and execution strategies |
+| `src/SwiftDispatch.FluentValidation/` | Optional asynchronous request validation integration |
 | `src/SwiftDispatch.SourceGenerator/` | Registration discovery, diagnostics, and generated dispatch code |
 | `tests/SwiftDispatch.Tests/` | xUnit runtime and source generator tests |
+| `tests/SwiftDispatch.FluentValidation.Tests/` | Validation behavior and generated pipeline integration tests |
 | `tests/NetStandardSmoke/` | .NET Standard consumer compatibility coverage |
 | `tests/PackageSmoke/` | Packaged-library and Native AOT smoke checks |
 | `samples/` | Example applications |

@@ -2,7 +2,7 @@
 
 Pipeline behaviors wrap request handlers. Use them to compose application-specific validation, authentication, logging, retries, or short-circuiting.
 
-These are custom behaviors you implement; SwiftDispatch does not automatically validate or authenticate requests.
+These are custom behaviors you implement; SwiftDispatch does not automatically validate or authenticate requests. For a maintained validation behavior, opt into the [FluentValidation integration](fluentvalidation.md).
 
 ## Define a behavior
 
