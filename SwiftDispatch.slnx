@@ -7,6 +7,7 @@
     <Project Path="src/SwiftDispatch.SourceGenerator/SwiftDispatch.SourceGenerator.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/SwiftDispatch.EntityFrameworkCore.Tests/SwiftDispatch.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/SwiftDispatch.FluentValidation.Tests/SwiftDispatch.FluentValidation.Tests.csproj" />
     <Project Path="tests/NetStandardSmoke/NetStandardSmoke.csproj" />
     <Project Path="tests/PackageSmoke/PackageSmoke.csproj">
