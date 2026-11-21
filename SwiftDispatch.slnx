@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/SwiftDispatch.FluentValidation/SwiftDispatch.FluentValidation.csproj" />
     <Project Path="src/SwiftDispatch.Contracts/SwiftDispatch.Contracts.csproj" />
     <Project Path="src/SwiftDispatch/SwiftDispatch.csproj" />
     <Project Path="src/SwiftDispatch.SourceGenerator/SwiftDispatch.SourceGenerator.csproj" />
