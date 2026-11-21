@@ -1,10 +1,12 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/SwiftDispatch.FluentValidation/SwiftDispatch.FluentValidation.csproj" />
     <Project Path="src/SwiftDispatch.Contracts/SwiftDispatch.Contracts.csproj" />
     <Project Path="src/SwiftDispatch/SwiftDispatch.csproj" />
     <Project Path="src/SwiftDispatch.SourceGenerator/SwiftDispatch.SourceGenerator.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/SwiftDispatch.FluentValidation.Tests/SwiftDispatch.FluentValidation.Tests.csproj" />
     <Project Path="tests/NetStandardSmoke/NetStandardSmoke.csproj" />
     <Project Path="tests/PackageSmoke/PackageSmoke.csproj">
       <!-- eng/verify.sh builds this after creating the local NuGet packages. -->

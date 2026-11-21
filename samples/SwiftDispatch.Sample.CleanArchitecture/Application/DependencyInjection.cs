@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentValidation;
+using SwiftDispatch.FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using SwiftDispatch.Sample.CleanArchitecture.Application.Common.Behaviours;
 
@@ -14,7 +15,7 @@ public static class DependencyInjection
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             options.AddOpenBehavior(typeof(LoggingBehaviour<,>));
-            options.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+            options.AddOpenBehavior(typeof(FluentValidationBehavior<,>));
         });
     }
 }

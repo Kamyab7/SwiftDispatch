@@ -1,4 +1,5 @@
 using System.Reflection;
+using SwiftDispatch.FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using SwiftDispatch.PackageSmoke.Behaviors;
 
@@ -11,6 +12,6 @@ internal static class DispatchRegistration
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             options.AddOpenBehavior(typeof(LoggingBehavior<,>));
-            options.AddPipelineBehavior(typeof(ValidationBehavior));
+            options.AddOpenBehavior(typeof(FluentValidationBehavior<,>));
         });
 }
