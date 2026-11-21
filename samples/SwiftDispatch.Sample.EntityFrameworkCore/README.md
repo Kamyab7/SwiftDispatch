@@ -4,6 +4,8 @@ Run `dotnet run --project samples/SwiftDispatch.Sample.EntityFrameworkCore` from
 
 The sample uses an in-memory SQLite database, so it needs no external database service. It demonstrates `[Transactional]`, explicit context selection, command/query contracts, response and void handlers, explicit saving, and rollback after saving. A fresh scope verifies persisted data after a failed command.
 
+`AddNote` uses `[Transactional]` and `RenameNote` uses `[Transactional(typeof(ApplicationDbContext))]` to demonstrate both forms. Both select the same configured `ApplicationDbContext`; the explicit type is not required for a void command. Prefer the short form with one default context, and use an explicit type to override the default or select a context when no default is configured.
+
 See the [EF integration guide](../../website/src/docs/entity-framework-core.md) for transaction ownership, diagnostics, nested dispatch, retry policy, and compatibility limits.
 
 ## Structure

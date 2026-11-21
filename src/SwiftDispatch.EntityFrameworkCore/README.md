@@ -41,6 +41,21 @@ The default-context call is a build-time directive, like other SwiftDispatch opt
 
 No runtime attribute scanning, reflection-based behavior construction, or per-message runtime selection is used. The generator constructs and registers a closed transaction behavior only for each marked request. Do not add `EntityFrameworkTransactionBehavior<,,>` manually as an open behavior.
 
+## Choosing the attribute form
+
+Use `[Transactional]` when requests should use the default configured with `options.UseEntityFrameworkTransactions<ApplicationDbContext>()`. This is the preferred form for an application with one context.
+
+| Attribute | Context selection |
+| --- | --- |
+| `[Transactional]` | Uses the configured default context. A missing default produces build error `SD010` at the host registration. |
+| `[Transactional(typeof(ApplicationDbContext))]` | Explicitly selects `ApplicationDbContext`, overriding any default. Works even when no default is configured. |
+
+In the example above, both forms select the same `ApplicationDbContext`. The explicit form on `CancelOrder` demonstrates an alternative; it is not required for void commands. Both forms support commands with responses and void commands.
+
+Use the explicit form when an application has multiple contexts and a particular request must select a specific one, or when you intentionally configure no default. Select the same scoped context instance used by the handler; selecting another context does not automatically enlist the handler's database operations in its transaction.
+
+The explicit form makes the request declaration reference a concrete context type. Prefer the default form when request contracts should remain separate from that persistence type, and choose the concrete context at the application's composition root. The request still references the integration package for `TransactionalAttribute`.
+
 ## Command and query intent
 
 The optional contracts are available in `SwiftDispatch.Contracts` on all core-supported frameworks, including .NET Standard 2.0:
