@@ -1,4 +1,6 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using SwiftDispatch.PackageSmoke.Behaviors;
 using SwiftDispatch.Contracts;
 using SwiftDispatch.PackageSmoke.Configuration;
 using SwiftDispatch.PackageSmoke.Infrastructure;
@@ -7,6 +9,8 @@ using SwiftDispatch.PackageSmoke.Requests;
 
 var services = new ServiceCollection();
 services.AddScoped(static _ => new TraceLog());
+services.AddScoped<IValidator<Hello>, HelloValidator>();
+services.AddScoped<IValidator<SaveGreeting>, SaveGreetingValidator>();
 services.AddPackageDispatch();
 services.AddPackageDispatch(); // Verify idempotency: repeated registration must not duplicate services or notification delivery.
 
@@ -27,6 +31,28 @@ TraceLog trace = scope.ServiceProvider.GetRequiredService<TraceLog>();
 if (greeting != "Hello, AOT!" || !trace.Entries.SequenceEqual(expected))
 {
     throw new InvalidOperationException("Generated dispatch produced unexpected results: " + string.Join(", ", trace.Entries));
+}
+
+int handlerCount = trace.Entries.Count(entry => entry == "hello" || entry.StartsWith("saved: ", StringComparison.Ordinal));
+try
+{
+    await mediator.Send(new Hello(""));
+    throw new InvalidOperationException("Invalid request reached its handler.");
+}
+catch (ValidationException exception) when (exception.Errors.Single().ErrorCode == "NameRequired")
+{
+}
+try
+{
+    await mediator.Send(new SaveGreeting(""));
+    throw new InvalidOperationException("Invalid void request reached its handler.");
+}
+catch (ValidationException)
+{
+}
+if (trace.Entries.Count(entry => entry == "hello" || entry.StartsWith("saved: ", StringComparison.Ordinal)) != handlerCount)
+{
+    throw new InvalidOperationException("Validation did not prevent handler execution.");
 }
 
 Console.WriteLine(greeting);

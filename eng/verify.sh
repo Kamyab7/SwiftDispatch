@@ -5,8 +5,10 @@ cd "$task_root"
 export DOTNET_PROCESSOR_COUNT="${DOTNET_PROCESSOR_COUNT:-2}"
 dotnet build SwiftDispatch.slnx -c Release --disable-build-servers -m:1
 dotnet test tests/SwiftDispatch.Tests -c Release --no-build
+dotnet test tests/SwiftDispatch.FluentValidation.Tests -c Release --no-build
 dotnet pack src/SwiftDispatch.Contracts -c Release --no-build --disable-build-servers -m:1 -o artifacts/packages
 dotnet pack src/SwiftDispatch -c Release --no-build --disable-build-servers -m:1 -o artifacts/packages
+dotnet pack src/SwiftDispatch.FluentValidation -c Release --no-build --disable-build-servers -m:1 -o artifacts/packages
 package_cache="$(mktemp -d "$task_root/artifacts/package-cache.XXXXXX")"
 dotnet restore tests/PackageSmoke --packages "$package_cache" --source "$task_root/artifacts/packages" --source https://api.nuget.org/v3/index.json
 for framework in net8.0 net10.0 net11.0; do
