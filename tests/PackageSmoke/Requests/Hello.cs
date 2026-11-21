@@ -3,7 +3,7 @@ using SwiftDispatch.PackageSmoke.Infrastructure;
 
 namespace SwiftDispatch.PackageSmoke.Requests;
 
-public sealed record Hello(string Name) : IRequest<string>;
+public sealed record Hello(string Name) : IQuery<string>;
 
 public sealed class HelloHandler(TraceLog trace) : IRequestHandler<Hello, string>
 {

@@ -4,6 +4,8 @@ Pipeline behaviors wrap request handlers. Use them to compose application-specif
 
 These are custom behaviors you implement; SwiftDispatch does not automatically validate or authenticate requests. For a maintained validation behavior, opt into the [FluentValidation integration](fluentvalidation.md).
 
+For optional attribute-selected database transactions, see the [EF Core integration](entity-framework-core.md). Its generated transaction boundary runs after your explicitly configured behaviors.
+
 ## Define a behavior
 
 Implement `IPipelineBehavior<TRequest, TResponse>`. Call `next()` to continue the pipeline, or return a response directly to short-circuit it.

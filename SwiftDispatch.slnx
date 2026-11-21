@@ -1,11 +1,16 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/SwiftDispatch.EntityFrameworkCore/SwiftDispatch.EntityFrameworkCore.csproj" />
     <Project Path="src/SwiftDispatch.FluentValidation/SwiftDispatch.FluentValidation.csproj" />
     <Project Path="src/SwiftDispatch.Contracts/SwiftDispatch.Contracts.csproj" />
     <Project Path="src/SwiftDispatch/SwiftDispatch.csproj" />
     <Project Path="src/SwiftDispatch.SourceGenerator/SwiftDispatch.SourceGenerator.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/EfPackageSmoke/EfPackageSmoke.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="tests/SwiftDispatch.EntityFrameworkCore.Tests/SwiftDispatch.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/SwiftDispatch.FluentValidation.Tests/SwiftDispatch.FluentValidation.Tests.csproj" />
     <Project Path="tests/NetStandardSmoke/NetStandardSmoke.csproj" />
     <Project Path="tests/PackageSmoke/PackageSmoke.csproj">
@@ -19,6 +24,9 @@
   </Folder>
   <Folder Name="/benchmarks/">
     <Project Path="benchmarks/SwiftDispatch.Benchmarks/SwiftDispatch.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/samples/EntityFrameworkCore/">
+    <Project Path="samples/SwiftDispatch.Sample.EntityFrameworkCore/SwiftDispatch.Sample.EntityFrameworkCore.csproj" />
   </Folder>
   <Folder Name="/samples/" />
   <Folder Name="/samples/CleanArchitecture/">

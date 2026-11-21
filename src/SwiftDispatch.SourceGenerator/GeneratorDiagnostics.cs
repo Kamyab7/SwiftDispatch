@@ -15,6 +15,10 @@ internal static class GeneratorDiagnostics
 
     internal static readonly DiagnosticDescriptor MissingNotificationHandler = Rule("SD008", "Missing notification handler");
 
+    internal static readonly DiagnosticDescriptor TransactionTarget = Rule("SD009", "Invalid transactional request");
+    internal static readonly DiagnosticDescriptor TransactionContext = Rule("SD010", "Invalid transaction context");
+    internal static readonly DiagnosticDescriptor RequestIntent = Rule("SD011", "Conflicting command and query contracts");
+
     private static DiagnosticDescriptor Rule(string id, string title) => new(
         id, title, "{0}", "SwiftDispatch", DiagnosticSeverity.Error, isEnabledByDefault: true);
 }

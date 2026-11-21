@@ -3,7 +3,7 @@ using SwiftDispatch.PackageSmoke.Infrastructure;
 
 namespace SwiftDispatch.PackageSmoke.Requests;
 
-public sealed record SaveGreeting(string Greeting) : IRequest;
+public sealed record SaveGreeting(string Greeting) : ICommand;
 
 public sealed class SaveGreetingHandler(TraceLog trace) : IRequestHandler<SaveGreeting>
 {

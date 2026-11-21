@@ -54,6 +54,7 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 
 ## Samples
 
+- [EF Core transactions](samples/SwiftDispatch.Sample.EntityFrameworkCore): attribute-selected transactions using SQLite, with response/void commands and queries.
 - [Console app](samples/SwiftDispatch.Sample.Console): a minimal request and notification example. Run `dotnet run --project samples/SwiftDispatch.Sample.Console -- Ada`.
 - [Clean architecture](samples/SwiftDispatch.Sample.CleanArchitecture): separate domain, application, infrastructure, and API projects with application pipeline behaviors. Run `dotnet run --project samples/SwiftDispatch.Sample.CleanArchitecture/Web -- --urls http://localhost:5081`.
 
@@ -68,6 +69,16 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 | Native AOT and trimming | Source-generated registration and dispatch |
 | Dependency injection | Microsoft dependency injection integration and cancellation token forwarding |
 | Handler discovery | Explicitly included assemblies and constrained generic pipeline behaviors |
+
+## Command and query contracts
+
+Use `ICommand`, `ICommand<TResponse>`, and `IQuery<TResponse>` to express request intent while keeping the existing `IRequestHandler` and `mediator.Send(...)` APIs. Both command forms implement `ICommandBase` for command-specific behaviors. Existing `IRequest` contracts remain supported.
+
+## Entity Framework Core integration
+
+Install `SwiftDispatch.EntityFrameworkCore` alongside `SwiftDispatch` to opt response and void requests into EF transactions with `[Transactional]`. Select a default context with `options.UseEntityFrameworkTransactions<TContext>()` or specify `[Transactional(typeof(TContext))]`. Handlers explicitly save changes; the generated innermost behavior owns commit and rollback. Queries and unsupported attribute targets produce build errors.
+
+See the [EF integration guide](website/src/docs/entity-framework-core.md) and [SQLite sample](samples/SwiftDispatch.Sample.EntityFrameworkCore). The EF package is verified under JIT execution on .NET 8, .NET 10, and .NET 11; EF/provider Native AOT support is outside the core mediator's AOT guarantee.
 
 ## FluentValidation integration
 
