@@ -4,7 +4,14 @@ using SwiftDispatch.Contracts;
 
 namespace SwiftDispatch.NetStandardSmoke;
 
-public sealed class Ping : IRequest<int>;
+public sealed class Ping : IQuery<int>;
+
+public sealed class Command : ICommand<int>;
+
+public sealed class CommandHandler : IRequestHandler<Command, int>
+{
+    public Task<int> Handle(Command request, CancellationToken cancellationToken) => Task.FromResult(7);
+}
 
 public sealed class PingHandler : IRequestHandler<Ping, int>
 {
@@ -41,6 +48,7 @@ public static class Smoke
         using var scope = provider.CreateScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         if (await mediator.Send(new Ping()) != 42) throw new InvalidOperationException("Request failed.");
+        if (await mediator.Send(new Command()) != 7) throw new InvalidOperationException("Command failed.");
         int sum = 0;
         await foreach (int value in mediator.CreateStream(new Numbers())) sum += value;
         if (sum != 3) throw new InvalidOperationException("Stream failed.");
