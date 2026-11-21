@@ -1,7 +1,10 @@
 # Exploratory short run — 2026-11-16
 
-Versions: SwiftDispatch working checkout (1.0.0), MediatR 15.0.0,
+Versions measured: SwiftDispatch working checkout (1.0.0), MediatR 15.0.0,
 Mediator 3.0.2. See [pairwise comparisons](comparison.md) and [raw JSON](short-run.json).
+
+These historical measurements predate the 2.1.0 release and have not been rerun for
+that version.
 
 Three measurement iterations only, on a shared development machine. Repository
 build/tests briefly overlapped this run. Treat these results as a working example,

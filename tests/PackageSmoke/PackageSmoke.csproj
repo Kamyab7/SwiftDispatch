@@ -8,8 +8,8 @@
     <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SwiftDispatch" VersionOverride="1.0.0" />
-    <PackageReference Include="SwiftDispatch.FluentValidation" VersionOverride="1.0.0" />
+    <PackageReference Include="SwiftDispatch" VersionOverride="$(Version)" />
+    <PackageReference Include="SwiftDispatch.FluentValidation" VersionOverride="$(Version)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
   </ItemGroup>
 </Project>

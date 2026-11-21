@@ -6,8 +6,8 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SwiftDispatch" VersionOverride="1.0.0" />
-    <PackageReference Include="SwiftDispatch.EntityFrameworkCore" VersionOverride="1.0.0" />
+    <PackageReference Include="SwiftDispatch" VersionOverride="$(Version)" />
+    <PackageReference Include="SwiftDispatch.EntityFrameworkCore" VersionOverride="$(Version)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <Compile Include="../../samples/SwiftDispatch.Sample.EntityFrameworkCore/**/*.cs"
