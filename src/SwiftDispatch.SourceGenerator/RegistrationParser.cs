@@ -19,9 +19,12 @@ internal static class RegistrationParser
 
     internal static bool ReadFluentConfiguration(Compilation compilation, InvocationExpressionSyntax call,
         HashSet<IAssemblySymbol> assemblies, List<INamedTypeSymbol> behaviors,
-        List<INamedTypeSymbol> streamBehaviors, out INamedTypeSymbol? notificationStrategy, out string? error)
+        List<INamedTypeSymbol> streamBehaviors, out INamedTypeSymbol? notificationStrategy,
+        out bool validateMissingHandlers, out bool validateNotificationHandlers, out string? error)
     {
         notificationStrategy = null;
+        validateMissingHandlers = true;
+        validateNotificationHandlers = false;
         error = "Use a direct lambda containing registration calls on its options parameter. Assemblies must use Assembly.GetExecutingAssembly() or typeof(T).Assembly, and behaviors must use typeof(T). Variables, helper calls and conditional configuration are unsupported.";
         ExpressionSyntax expression = call.ArgumentList.Arguments[0].Expression;
         string parameter;
@@ -69,7 +72,22 @@ internal static class RegistrationParser
         foreach (InvocationExpressionSyntax step in calls)
         {
             var member = (MemberAccessExpressionSyntax)step.Expression;
-            if (member.Name is GenericNameSyntax { Identifier.ValueText: "AddHandlersFromAssemblyContaining", TypeArgumentList.Arguments.Count: 1 } generic
+            if (member.Name is IdentifierNameSyntax validationName
+                && (validationName.Identifier.ValueText == "ValidateMissingHandlers" || validationName.Identifier.ValueText == "ValidateNotificationHandlers")
+                && step.ArgumentList.Arguments.Count == 1)
+            {
+                Optional<object?> constant = model.GetConstantValue(step.ArgumentList.Arguments[0].Expression);
+                if (!constant.HasValue || constant.Value is not bool enabled)
+                {
+                    error = validationName.Identifier.ValueText + " requires a compile-time Boolean constant (true or false).";
+                    return false;
+                }
+                if (validationName.Identifier.ValueText == "ValidateNotificationHandlers")
+                    validateNotificationHandlers = enabled;
+                else
+                    validateMissingHandlers = enabled;
+            }
+            else if (member.Name is GenericNameSyntax { Identifier.ValueText: "AddHandlersFromAssemblyContaining", TypeArgumentList.Arguments.Count: 1 } generic
                 && step.ArgumentList.Arguments.Count == 0)
             {
                 if (model.GetTypeInfo(generic.TypeArgumentList.Arguments[0]).Type is not INamedTypeSymbol marker

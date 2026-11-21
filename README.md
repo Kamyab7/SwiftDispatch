@@ -75,6 +75,49 @@ Install `SwiftDispatch.FluentValidation` alongside `SwiftDispatch` for asynchron
 
 Validators run sequentially, aggregate failures into FluentValidation's `ValidationException`, and prevent invalid requests from reaching handlers. Core SwiftDispatch has no FluentValidation dependency. See the [integration guide](website/src/docs/fluentvalidation.md) for registration, ordering, HTTP mapping, and AOT guidance.
 
+## Build-time handler validation
+
+Missing request handlers fail the build with `SD007` by default. The generator checks
+concrete, closed request types in the assembly containing `AddSwiftDispatch` and any
+assemblies explicitly included in that registration. This covers requests with or
+without responses and streaming requests, including unused requests. Each request
+requires a handler for its exact concrete type; a base request's handler does not
+handle derived requests. Notifications may have no handlers.
+
+To allow intentionally unhandled requests, disable this check for the registration:
+
+```csharp
+services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
+    options.ValidateMissingHandlers(false);
+});
+```
+
+The argument must be a compile-time Boolean constant. Disabling this check leaves
+other generator diagnostics enabled; sending an unhandled request still throws at
+runtime. Abstract types, interfaces, open generic request definitions, and request
+types in assemblies outside the registration scope are not checked. This validation
+does not inspect `Send` call sites or validate runtime dependency injection services.
+
+Notification handler validation is separate and **disabled by default**, because
+notifications can legitimately have no subscribers. Opt in to build error `SD008`
+when a concrete, closed notification in the same validation scope has no registered
+handler:
+
+```csharp
+services.AddSwiftDispatch(options =>
+{
+    options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
+    options.ValidateNotificationHandlers(true);
+});
+```
+
+At least one handler is required when enabled; multiple handlers remain valid.
+Pass `false` to disable this check. Both validation options accept compile-time
+Boolean constants and operate independently. Notification handlers must match the
+exact concrete notification type, consistent with runtime dispatch.
+
 ## Benchmarks
 
 Speed and managed memory allocations for SwiftDispatch, MediatR, and Mediator on .NET 10.
