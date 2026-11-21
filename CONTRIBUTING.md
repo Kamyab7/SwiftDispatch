@@ -32,6 +32,7 @@ dotnet restore SwiftDispatch.slnx
 dotnet build SwiftDispatch.slnx -c Release
 dotnet test tests/SwiftDispatch.Tests -c Release --no-build
 dotnet test tests/SwiftDispatch.FluentValidation.Tests -c Release --no-build
+dotnet test tests/SwiftDispatch.EntityFrameworkCore.Tests -c Release --no-build
 ```
 
 ## Find the right place to contribute
@@ -40,9 +41,12 @@ dotnet test tests/SwiftDispatch.FluentValidation.Tests -c Release --no-build
 | --- | --- |
 | `src/SwiftDispatch.Contracts/` | Public request, notification, streaming, and mediator contracts |
 | `src/SwiftDispatch/` | Runtime dispatch, dependency injection, and execution strategies |
+| `src/SwiftDispatch.EntityFrameworkCore/` | Optional attribute-selected EF Core transactions |
 | `src/SwiftDispatch.FluentValidation/` | Optional asynchronous request validation integration |
 | `src/SwiftDispatch.SourceGenerator/` | Registration discovery, diagnostics, and generated dispatch code |
 | `tests/SwiftDispatch.Tests/` | xUnit runtime and source generator tests |
+| `tests/SwiftDispatch.EntityFrameworkCore.Tests/` | Relational transactions and attribute diagnostics |
+| `tests/EfPackageSmoke/` | Packed EF integration consumption under JIT execution |
 | `tests/SwiftDispatch.FluentValidation.Tests/` | Validation behavior and generated pipeline integration tests |
 | `tests/NetStandardSmoke/` | .NET Standard consumer compatibility coverage |
 | `tests/PackageSmoke/` | Packaged-library and Native AOT smoke checks |
@@ -75,7 +79,7 @@ Before submitting library, generator, or packaging changes, run the same verific
 bash eng/verify.sh
 ```
 
-The script builds the solution, runs tests, creates NuGet packages, runs a package consumer, and publishes and executes a Native AOT binary for each of .NET 8, .NET 10, and .NET 11. It requires Bash, the .NET SDK/runtime setup above, and native compilation prerequisites. On Ubuntu, CI installs these with:
+The script builds the solution, runs tests, creates NuGet packages, runs a package consumer, and publishes and executes a Native AOT binary for each of .NET 8, .NET 10, and .NET 11. It also packs the EF integration and runs its SQLite consumer under JIT execution for all three frameworks; EF Core is not part of the Native AOT claim. It requires Bash, the .NET SDK/runtime setup above, and native compilation prerequisites. On Ubuntu, CI installs these with:
 
 ```sh
 sudo apt-get update
