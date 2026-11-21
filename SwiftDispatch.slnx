@@ -22,6 +22,9 @@
   <Folder Name="/benchmarks/">
     <Project Path="benchmarks/SwiftDispatch.Benchmarks/SwiftDispatch.Benchmarks.csproj" />
   </Folder>
+  <Folder Name="/samples/EntityFrameworkCore/">
+    <Project Path="samples/SwiftDispatch.Sample.EntityFrameworkCore/SwiftDispatch.Sample.EntityFrameworkCore.csproj" />
+  </Folder>
   <Folder Name="/samples/" />
   <Folder Name="/samples/CleanArchitecture/">
     <Project Path="samples/SwiftDispatch.Sample.CleanArchitecture/Domain/Domain.csproj" />
