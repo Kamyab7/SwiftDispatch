@@ -3,6 +3,8 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.34" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.34" />
         <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
         <PackageVersion Include="MediatR" Version="15.0.0" />
         <PackageVersion Include="Mediator.Abstractions" Version="3.0.2" />

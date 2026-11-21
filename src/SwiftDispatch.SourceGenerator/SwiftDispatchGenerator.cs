@@ -33,9 +33,19 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
     private static void Generate(SourceProductionContext output, Compilation compilation, ImmutableArray<InvocationExpressionSyntax> registrations)
     {
         var fluentCalls = registrations.Where(call => IsServiceRegistration(compilation, call)).ToArray();
-        if (fluentCalls.Length == 0) return;
-
         bool failed = false;
+        void Report(DiagnosticDescriptor rule, Location location, string message)
+        {
+            failed = true;
+            output.ReportDiagnostic(Diagnostic.Create(rule, location, message));
+        }
+        if (fluentCalls.Length == 0)
+        {
+            TransactionConfiguration.Analyze(compilation, new[] { compilation.Assembly }, null, false,
+                Location.None, output.CancellationToken, Report);
+            return;
+        }
+
         ISymbol accessContext = compilation.Assembly;
         Location configurationLocation = fluentCalls[0].GetLocation();
         void Error(DiagnosticDescriptor rule, ISymbol symbol, string message)
@@ -70,7 +80,7 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
         var configuredStreamBehaviors = new List<INamedTypeSymbol>();
         if (!ReadFluentConfiguration(compilation, fluentCalls[0], assemblies,
             configuredBehaviors, configuredStreamBehaviors, out INamedTypeSymbol? notificationStrategy,
-            out bool validateMissingHandlers, out bool validateNotificationHandlers, out string? error))
+            out INamedTypeSymbol? transactionContext, out bool validateMissingHandlers, out bool validateNotificationHandlers, out string? error))
         {
             Error(Configuration, accessContext, error!);
             return;
@@ -82,8 +92,10 @@ public sealed class SwiftDispatchGenerator : IIncrementalGenerator
             MissingHandlerValidator.Validate(compilation, assemblies, requests, notifications,
                 validateMissingHandlers, validateNotificationHandlers, output.CancellationToken, Error);
         }
+        var transactionContexts = TransactionConfiguration.Analyze(compilation, assemblies, transactionContext, true,
+            configurationLocation, output.CancellationToken, Report);
         var constructors = DispatchModelValidator.Validate(compilation, accessContext, requests, notifications,
-            configuredBehaviors, configuredStreamBehaviors, pipeline, streamPipeline, notificationStrategy, Error);
+            configuredBehaviors, configuredStreamBehaviors, pipeline, streamPipeline, notificationStrategy, transactionContexts, Error);
 
         if (failed)
         {

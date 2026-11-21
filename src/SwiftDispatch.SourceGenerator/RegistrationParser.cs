@@ -19,10 +19,11 @@ internal static class RegistrationParser
 
     internal static bool ReadFluentConfiguration(Compilation compilation, InvocationExpressionSyntax call,
         HashSet<IAssemblySymbol> assemblies, List<INamedTypeSymbol> behaviors,
-        List<INamedTypeSymbol> streamBehaviors, out INamedTypeSymbol? notificationStrategy,
+        List<INamedTypeSymbol> streamBehaviors, out INamedTypeSymbol? notificationStrategy, out INamedTypeSymbol? transactionContext,
         out bool validateMissingHandlers, out bool validateNotificationHandlers, out string? error)
     {
         notificationStrategy = null;
+        transactionContext = null;
         validateMissingHandlers = true;
         validateNotificationHandlers = false;
         error = "Use a direct lambda containing registration calls on its options parameter. Assemblies must use Assembly.GetExecutingAssembly() or typeof(T).Assembly, and behaviors must use typeof(T). Variables, helper calls and conditional configuration are unsupported.";
@@ -86,6 +87,18 @@ internal static class RegistrationParser
                     validateNotificationHandlers = enabled;
                 else
                     validateMissingHandlers = enabled;
+            }
+            else if (member.Name is GenericNameSyntax { Identifier.ValueText: "UseEntityFrameworkTransactions", TypeArgumentList.Arguments.Count: 1 } transactionName
+                && step.ArgumentList.Arguments.Count == 0)
+            {
+                if (transactionContext != null
+                    || compilation.GetTypeByMetadataName("SwiftDispatch.EntityFrameworkCore.EntityFrameworkTransactionOptionsExtensions") == null
+                    || model.GetTypeInfo(transactionName.TypeArgumentList.Arguments[0]).Type is not INamedTypeSymbol contextType)
+                {
+                    error = "Select one default DbContext with UseEntityFrameworkTransactions<TContext>() from SwiftDispatch.EntityFrameworkCore.";
+                    return false;
+                }
+                transactionContext = contextType;
             }
             else if (member.Name is GenericNameSyntax { Identifier.ValueText: "AddHandlersFromAssemblyContaining", TypeArgumentList.Arguments.Count: 1 } generic
                 && step.ArgumentList.Arguments.Count == 0)

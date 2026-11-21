@@ -13,6 +13,7 @@ internal static class DispatchModelValidator
         Compilation compilation, ISymbol accessContext, List<Request> requests, List<Observer> notifications,
         List<INamedTypeSymbol> configuredBehaviors, List<INamedTypeSymbol> configuredStreamBehaviors,
         INamedTypeSymbol pipeline, INamedTypeSymbol streamPipeline, INamedTypeSymbol? notificationStrategy,
+        IReadOnlyDictionary<ITypeSymbol, INamedTypeSymbol> transactionContexts,
         Action<DiagnosticDescriptor, ISymbol, string> reportError)
     {
         var seen = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
@@ -65,6 +66,18 @@ internal static class DispatchModelValidator
                         reportError(Behavior, behavior, $"Open behavior '{Name(behavior)}' must implement {behaviorContract.Name}<TRequest,TResponse> using its type parameters in that order.");
                     }
                 }
+            }
+        }
+
+        INamedTypeSymbol? transactionBehavior = compilation.GetTypeByMetadataName("SwiftDispatch.EntityFrameworkCore.EntityFrameworkTransactionBehavior`3");
+        foreach (Request request in requests)
+        {
+            if (transactionContexts.TryGetValue(request.Message, out INamedTypeSymbol? contextType))
+            {
+                if (transactionBehavior == null)
+                    reportError(TransactionContext, request.Message, "Reference SwiftDispatch.EntityFrameworkCore to generate transaction behaviors.");
+                else
+                    request.Behaviors.Add(transactionBehavior.Construct(request.Message, request.Response, contextType));
             }
         }
 
