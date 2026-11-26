@@ -66,8 +66,29 @@ there is no unconditional `--skip-duplicate`. A race during a push fails safely 
 can be retried. Existing identical assets and already published identical packages
 are reused. A completed release can also be retried without modifying its assets.
 
+Drafts are discovered through GitHub's authenticated, paginated release list.
+The by-tag endpoint returns published releases only, so it cannot be used alone
+to find a staged draft. Ambiguous duplicate releases stop publication.
+
+### Recovering with updated workflow code
+
+Rerunning a tag-triggered job uses the workflow and tools at the original tag.
+When the failure needs a code fix, merge the fix to `master`, then open
+**Actions → Publish NuGet packages → Run workflow** on `master`. Enter the existing
+`release_tag` and the `original_run_id` of the tag-triggered run that saved the
+`release-bundle`. For the first SBOM release these are `v2.1.1` and `45889235251`.
+
+This recovery uses the updated tools while keeping the original tag, commit,
+packages, restore graphs, and SBOMs. It verifies that the completed source run was
+triggered by that tag in this repository's publish workflow and has the matching
+commit. Missing original artifacts or mismatched package versions stop recovery;
+the workflow never falls back to rebuilding. It retains the existing NuGet trusted
+publishing workflow identity (`publish.yml`) and the same permissions. Recovery
+and tag-triggered publication share the same concurrency group.
+
 If the original bundle expired, or an existing release belongs to another run,
-automatic recovery stops. Recover the original Actions outputs, or the published
+automatic same-run recovery stops. Use the dispatch recovery above when a reviewed
+original artifact is still available. Otherwise recover the original Actions outputs, or the published
 packages and original build/restore inputs, into a separate directory. Review
 their provenance and dependency coverage and run `dotnet run --file eng/sbom.cs -- verify DIR`
 before an explicit manual recovery. Do not rebuild and silently replace an SBOM.

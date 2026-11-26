@@ -271,7 +271,9 @@ internal sealed class ReleaseClient(HttpClient http, Action<string[]>? run = nul
 {
     private readonly Action<string[]> runProcess = run ?? Tool.Run;
     private static string Repository => Tool.Env("GITHUB_REPOSITORY");
-    private static string TagPath => "releases/tags/" + Uri.EscapeDataString(Tool.Env("GITHUB_REF_NAME"));
+    private static string ReleaseTag => Environment.GetEnvironmentVariable("RELEASE_TAG") ?? Tool.Env("GITHUB_REF_NAME");
+    private static string ReleaseCommit => Environment.GetEnvironmentVariable("RELEASE_COMMIT") ?? Tool.Env("GITHUB_SHA");
+    private static string TagPath => "releases/tags/" + Uri.EscapeDataString(ReleaseTag);
 
     private async Task<byte[]?> Request(string url, byte[]? data = null, string? method = null,
         bool github = true, string accept = "application/vnd.github+json")
@@ -302,9 +304,37 @@ internal sealed class ReleaseClient(HttpClient http, Action<string[]>? run = nul
         return result is null ? null : JsonNode.Parse(result);
     }
 
+    private async Task<JsonNode?> FindRelease()
+    {
+        // The by-tag endpoint only returns published releases. Drafts are available
+        // through the authenticated release list, including on retry before publish.
+        var published = await Api(TagPath);
+        if (published is not null) return published;
+        var matches = new List<JsonNode>();
+        for (var page = 1; ; page++)
+        {
+            var releases = Tool.Items(await Api($"releases?per_page=100&page={page}")).ToArray();
+            matches.AddRange(releases.Where(r => Tool.Text(r, "tag_name") == ReleaseTag));
+            Tool.Require(matches.Count <= 1, "Multiple releases match this tag; manual review required");
+            if (releases.Length < 100) break;
+        }
+        return matches.SingleOrDefault();
+    }
+
     public async Task Restore(string directory)
     {
-        var artifacts = (await Api($"actions/runs/{Tool.Env("GITHUB_RUN_ID")}/artifacts?per_page=100"))!;
+        var originalRun = Environment.GetEnvironmentVariable("RELEASE_SOURCE_RUN_ID");
+        var recovery = !string.IsNullOrEmpty(originalRun);
+        var runId = recovery ? originalRun! : Tool.Env("GITHUB_RUN_ID");
+        Tool.Require(Regex.IsMatch(runId, @"\A[0-9]+\z"), "Invalid original workflow run ID");
+        if (recovery)
+        {
+            var source = await Api($"actions/runs/{runId}") ?? throw new InvalidOperationException("Original workflow run is unavailable");
+            Tool.Require(Tool.Text(source, "head_sha") == ReleaseCommit && Tool.Text(source, "head_branch") == ReleaseTag
+                && Tool.Text(source, "event") == "push" && Tool.Text(source, "path") == ".github/workflows/publish.yml"
+                && Tool.Text(source, "status") == "completed", "Original workflow run does not match the release tag and commit");
+        }
+        var artifacts = (await Api($"actions/runs/{runId}/artifacts?per_page=100"))!;
         var matches = Tool.Items(artifacts["artifacts"]).Where(a => Tool.Text(a, "name") == "release-bundle").ToArray();
         Tool.Require(matches.Length <= 1, "Ambiguous original release bundle");
         if (matches.Length == 1)
@@ -315,17 +345,21 @@ internal sealed class ReleaseClient(HttpClient http, Action<string[]>? run = nul
             using var stream = new MemoryStream(data!);
             Sbom.Extract(stream, directory);
             Sbom.Verify(directory);
+            Tool.Require(Sbom.Packages(directory).All(p => "v" + p.Version == ReleaseTag), "Original package versions do not match the release tag");
         }
         else
-            Tool.Require(await Api(TagPath) is null,
+        {
+            Tool.Require(!recovery, "Original release bundle is missing; manual recovery required");
+            Tool.Require(await FindRelease() is null,
                 "Release already exists without this run's original bundle; manual recovery required");
+        }
         await File.AppendAllTextAsync(Tool.Env("GITHUB_OUTPUT"), $"reused={(matches.Length == 1 ? "true" : "false")}\n");
     }
 
     private async Task<JsonNode> ReleaseForTag()
     {
-        var release = await Api(TagPath) ?? throw new InvalidOperationException("Missing draft release");
-        Tool.Require(Tool.Text(release, "target_commitish") == Tool.Env("GITHUB_SHA"), "Release commit differs from this run");
+        var release = await FindRelease() ?? throw new InvalidOperationException("Missing draft release");
+        Tool.Require(Tool.Text(release, "target_commitish") == ReleaseCommit, "Release commit differs from this run");
         return release;
     }
 
@@ -376,8 +410,8 @@ internal sealed class ReleaseClient(HttpClient http, Action<string[]>? run = nul
     {
         Sbom.Verify(directory);
         foreach (var package in Sbom.Packages(directory)) await ExistingNuget(package);
-        var tag = Tool.Env("GITHUB_REF_NAME");
-        var release = await Api(TagPath);
+        var tag = ReleaseTag;
+        var release = await FindRelease();
         if (release is null)
         {
             var links = string.Join("\n", Directory.GetFiles(Path.Combine(directory, "sbom"), "*.json").Order(StringComparer.Ordinal).Select(path =>
@@ -385,11 +419,11 @@ internal sealed class ReleaseClient(HttpClient http, Action<string[]>? run = nul
                 var name = Path.GetFileName(path);
                 return $"- {name[..^".sbom.spdx.json".Length]}: [Download SBOM (SPDX JSON)](https://github.com/{Repository}/releases/download/{tag}/{name})";
             }));
-            release = (await Api("releases", new { tag_name = tag, target_commitish = Tool.Env("GITHUB_SHA"), name = tag,
+            release = (await Api("releases", new { tag_name = tag, target_commitish = ReleaseCommit, name = tag,
                 draft = true, prerelease = tag.Contains('-'), generate_release_notes = true,
                 body = $"## Software Bill of Materials\n\n{links}" }))!;
         }
-        Tool.Require(Tool.Text(release, "target_commitish") == Tool.Env("GITHUB_SHA"), "Release commit mismatch");
+        Tool.Require(Tool.Text(release, "target_commitish") == ReleaseCommit, "Release commit mismatch");
         var assets = (await Assets(release)).ToDictionary(a => Tool.Text(a, "name"), StringComparer.Ordinal);
         foreach (var path in Directory.GetFiles(Path.Combine(directory, "sbom"), "*.json").Order(StringComparer.Ordinal))
         {

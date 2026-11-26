@@ -103,10 +103,31 @@ var tests = new (string Name, Func<Fixture, Task> Run)[]
     {
         await ExpectFailureAsync(() => f.Client.Restore(f.Directory), "manual recovery");
     }),
+    ("Draft lookup paginates the authenticated release list", async f =>
+    {
+        for (var index = 0; index < 100; index++)
+            f.ReleaseListPrefix.Add(JsonSerializer.SerializeToNode(new { id = index + 2, tag_name = $"v0.0.{index}", draft = true })!);
+        await f.Client.PublishPackages(f.Directory);
+        Tool.Require(f.Pushes.Count == 4, "Draft could not be found before package publication");
+        Tool.Require(f.Requests.Any(r => r.Url.Query.Contains("page=2", StringComparison.Ordinal)), "Release list was not paginated");
+        Tool.Require(f.Requests.Where(r => r.Url.AbsolutePath.EndsWith("/releases", StringComparison.Ordinal))
+            .All(r => r.Authorization == "Bearer test-token"), "Draft lookup was not authenticated");
+    }),
+    ("Existing draft is reused without creating a duplicate", async f =>
+    {
+        await f.Client.Stage(f.Directory);
+        await f.Client.Stage(f.Directory);
+        Tool.Require(f.Requests.All(r => r.Method == HttpMethod.Get), "Restaging an existing draft created or changed a release");
+    }),
+    ("Ambiguous draft releases stop publication", async f =>
+    {
+        f.ReleaseListPrefix.Add(f.Release!.DeepClone());
+        await ExpectFailureAsync(() => f.Client.PublishPackages(f.Directory), "Multiple releases");
+        Tool.Require(f.Pushes.Count == 0, "Published packages for ambiguous releases");
+    }),
     ("Retry restores byte-identical original bundle", async f =>
     {
-        f.Bundle = Fixture.Archive(System.IO.Directory.GetFiles(f.Directory, "*", SearchOption.AllDirectories)
-            .ToDictionary(p => Tool.Relative(f.Directory, p), File.ReadAllBytes));
+        f.Bundle = f.ArchiveBundle();
         using var destination = new TemporaryDirectory();
         await f.Client.Restore(destination.Path);
         Sbom.Verify(destination.Path);
@@ -114,6 +135,45 @@ var tests = new (string Name, Func<Fixture, Task> Run)[]
             Tool.Require(File.ReadAllBytes(package.Path).AsSpan().SequenceEqual(
                 File.ReadAllBytes(Path.Combine(destination.Path, Path.GetFileName(package.Path)))), "Recovered package bytes differ");
         Tool.Require(File.ReadAllText(f.Output) == "reused=true\n", "Restore did not skip regeneration");
+    }),
+    ("Recovery uses original outputs and tag with updated workflow code", async f =>
+    {
+        f.Bundle = f.ArchiveBundle();
+        Environment.SetEnvironmentVariable("RELEASE_SOURCE_RUN_ID", "42");
+        Environment.SetEnvironmentVariable("RELEASE_TAG", "v" + Fixture.Version);
+        Environment.SetEnvironmentVariable("RELEASE_COMMIT", "abc123");
+        Environment.SetEnvironmentVariable("GITHUB_RUN_ID", "99");
+        Environment.SetEnvironmentVariable("GITHUB_REF_NAME", "master");
+        Environment.SetEnvironmentVariable("GITHUB_SHA", "new-workflow-commit");
+        using var destination = new TemporaryDirectory();
+        await f.Client.Restore(destination.Path);
+        await f.Client.Stage(destination.Path);
+        await f.Client.PublishPackages(destination.Path);
+        Tool.Require(f.Pushes.Count == 4 && File.ReadAllText(f.Output) == "reused=true\n", "Recovery did not reuse original outputs");
+        Tool.Require(f.Requests.Any(r => r.Url.AbsolutePath.EndsWith("/actions/runs/42/artifacts", StringComparison.Ordinal)),
+            "Recovery used its own run instead of the original one");
+    }),
+    ("Recovery rejects unrelated original run", async f =>
+    {
+        Environment.SetEnvironmentVariable("RELEASE_SOURCE_RUN_ID", "42");
+        f.SourceRun["head_sha"] = "unrelated-commit";
+        await ExpectFailureAsync(() => f.Client.Restore(f.Directory), "does not match the release tag and commit");
+        Tool.Require(f.Requests.Count == 1, "Recovery proceeded after provenance check failed");
+    }),
+    ("Recovery never rebuilds when original artifact is missing", async f =>
+    {
+        Environment.SetEnvironmentVariable("RELEASE_SOURCE_RUN_ID", "42");
+        await ExpectFailureAsync(() => f.Client.Restore(f.Directory), "Original release bundle is missing");
+        Tool.Require(!File.Exists(f.Output), "Recovery permitted a rebuild without original outputs");
+    }),
+    ("Recovery rejects mismatched package version", async f =>
+    {
+        f.Bundle = f.ArchiveBundle();
+        Environment.SetEnvironmentVariable("RELEASE_SOURCE_RUN_ID", "42");
+        Environment.SetEnvironmentVariable("RELEASE_TAG", "v3.0.1");
+        f.SourceRun["head_branch"] = "v3.0.1";
+        using var destination = new TemporaryDirectory();
+        await ExpectFailureAsync(() => f.Client.Restore(destination.Path), "versions do not match the release tag");
     }),
     ("Failed tool validation stops before copying manifests", f =>
     {
@@ -202,18 +262,24 @@ internal sealed class Fixture : IDisposable
     public List<string[]> Pushes { get; } = [];
     public List<RecordedRequest> Requests { get; } = [];
     public byte[]? Bundle { get; set; }
+    public List<JsonNode> ReleaseListPrefix { get; } = [];
+    public JsonNode SourceRun { get; } = JsonNode.Parse("""
+        {"head_sha":"abc123","head_branch":"v3.0.0-rc.1","event":"push",
+         "path":".github/workflows/publish.yml","status":"completed"}
+        """)!;
     public JsonNode? Release { get; set; } = JsonNode.Parse("""
-        {"id":1,"target_commitish":"abc123","draft":true,
+        {"id":1,"tag_name":"v3.0.0-rc.1","target_commitish":"abc123","draft":true,
          "upload_url":"https://uploads.github.com/repos/Kamyab7/SwiftDispatch/releases/1/assets{?name,label}"}
         """);
 
     public Fixture()
     {
-        foreach (var (name, value) in new Dictionary<string, string>
+        foreach (var (name, value) in new Dictionary<string, string?>
         {
             ["GITHUB_REPOSITORY"] = "Kamyab7/SwiftDispatch", ["GITHUB_REF_NAME"] = "v" + Version,
             ["GITHUB_SHA"] = "abc123", ["GITHUB_RUN_ID"] = "42", ["GITHUB_OUTPUT"] = Output,
-            ["GH_TOKEN"] = "test-token", ["NUGET_API_KEY"] = "test-key"
+            ["GH_TOKEN"] = "test-token", ["NUGET_API_KEY"] = "test-key",
+            ["RELEASE_TAG"] = null, ["RELEASE_COMMIT"] = null, ["RELEASE_SOURCE_RUN_ID"] = null
         })
         {
             environment[name] = Environment.GetEnvironmentVariable(name);
@@ -253,6 +319,8 @@ internal sealed class Fixture : IDisposable
 
     public string Manifest(string name = "SwiftDispatch") => Path.Combine(Directory, "sbom", $"{name}.{Version}.sbom.spdx.json");
     public string Graph() => Path.Combine(Directory, "validation", $"SwiftDispatch.{Version}.inputs/project.assets.json");
+    public byte[] ArchiveBundle() => Archive(System.IO.Directory.GetFiles(Directory, "*", SearchOption.AllDirectories)
+        .ToDictionary(p => Tool.Relative(Directory, p), File.ReadAllBytes));
     public void Mutate(Action<JsonNode> change)
     {
         var document = Tool.ReadJson(Manifest());
@@ -298,11 +366,22 @@ internal sealed class Fixture : IDisposable
         static HttpResponseMessage Json(object? value) => value is null ? new(HttpStatusCode.NotFound)
             : Bytes(JsonSerializer.SerializeToUtf8Bytes(value));
         if (url.Host == "api.nuget.org") return Bytes(Published.GetValueOrDefault(Path.GetFileName(url.AbsolutePath)));
+        if (url.AbsolutePath.Contains("/actions/runs/", StringComparison.Ordinal) && !url.AbsolutePath.EndsWith("/artifacts", StringComparison.Ordinal))
+            return Json(SourceRun);
         if (url.AbsolutePath.Contains("/actions/runs/", StringComparison.Ordinal))
             return Json(new { artifacts = Bundle is null ? Array.Empty<object>() :
                 [new { name = "release-bundle", expired = false, archive_download_url = "https://api.github.com/bundle" }] });
         if (url.AbsolutePath == "/bundle") return Bytes(Bundle);
-        if (url.AbsolutePath.Contains("/releases/tags/", StringComparison.Ordinal)) return Json(Release);
+        // GitHub's by-tag endpoint returns published releases, never drafts.
+        if (url.AbsolutePath.Contains("/releases/tags/", StringComparison.Ordinal))
+            return Json(Release?["draft"]?.GetValue<bool>() == false ? Release : null);
+        if (message.Method == HttpMethod.Get && url.AbsolutePath.EndsWith("/releases", StringComparison.Ordinal))
+        {
+            var page = url.Query.Split('&').FirstOrDefault(p => p.StartsWith("page=", StringComparison.Ordinal));
+            var number = page is null ? 1 : int.Parse(page["page=".Length..], System.Globalization.CultureInfo.InvariantCulture);
+            var releases = ReleaseListPrefix.Concat(Release is null ? [] : new[] { Release });
+            return Json(releases.Skip((number - 1) * 100).Take(100).ToArray());
+        }
         if (message.Method == HttpMethod.Post && url.Host == "uploads.github.com")
         {
             Assets[Uri.UnescapeDataString(url.Query["?name=".Length..])] = data!;
