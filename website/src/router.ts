@@ -20,24 +20,38 @@ export const router = createRouter({
   },
 });
 
+const guideDescriptions: Record<string, string> = {
+  "getting-started": "Install SwiftDispatch and build your first .NET request handler with source-generated registration, dependency injection, and Native AOT support.",
+  "evaluating": "Evaluate SwiftDispatch for your .NET project: compare mediator features, supported frameworks, Native AOT support, and migration requirements.",
+  "migration": "Migrate from MediatR to SwiftDispatch. Learn how to update request handlers, dependency injection, pipeline behaviors, and notifications.",
+  "pipeline-behaviors": "Build ordered SwiftDispatch pipeline behaviors for .NET request handlers, including validation, logging, retries, and short-circuiting.",
+  "notifications": "Publish SwiftDispatch notifications to multiple .NET handlers with sequential, parallel, or custom execution strategies and cancellation support.",
+  "streaming": "Stream .NET request results with SwiftDispatch using IAsyncEnumerable, stream request handlers, cancellation, and stream pipeline behaviors.",
+  "fluentvalidation": "Add asynchronous FluentValidation to SwiftDispatch request pipelines. Register validators, aggregate failures, and configure validation behavior ordering.",
+  "entity-framework-core": "Use opt-in Entity Framework Core transactions with SwiftDispatch requests. Configure transaction attributes, database contexts, commit, and rollback."
+};
+
 router.afterEach((to) => {
   const page = documents.find((doc) => doc.slug === to.params.slug);
   const title =
     to.path === "/"
-      ? "SwiftDispatch — Lightweight .NET mediator with Native AOT"
+      ? "SwiftDispatch — MediatR alternative for .NET with Native AOT"
       : to.path === "/privacy"
         ? "Privacy policy · SwiftDispatch"
         : `${page?.title ?? "Page not found"} · SwiftDispatch`;
   const description =
     to.path === "/"
-      ? "A lightweight, MIT-licensed MediatR alternative for .NET. Source-generated registration and dispatch, Native AOT support, requests, notifications, and streaming."
+      ? "A free, MIT-licensed MediatR alternative for .NET with source-generated dispatch, Native AOT support, CQRS, ordered pipelines, notifications, and streaming."
       : to.path === "/privacy"
         ? "How the SwiftDispatch website handles hosting logs, local interaction events, cookies, and privacy questions."
-        : (page?.source
-            .split("\n")
-            .find((line) => line.length > 60 && !line.startsWith("#"))
-            ?.replace(/\*\*/g, "") ??
-          "Explore SwiftDispatch documentation and examples.");
+        : (page && guideDescriptions[page.slug]) ||
+          "Explore SwiftDispatch documentation and examples for .NET requests, pipeline behaviors, notifications, and streaming.";
+  document
+    .querySelector('meta[name="twitter:title"]')
+    ?.setAttribute("content", title);
+  document
+    .querySelector('meta[name="twitter:description"]')
+    ?.setAttribute("content", description);
   document.title = title;
   document
     .querySelector('meta[name="description"]')

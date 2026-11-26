@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watchEffect } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { documents, renderDocument } from "../docs";
 import SiteHeader from "../components/SiteHeader.vue";
@@ -25,9 +25,6 @@ const rendered = computed(() =>
     page.value?.slug,
   ),
 );
-watchEffect(() => {
-  document.title = `${page.value?.title ?? "Page not found"} · SwiftDispatch`;
-});
 </script>
 
 <template>
