@@ -16,7 +16,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
+      actions: read
       id-token: write
     env:
       DOTNET_PROCESSOR_COUNT: 2
@@ -48,21 +49,51 @@ jobs:
             10.0.x
             11.0.x
 
+      - name: Restore original release bundle on retry
+        id: bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: dotnet run --file eng/release.cs -- restore artifacts/release
+
       - name: Build
+        if: steps.bundle.outputs.reused != 'true'
         run: dotnet build SwiftDispatch.slnx -c Release -p:Version="$PACKAGE_VERSION" --disable-build-servers -m:1
 
       - name: Test
+        if: steps.bundle.outputs.reused != 'true'
         run: |
           dotnet test tests/SwiftDispatch.Tests -c Release --no-build
           dotnet test tests/SwiftDispatch.FluentValidation.Tests -c Release --no-build
           dotnet test tests/SwiftDispatch.EntityFrameworkCore.Tests -c Release --no-build
 
       - name: Pack
+        if: steps.bundle.outputs.reused != 'true'
         run: |
           dotnet pack src/SwiftDispatch.Contracts -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
           dotnet pack src/SwiftDispatch -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
           dotnet pack src/SwiftDispatch.FluentValidation -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
           dotnet pack src/SwiftDispatch.EntityFrameworkCore -c Release --no-build --disable-build-servers -m:1 -p:Version="$PACKAGE_VERSION" -o artifacts/release
+
+      - name: Restore SBOM tool
+        run: dotnet tool restore
+
+      - name: Generate and validate package SBOMs
+        if: steps.bundle.outputs.reused != 'true'
+        run: dotnet run --file eng/sbom.cs -- generate artifacts/release
+
+      - name: Save original release outputs before publication
+        if: steps.bundle.outputs.reused != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-bundle
+          path: artifacts/release/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload and verify draft release SBOM assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: dotnet run --file eng/release.cs -- stage artifacts/release
 
       - name: Log in to NuGet.org
         uses: NuGet/login@v1
@@ -73,7 +104,10 @@ jobs:
       - name: Publish to NuGet.org
         env:
           NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          dotnet nuget push "artifacts/release/*.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          GH_TOKEN: ${{ github.token }}
+        run: dotnet run --file eng/release.cs -- packages artifacts/release
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: dotnet run --file eng/release.cs -- publish artifacts/release

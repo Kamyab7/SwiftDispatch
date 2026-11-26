@@ -1,5 +1,14 @@
 # Entity Framework Core transactions
 
+## Software Bill of Materials
+
+For versions released through the SBOM-enabled workflow, download
+`SwiftDispatch.EntityFrameworkCore.<version>.sbom.spdx.json` from the matching
+[GitHub Release](https://github.com/Kamyab7/SwiftDispatch/releases).
+This SPDX 2.2 JSON SBOM describes the package and its release build inputs across
+supported frameworks, including build dependencies. A consuming application should
+generate its own SBOM to inventory the dependency versions it deploys.
+
 `SwiftDispatch.EntityFrameworkCore` adds opt-in, attribute-selected transactions to response and void requests. The package targets .NET 8, .NET 10, and .NET 11 and depends on EF Core Relational 8.0.34 or later. Core SwiftDispatch and its command/query contracts do not depend on EF Core.
 
 ## Install and configure

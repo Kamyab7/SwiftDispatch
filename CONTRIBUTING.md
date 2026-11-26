@@ -88,6 +88,13 @@ sudo apt-get install -y clang zlib1g-dev
 
 The script publishes specifically for `linux-x64`; use a matching environment for the complete check. If you cannot run it locally, state which checks you ran and let the pull request's CI verify the Linux Native AOT path.
 
+Verification also restores the pinned Microsoft SBOM tool and generates and validates
+an SPDX 2.2 SBOM for each packaged library. Packages and reports are saved in a fresh
+`artifacts/verify-packages.*` directory on every run. See the
+[release and SBOM guide](eng/RELEASING.md) for scan scope, publication gates, and retry
+recovery. Run the offline release gate tests with
+`dotnet run --file eng/test-release.cs`.
+
 For website changes, use Node.js `^22.18.0 || >=24.12.0` and npm, then run:
 
 ```sh
@@ -97,6 +104,11 @@ npm run build
 ```
 
 Use `npm run dev` to inspect affected pages locally. See the [website README](website/README.md) for documentation structure and linking conventions. Documentation-only changes do not need unrelated library checks.
+
+The wiki sync workflow renders the same documentation with a file-based C# app.
+Preview its generated pages locally with
+`dotnet run --file eng/prepare-wiki.cs -- website/src/docs artifacts/wiki-preview`.
+The output directory is fully generated; obsolete Markdown pages there are removed.
 
 ## Submit a pull request
 

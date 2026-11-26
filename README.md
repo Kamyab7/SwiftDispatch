@@ -161,6 +161,16 @@ Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) in all project spaces.
 
 See our [security policy](SECURITY.md) for supported versions and how to report vulnerabilities privately.
 
+## Software Bill of Materials
+
+SwiftDispatch publishes an SPDX 2.2 JSON SBOM for each NuGet package version released
+through its SBOM-enabled workflow. Open the [GitHub Release](https://github.com/Kamyab7/SwiftDispatch/releases)
+matching your package version and download its versioned `*.sbom.spdx.json` asset.
+The SBOM describes the package and its release build inputs across all supported
+frameworks, including build dependencies. A consuming application should generate
+its own SBOM to inventory the dependency versions it deploys. Historical release
+assets remain available with their corresponding package versions.
+
 ## License
 
 Licensed under [MIT](LICENSE). Free for personal and commercial use.
