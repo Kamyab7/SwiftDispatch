@@ -8,7 +8,7 @@ Supports `netstandard2.0`, `net8.0`, `net10.0`, and `net11.0`. Native AOT is sup
 
 ## Quick start
 
-Install [SwiftDispatch from NuGet](https://www.nuget.org/packages/SwiftDispatch/2.1.0). The package includes the source generator automatically and references `SwiftDispatch.Contracts`.
+Install [SwiftDispatch from NuGet](https://www.nuget.org/packages/SwiftDispatch/2.1.1). The package includes the source generator automatically and references `SwiftDispatch.Contracts`.
 
 ```sh
 dotnet add package SwiftDispatch
