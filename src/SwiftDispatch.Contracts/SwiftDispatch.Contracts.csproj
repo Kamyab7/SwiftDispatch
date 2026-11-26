@@ -5,6 +5,7 @@
     <TargetFrameworks>netstandard2.0;net8.0;net10.0;net11.0</TargetFrameworks>
     <IsAotCompatible Condition="'$(TargetFramework)' != 'netstandard2.0'">true</IsAotCompatible>
     <Description>Contracts for SwiftDispatch requests, pipelines, and notifications.</Description>
+    <PackageTags>mediator;request;response;queries;commands;notifications;CQRS;contracts</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>swiftdispatch-icon-128.png</PackageIcon>
   </PropertyGroup>

@@ -4,7 +4,8 @@
     <TargetFramework />
     <TargetFrameworks>netstandard2.0;net8.0;net10.0;net11.0</TargetFrameworks>
     <IsAotCompatible Condition="'$(TargetFramework)' != 'netstandard2.0'">true</IsAotCompatible>
-    <Description>A free, source-generated, Native AOT-friendly mediator with ordered pipelines and notifications.</Description>
+    <Description>A free, lightweight MediatR alternative with source-generated dispatch, Native AOT support, ordered pipelines, and notifications.</Description>
+    <PackageTags>mediator;request;response;queries;commands;notifications;CQRS;source-generator;NativeAOT</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>swiftdispatch-icon-128.png</PackageIcon>
   </PropertyGroup>
