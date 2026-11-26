@@ -7,9 +7,17 @@ The publish job alone has GitHub `contents: write` for draft release creation an
 asset upload, `actions: read` for retry recovery, and `id-token: write` for NuGet.
 No signing steps are added or removed; SBOM generation uses the final pack outputs.
 
+The SBOM and release utilities are [file-based C# apps](https://learn.microsoft.com/en-us/dotnet/core/sdk/file-based-apps),
+run with `dotnet run --file eng/sbom.cs -- ACTION DIR` and
+`dotnet run --file eng/release.cs -- ACTION DIR`. They use only .NET standard
+libraries, share `eng/ReleaseTools.cs` via `#:include`, and need no `.csproj` or
+additional NuGet packages. Use the repository's required .NET 11 SDK; `#:include`
+also works with .NET SDK 10.0.300 or later. The apps target .NET 10 and disable
+Native AOT for these utilities. Both workflows already install that runtime.
+
 The repository tool manifest pins Microsoft.Sbom.DotNetTool 4.1.13, invoked as
 `dotnet tool run sbom-tool`. It requires .NET 8, installed by both workflows.
-`eng/sbom.py` extracts each final `.nupkg` outside the source tree, reads its identity
+`eng/sbom.cs` extracts each final `.nupkg` outside the source tree, reads its identity
 from the embedded `.nuspec`, generates SPDX 2.2 JSON, and runs Microsoft validation.
 Symbol `.snupkg` files are not included in the package inventory or published by
 these steps.
@@ -35,7 +43,7 @@ the scoped restore graphs, and all `.nuspec` dependency IDs. The CI artifact
 contains Microsoft's validation reports, dependency coverage reports, and the
 original scoped inputs so detected direct, transitive, and build-only dependencies
 can be reviewed. `eng/verify.sh` exercises real generation/validation in normal CI;
-`python3 -m unittest discover -s eng -p 'test_*.py' -v` exercises failure gates and
+`dotnet run --file eng/test-release.cs` exercises failure gates and
 partial publication without making network mutations.
 
 Before any publication, Actions saves the original packages, SBOMs, and evidence in
@@ -61,7 +69,7 @@ are reused. A completed release can also be retried without modifying its assets
 If the original bundle expired, or an existing release belongs to another run,
 automatic recovery stops. Recover the original Actions outputs, or the published
 packages and original build/restore inputs, into a separate directory. Review
-their provenance and dependency coverage and run `python3 eng/sbom.py verify DIR`
+their provenance and dependency coverage and run `dotnet run --file eng/sbom.cs -- verify DIR`
 before an explicit manual recovery. Do not rebuild and silently replace an SBOM.
 Historical versions predating this workflow are not automatically backfilled.
 

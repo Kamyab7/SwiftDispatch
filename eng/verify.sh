@@ -14,7 +14,7 @@ dotnet pack src/SwiftDispatch -c Release --no-build --disable-build-servers -m:1
 dotnet pack src/SwiftDispatch.FluentValidation -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
 dotnet pack src/SwiftDispatch.EntityFrameworkCore -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
 dotnet tool restore
-python3 eng/sbom.py generate "$package_output"
+dotnet run --file eng/sbom.cs -- generate "$package_output"
 package_cache="$(mktemp -d "$task_root/artifacts/package-cache.XXXXXX")"
 dotnet restore tests/PackageSmoke --packages "$package_cache" --source "$package_output" --source https://api.nuget.org/v3/index.json
 dotnet restore tests/EfPackageSmoke --packages "$package_cache" --source "$package_output" --source https://api.nuget.org/v3/index.json

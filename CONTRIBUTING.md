@@ -93,7 +93,7 @@ an SPDX 2.2 SBOM for each packaged library. Packages and reports are saved in a 
 `artifacts/verify-packages.*` directory on every run. See the
 [release and SBOM guide](eng/RELEASING.md) for scan scope, publication gates, and retry
 recovery. Run the offline release gate tests with
-`python3 -m unittest discover -s eng -p 'test_*.py' -v`.
+`dotnet run --file eng/test-release.cs`.
 
 For website changes, use Node.js `^22.18.0 || >=24.12.0` and npm, then run:
 

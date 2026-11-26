@@ -53,7 +53,7 @@ jobs:
         id: bundle
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 eng/release.py restore artifacts/release
+        run: dotnet run --file eng/release.cs -- restore artifacts/release
 
       - name: Build
         if: steps.bundle.outputs.reused != 'true'
@@ -79,7 +79,7 @@ jobs:
 
       - name: Generate and validate package SBOMs
         if: steps.bundle.outputs.reused != 'true'
-        run: python3 eng/sbom.py generate artifacts/release
+        run: dotnet run --file eng/sbom.cs -- generate artifacts/release
 
       - name: Save original release outputs before publication
         if: steps.bundle.outputs.reused != 'true'
@@ -93,7 +93,7 @@ jobs:
       - name: Upload and verify draft release SBOM assets
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 eng/release.py stage artifacts/release
+        run: dotnet run --file eng/release.cs -- stage artifacts/release
 
       - name: Log in to NuGet.org
         uses: NuGet/login@v1
@@ -105,9 +105,9 @@ jobs:
         env:
           NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
           GH_TOKEN: ${{ github.token }}
-        run: python3 eng/release.py packages artifacts/release
+        run: dotnet run --file eng/release.cs -- packages artifacts/release
 
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 eng/release.py publish artifacts/release
+        run: dotnet run --file eng/release.cs -- publish artifacts/release
