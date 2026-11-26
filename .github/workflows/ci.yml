@@ -17,5 +17,7 @@ jobs:
             11.0.x
       - name: Install Native AOT prerequisites
         run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+      - name: Test SBOM and release publication gates
+        run: python3 -m unittest discover -s eng -p 'test_*.py' -v
       - name: Verify source, packages, and native executables
         run: bash eng/verify.sh

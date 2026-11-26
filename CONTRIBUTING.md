@@ -88,6 +88,13 @@ sudo apt-get install -y clang zlib1g-dev
 
 The script publishes specifically for `linux-x64`; use a matching environment for the complete check. If you cannot run it locally, state which checks you ran and let the pull request's CI verify the Linux Native AOT path.
 
+Verification also restores the pinned Microsoft SBOM tool and generates and validates
+an SPDX 2.2 SBOM for each packaged library. Packages and reports are saved in a fresh
+`artifacts/verify-packages.*` directory on every run. See the
+[release and SBOM guide](eng/RELEASING.md) for scan scope, publication gates, and retry
+recovery. Run the offline release gate tests with
+`python3 -m unittest discover -s eng -p 'test_*.py' -v`.
+
 For website changes, use Node.js `^22.18.0 || >=24.12.0` and npm, then run:
 
 ```sh
