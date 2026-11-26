@@ -105,6 +105,11 @@ npm run build
 
 Use `npm run dev` to inspect affected pages locally. See the [website README](website/README.md) for documentation structure and linking conventions. Documentation-only changes do not need unrelated library checks.
 
+The wiki sync workflow renders the same documentation with a file-based C# app.
+Preview its generated pages locally with
+`dotnet run --file eng/prepare-wiki.cs -- website/src/docs artifacts/wiki-preview`.
+The output directory is fully generated; obsolete Markdown pages there are removed.
+
 ## Submit a pull request
 
 Use a clear title describing the result. Existing commits commonly use prefixes such as `fix:`, `feat:`, and `docs:`; follow that style where useful.
