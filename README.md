@@ -6,7 +6,7 @@ Supports `netstandard2.0`, `net8.0`, `net10.0`, and `net11.0`. Native AOT is sup
 
 ## Quick start
 
-Install [TrueMediator from NuGet](https://www.nuget.org/packages/TrueMediator/2.1.1). The package includes the source generator automatically and references `TrueMediator.Contracts`.
+Install [TrueMediator from NuGet](https://www.nuget.org/packages/TrueMediator/3.0.0). The package includes the source generator automatically and references `TrueMediator.Contracts`.
 
 ```sh
 dotnet add package TrueMediator
