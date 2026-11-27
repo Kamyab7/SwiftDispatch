@@ -1,19 +1,8 @@
 # TrueMediator
 
-![TrueMediator banner](assets/logo/truemediator-banner.png)
-
 A free, lightweight MediatR alternative with Native AOT support.
 
 Supports `netstandard2.0`, `net8.0`, `net10.0`, and `net11.0`. Native AOT is supported on .NET 8, .NET 10, and .NET 11. Building this repository requires the .NET 11 SDK.
-
-## Migrating from SwiftDispatch
-
-TrueMediator is a breaking rename. Replace `SwiftDispatch` package references and
-namespace imports with `TrueMediator` (including `.Contracts`, `.FluentValidation`,
-and `.EntityFrameworkCore`), and change `AddSwiftDispatch(...)` to
-`AddTrueMediator(...)`. Generator diagnostics now use `TM001`–`TM011` instead of
-`SD001`–`SD011`; update diagnostic suppressions and build rules accordingly.
-Mediator contracts and runtime behavior are unchanged.
 
 ## Quick start
 
