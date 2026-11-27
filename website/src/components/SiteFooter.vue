@@ -20,7 +20,7 @@ import logo from "../assets/logo.svg";
         rel="noopener noreferrer"
         >NuGet ↗</a
       ><a
-        href="https://github.com/Kamyab7/TrueMediator/blob/master/LICENSE"
+        href="https://github.com/TrueMediator/TrueMediator/blob/master/LICENSE"
         target="_blank"
         rel="noopener noreferrer"
         >MIT license ↗</a

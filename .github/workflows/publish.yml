@@ -38,6 +38,18 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Validate NuGet publishing configuration
+        env:
+          NUGET_USER: ${{ secrets.NUGET_USER }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$NUGET_USER" ]]; then
+            echo '::error::Set NUGET_USER to the publishing account username on nuget.org.'
+            exit 1
+          fi
+          echo "NuGet trusted publishing must allow ${GITHUB_REPOSITORY} with workflow publish.yml."
+
       - name: Validate release tag and master ancestry
         shell: bash
         run: |
@@ -125,6 +137,8 @@ jobs:
         uses: NuGet/login@v1
         id: nuget
         with:
+          # Configure the nuget.org policy for TrueMediator/TrueMediator, publish.yml.
+          # This is the NuGet account username, not the GitHub organization name.
           user: ${{ secrets.NUGET_USER }}
 
       - name: Publish to NuGet.org

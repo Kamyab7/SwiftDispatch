@@ -7,6 +7,37 @@ The publish job alone has GitHub `contents: write` for draft release creation an
 asset upload, `actions: read` for retry recovery, and `id-token: write` for NuGet.
 No signing steps are added or removed; SBOM generation uses the final pack outputs.
 
+## Publishing from the TrueMediator organization
+
+The canonical repository is `TrueMediator/TrueMediator`. Release API calls and wiki
+sync use Actions' `GITHUB_REPOSITORY` automatically. Package repository metadata,
+SBOM namespace URLs, documentation, and website links use the canonical address.
+
+Before publishing from the transferred repository:
+
+1. Configure a NuGet trusted publishing policy with repository owner `TrueMediator`,
+   repository `TrueMediator`, and workflow filename `publish.yml`. Leave the optional
+   environment empty: the publish job does not declare an environment. A policy for
+   the former repository owner does not authorize the new owner.
+2. Ensure the repository can access the `NUGET_USER` Actions secret. Its value is the
+   **nuget.org account username**, which does not have to match the GitHub organization.
+   That NuGet account must have publishing rights for the `TrueMediator` packages.
+3. Check organization Actions policies allow the actions used by these workflows.
+   The publish job explicitly requests the permissions needed for releases, artifacts,
+   and OIDC; no broader organization default token permissions are required.
+4. For wiki sync, ensure `WIKI_TOKEN` can write to `TrueMediator/TrueMediator.wiki` and
+   meets any organization token approval or SSO requirements.
+5. Verify GitHub Pages uses GitHub Actions as its deployment source and the `github-pages`
+   environment permits `master`. Remove the previous custom domain to publish at
+   `https://truemediator.github.io/TrueMediator/`.
+
+The publishing workflow checks that `NUGET_USER` is configured before building. The
+actual NuGet login remains immediately before package publication so its short-lived
+credential is not consumed by the build. Local tests cannot verify the external NuGet
+policy, secret availability, organization permissions, or Pages settings.
+
+## Release tooling
+
 The SBOM and release utilities are [file-based C# apps](https://learn.microsoft.com/en-us/dotnet/core/sdk/file-based-apps),
 run with `dotnet run --file eng/sbom.cs -- ACTION DIR` and
 `dotnet run --file eng/release.cs -- ACTION DIR`. They use only .NET standard

@@ -237,7 +237,7 @@ internal static class Sbom
                 File.Copy(props, Path.Combine(inputs, Path.GetFileName(props)));
             run(["tool", "run", "sbom-tool", "--", "generate", "-b", payload, "-bc", inputs,
                 "-pn", package.Name, "-pv", package.Version, "-ps", "Kamyab Valipour",
-                "-nsb", "https://github.com/Kamyab7/TrueMediator/sbom", "-mi", "SPDX:2.2"]);
+                "-nsb", "https://github.com/TrueMediator/TrueMediator/sbom", "-mi", "SPDX:2.2"]);
             run(["tool", "run", "sbom-tool", "--", "validate", "-b", payload, "-mi", "SPDX:2.2",
                 "-o", Path.Combine(reports, package.Stem + ".validation.json")]);
             var manifest = Path.Combine(payload, "_manifest/spdx_2.2/manifest.spdx.json");

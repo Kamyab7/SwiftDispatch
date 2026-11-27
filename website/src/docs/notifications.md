@@ -31,7 +31,7 @@ Register services and configure a generated registration class as described in [
 await mediator.Publish(new OrderPlaced("order-123"));
 ```
 
-See the [package smoke test handlers](https://github.com/Kamyab7/TrueMediator/tree/master/tests/PackageSmoke/Notifications/Handlers) for multiple handlers.
+See the [package smoke test handlers](https://github.com/TrueMediator/TrueMediator/tree/master/tests/PackageSmoke/Notifications/Handlers) for multiple handlers.
 
 ## Execution strategies
 

@@ -51,6 +51,6 @@ With validation, authentication, and logging registered in that order, a request
 
 ## Supported behavior types
 
-You can configure closed behaviors or open two-parameter behaviors. See the [package smoke test behaviors](https://github.com/Kamyab7/TrueMediator/tree/master/tests/PackageSmoke/Behaviors) for working examples.
+You can configure closed behaviors or open two-parameter behaviors. See the [package smoke test behaviors](https://github.com/TrueMediator/TrueMediator/tree/master/tests/PackageSmoke/Behaviors) for working examples.
 
 Return to [getting started](getting-started.md).

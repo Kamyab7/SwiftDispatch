@@ -162,7 +162,7 @@ See our [security policy](SECURITY.md) for supported versions and how to report 
 ## Software Bill of Materials
 
 TrueMediator publishes an SPDX 2.2 JSON SBOM for each NuGet package version released
-through its SBOM-enabled workflow. Open the [GitHub Release](https://github.com/Kamyab7/TrueMediator/releases)
+through its SBOM-enabled workflow. Open the [GitHub Release](https://github.com/TrueMediator/TrueMediator/releases)
 matching your package version and download its versioned `*.sbom.spdx.json` asset.
 The SBOM describes the package and its release build inputs across all supported
 frameworks, including build dependencies. A consuming application should generate

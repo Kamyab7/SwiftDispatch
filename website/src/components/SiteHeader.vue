@@ -29,7 +29,7 @@ const open = ref(false);
       <RouterLink to="/docs/migration">Migration</RouterLink>
       <RouterLink to="/docs/getting-started">Docs</RouterLink>
       <a
-        href="https://github.com/Kamyab7/TrueMediator"
+        href="https://github.com/TrueMediator/TrueMediator"
         target="_blank"
         rel="noopener noreferrer"
         >GitHub ↗</a

@@ -269,14 +269,14 @@ internal sealed class Fixture : IDisposable
         """)!;
     public JsonNode? Release { get; set; } = JsonNode.Parse("""
         {"id":1,"tag_name":"v3.0.0-rc.1","target_commitish":"abc123","draft":true,
-         "upload_url":"https://uploads.github.com/repos/Kamyab7/TrueMediator/releases/1/assets{?name,label}"}
+         "upload_url":"https://uploads.github.com/repos/TrueMediator/TrueMediator/releases/1/assets{?name,label}"}
         """);
 
     public Fixture()
     {
         foreach (var (name, value) in new Dictionary<string, string?>
         {
-            ["GITHUB_REPOSITORY"] = "Kamyab7/TrueMediator", ["GITHUB_REF_NAME"] = "v" + Version,
+            ["GITHUB_REPOSITORY"] = "TrueMediator/TrueMediator", ["GITHUB_REF_NAME"] = "v" + Version,
             ["GITHUB_SHA"] = "abc123", ["GITHUB_RUN_ID"] = "42", ["GITHUB_OUTPUT"] = Output,
             ["GH_TOKEN"] = "test-token", ["NUGET_API_KEY"] = "test-key",
             ["RELEASE_TAG"] = null, ["RELEASE_COMMIT"] = null, ["RELEASE_SOURCE_RUN_ID"] = null
@@ -391,7 +391,7 @@ internal sealed class Fixture : IDisposable
         {
             Release = JsonNode.Parse(data!)!;
             Release["id"] = 1;
-            Release["upload_url"] = "https://uploads.github.com/repos/Kamyab7/TrueMediator/releases/1/assets{?name,label}";
+            Release["upload_url"] = "https://uploads.github.com/repos/TrueMediator/TrueMediator/releases/1/assets{?name,label}";
             return Json(Release);
         }
         if (message.Method == HttpMethod.Patch)
@@ -401,7 +401,7 @@ internal sealed class Fixture : IDisposable
         }
         if (url.AbsolutePath.EndsWith("/assets", StringComparison.Ordinal))
             return Json(Assets.Keys.Select(name => new { name, url = "https://api.github.com/assets/" + name,
-                browser_download_url = "https://github.com/Kamyab7/TrueMediator/releases/download/v" + Version + "/" + name }).ToArray());
+                browser_download_url = "https://github.com/TrueMediator/TrueMediator/releases/download/v" + Version + "/" + name }).ToArray());
         if (url.AbsolutePath.StartsWith("/assets/", StringComparison.Ordinal) || url.Host == "github.com")
             return Bytes(Assets.GetValueOrDefault(Path.GetFileName(url.AbsolutePath)));
         throw new InvalidOperationException($"Unexpected HTTP request: {message.Method} {url}");

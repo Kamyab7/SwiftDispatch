@@ -37,10 +37,10 @@ The repository compares TrueMediator, MediatR, and Mediator on .NET 10. The curr
 
 These are working examples, not publication-quality evidence. In particular, the yielding async request timing errors overlap substantially, so the results do not establish a reliable async speed winner. Execution time and allocation tradeoffs vary by scenario.
 
-Review [full results and measurement errors](https://github.com/Kamyab7/TrueMediator/blob/master/benchmarks/results/short-run.md) and [reproduction instructions](https://github.com/Kamyab7/TrueMediator/blob/master/benchmarks/README.md). Run the full job on an idle machine and measure representative application workloads before drawing performance conclusions.
+Review [full results and measurement errors](https://github.com/TrueMediator/TrueMediator/blob/master/benchmarks/results/short-run.md) and [reproduction instructions](https://github.com/TrueMediator/TrueMediator/blob/master/benchmarks/README.md). Run the full job on an idle machine and measure representative application workloads before drawing performance conclusions.
 
 ## Try it on one feature
 
-Use the [quick start](getting-started.md) to run a request and handler. Then inspect the [clean architecture sample](https://github.com/Kamyab7/TrueMediator/tree/master/samples/TrueMediator.Sample.CleanArchitecture) for a larger application structure.
+Use the [quick start](getting-started.md) to run a request and handler. Then inspect the [clean architecture sample](https://github.com/TrueMediator/TrueMediator/tree/master/samples/TrueMediator.Sample.CleanArchitecture) for a larger application structure.
 
 If your application already uses MediatR, begin with the [migration guide](migration.md).

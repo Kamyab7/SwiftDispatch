@@ -4,7 +4,7 @@
 
 For versions released through the SBOM-enabled workflow, download
 `TrueMediator.EntityFrameworkCore.<version>.sbom.spdx.json` from the matching
-[GitHub Release](https://github.com/Kamyab7/TrueMediator/releases).
+[GitHub Release](https://github.com/TrueMediator/TrueMediator/releases).
 This SPDX 2.2 JSON SBOM describes the package and its release build inputs across
 supported frameworks, including build dependencies. A consuming application should
 generate its own SBOM to inventory the dependency versions it deploys.

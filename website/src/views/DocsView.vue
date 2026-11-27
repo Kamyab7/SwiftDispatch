@@ -97,7 +97,7 @@ const rendered = computed(() =>
           <a
             v-if="page.slug === 'getting-started'"
             class="button primary"
-            href="https://github.com/Kamyab7/TrueMediator/tree/master/samples/TrueMediator.Sample.CleanArchitecture"
+            href="https://github.com/TrueMediator/TrueMediator/tree/master/samples/TrueMediator.Sample.CleanArchitecture"
             target="_blank"
             rel="noopener noreferrer"
             >Explore the sample ↗</a
@@ -109,7 +109,7 @@ const rendered = computed(() =>
         <a
           v-if="page"
           class="docs-edit text-link"
-          :href="`https://github.com/Kamyab7/TrueMediator/edit/master/website/src/docs/${page.slug}.md`"
+          :href="`https://github.com/TrueMediator/TrueMediator/edit/master/website/src/docs/${page.slug}.md`"
           target="_blank"
           rel="noopener noreferrer"
           >Edit this page on GitHub ↗</a

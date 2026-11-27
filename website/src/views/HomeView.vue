@@ -3,7 +3,7 @@ import { computed, onUnmounted, ref } from "vue";
 import { emitConversion } from "../funnel";
 import SiteHeader from "../components/SiteHeader.vue";
 import SiteFooter from "../components/SiteFooter.vue";
-const github = "https://github.com/Kamyab7/TrueMediator";
+const github = "https://github.com/TrueMediator/TrueMediator";
 const command = "dotnet add package TrueMediator";
 const copyState = ref("");
 let copyTimer: ReturnType<typeof setTimeout> | undefined;
