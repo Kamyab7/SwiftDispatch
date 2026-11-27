@@ -6,7 +6,7 @@ import logo from "../assets/logo.png";
     <div>
       <RouterLink class="brand" to="/"
         ><img :src="logo" alt="" width="30" height="30" /><span
-          >Swift<span class="brand-accent">Dispatch</span></span
+          >True<span class="brand-accent">Mediator</span></span
         ></RouterLink
       >
       <p>A lightweight mediator for .NET. MIT licensed.</p>
@@ -15,12 +15,12 @@ import logo from "../assets/logo.png";
       <RouterLink to="/docs/getting-started">Quick start</RouterLink
       ><RouterLink to="/docs/migration">Migration guide</RouterLink
       ><a
-        href="https://www.nuget.org/packages/SwiftDispatch"
+        href="https://www.nuget.org/packages/TrueMediator"
         target="_blank"
         rel="noopener noreferrer"
         >NuGet ↗</a
       ><a
-        href="https://github.com/Kamyab7/SwiftDispatch/blob/master/LICENSE"
+        href="https://github.com/Kamyab7/TrueMediator/blob/master/LICENSE"
         target="_blank"
         rel="noopener noreferrer"
         >MIT license ↗</a

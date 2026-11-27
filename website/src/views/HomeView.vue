@@ -3,8 +3,8 @@ import { computed, onUnmounted, ref } from "vue";
 import { emitConversion } from "../funnel";
 import SiteHeader from "../components/SiteHeader.vue";
 import SiteFooter from "../components/SiteFooter.vue";
-const github = "https://github.com/Kamyab7/SwiftDispatch";
-const command = "dotnet add package SwiftDispatch";
+const github = "https://github.com/Kamyab7/TrueMediator";
+const command = "dotnet add package TrueMediator";
 const copyState = ref("");
 let copyTimer: ReturnType<typeof setTimeout> | undefined;
 async function copyCommand() {
@@ -36,7 +36,7 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
         => Task.FromResult($"Hello, {request.Name}!");
 }
 
-// After registering SwiftDispatch:
+// After registering TrueMediator:
 var greeting = await mediator.Send(new Hello("Ada"));
 // Hello, Ada!`,
   },
@@ -84,7 +84,7 @@ const scenarios = [
   {
     title: "Completed request",
     rows: [
-      ["SwiftDispatch", "25.11 ns", "136 B"],
+      ["TrueMediator", "25.11 ns", "136 B"],
       ["MediatR", "47.57 ns", "200 B"],
       ["Mediator", "29.20 ns", "88 B"],
     ],
@@ -92,7 +92,7 @@ const scenarios = [
   {
     title: "Notification",
     rows: [
-      ["SwiftDispatch", "54.70 ns", "184 B"],
+      ["TrueMediator", "54.70 ns", "184 B"],
       ["MediatR", "215.53 ns", "768 B"],
       ["Mediator", "36.72 ns", "56 B"],
     ],
@@ -100,7 +100,7 @@ const scenarios = [
   {
     title: "Yielding async request",
     rows: [
-      ["SwiftDispatch", "859.18 ns", "160 B"],
+      ["TrueMediator", "859.18 ns", "160 B"],
       ["MediatR", "888.31 ns", "224 B"],
       ["Mediator", "998.18 ns", "192 B"],
     ],
@@ -110,8 +110,8 @@ const scenarioIndex = ref(0);
 const scenario = computed(() => scenarios[scenarioIndex.value]!);
 const faqs = [
   {
-    q: "Is SwiftDispatch free for commercial use?",
-    a: "Yes. SwiftDispatch is MIT licensed and free for personal and commercial projects. The source is available on GitHub.",
+    q: "Is TrueMediator free for commercial use?",
+    a: "Yes. TrueMediator is MIT licensed and free for personal and commercial projects. The source is available on GitHub.",
   },
   {
     q: "Is it a drop-in replacement for MediatR?",
@@ -123,11 +123,11 @@ const faqs = [
   },
   {
     q: "Do I install the source generator separately?",
-    a: "No. The SwiftDispatch NuGet package includes the source generator automatically and references SwiftDispatch.Contracts.",
+    a: "No. The TrueMediator NuGet package includes the source generator automatically and references TrueMediator.Contracts.",
   },
   {
     q: "Are validation and retries built in?",
-    a: "You implement these as pipeline behaviors and register them explicitly. SwiftDispatch composes the ordered pipeline; your behaviors supply the validation, logging, retry, or exception-handling logic.",
+    a: "You implement these as pipeline behaviors and register them explicitly. TrueMediator composes the ordered pipeline; your behaviors supply the validation, logging, retry, or exception-handling logic.",
   },
 ];
 </script>
@@ -188,7 +188,7 @@ const faqs = [
             <span class="green">$"Hello, {request.Name}!"</span>);
 }
 
-<span class="comment">// SwiftDispatch connects them.</span>
+<span class="comment">// TrueMediator connects them.</span>
 <span class="purple">await</span> mediator.<span class="aqua">Send</span>(<span class="purple">new</span> Hello(<span class="green">"Ada"</span>));</code></pre>
             <div class="code-footer">
               <span class="status-dot"></span> Hello, Ada!
@@ -211,10 +211,10 @@ const faqs = [
         >
       </div>
 
-      <section id="why-swiftdispatch" class="wrap section-space">
+      <section id="why-truemediator" class="wrap section-space">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">WHY SWIFTDISPATCH</p>
+            <p class="eyebrow">WHY TRUEMEDIATOR</p>
             <h2>Keep the pattern.<br />Simplify the plumbing.</h2>
           </div>
           <p>
@@ -296,7 +296,7 @@ const faqs = [
               :aria-label="`${example.title} code example`"
             ><code>{{ example.code }}</code></pre>
             <div class="code-footer">
-              Examples use SwiftDispatch.Contracts; register services before
+              Examples use TrueMediator.Contracts; register services before
               dispatch.
             </div>
           </div>
@@ -355,7 +355,7 @@ const faqs = [
                 <tr
                   v-for="row in scenario.rows"
                   :key="row[0]"
-                  :class="{ 'highlight-row': row[0] === 'SwiftDispatch' }"
+                  :class="{ 'highlight-row': row[0] === 'TrueMediator' }"
                 >
                   <th scope="row">{{ row[0] }}</th>
                   <td>{{ row[1] }}</td>
@@ -457,7 +457,7 @@ const faqs = [
               <span>02</span>
               <div>
                 <h3>Update namespaces and registration</h3>
-                <p>Use SwiftDispatch.Contracts and AddSwiftDispatch.</p>
+                <p>Use TrueMediator.Contracts and AddTrueMediator.</p>
               </div>
             </li>
             <li>
@@ -493,14 +493,14 @@ const faqs = [
 
       <section class="cta wrap">
         <p class="eyebrow">FROM EVALUATION TO YOUR FIRST REQUEST</p>
-        <h2>Put SwiftDispatch to work.</h2>
+        <h2>Put TrueMediator to work.</h2>
         <p>Start with one handler. See how it fits your application.</p>
         <div class="hero-actions">
           <RouterLink class="button primary" to="/docs/getting-started"
             >Follow the quick start →</RouterLink
           ><a
             class="button secondary"
-            :href="`${github}/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture`"
+            :href="`${github}/tree/master/samples/TrueMediator.Sample.CleanArchitecture`"
             target="_blank"
             rel="noopener noreferrer"
             >Explore a real sample ↗</a

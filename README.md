@@ -15,8 +15,6 @@ and `.EntityFrameworkCore`), and change `AddSwiftDispatch(...)` to
 `SD001`–`SD011`; update diagnostic suppressions and build rules accordingly.
 Mediator contracts and runtime behavior are unchanged.
 
-The website documentation retains the previous naming during this transition.
-
 ## Quick start
 
 Install [TrueMediator from NuGet](https://www.nuget.org/packages/TrueMediator/2.1.1). The package includes the source generator automatically and references `TrueMediator.Contracts`.

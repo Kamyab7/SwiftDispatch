@@ -49,7 +49,7 @@ const rendered = computed(() =>
         <RouterLink class="docs-home" to="/">← Back to home</RouterLink>
       </aside>
       <main id="doc-content" class="docs-main" tabindex="-1">
-        <p class="eyebrow">SWIFTDISPATCH / GUIDES</p>
+        <p class="eyebrow">TRUEMEDIATOR / GUIDES</p>
         <article class="markdown-body" v-html="rendered.html"></article>
         <nav
           v-if="previousPage || nextPage"
@@ -97,7 +97,7 @@ const rendered = computed(() =>
           <a
             v-if="page.slug === 'getting-started'"
             class="button primary"
-            href="https://github.com/Kamyab7/SwiftDispatch/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture"
+            href="https://github.com/Kamyab7/TrueMediator/tree/master/samples/TrueMediator.Sample.CleanArchitecture"
             target="_blank"
             rel="noopener noreferrer"
             >Explore the sample ↗</a
@@ -109,7 +109,7 @@ const rendered = computed(() =>
         <a
           v-if="page"
           class="docs-edit text-link"
-          :href="`https://github.com/Kamyab7/SwiftDispatch/edit/master/website/src/docs/${page.slug}.md`"
+          :href="`https://github.com/Kamyab7/TrueMediator/edit/master/website/src/docs/${page.slug}.md`"
           target="_blank"
           rel="noopener noreferrer"
           >Edit this page on GitHub ↗</a

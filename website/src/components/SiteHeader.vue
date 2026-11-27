@@ -7,7 +7,7 @@ const open = ref(false);
   <header class="header wrap">
     <RouterLink class="brand" to="/" @click="open = false"
       ><img :src="logo" alt="" width="36" height="36" /><span
-        >Swift<span class="brand-accent">Dispatch</span></span
+        >True<span class="brand-accent">Mediator</span></span
       ></RouterLink
     >
     <button
@@ -24,12 +24,12 @@ const open = ref(false);
       aria-label="Main navigation"
       @click="open = false"
     >
-      <RouterLink to="/#why-swiftdispatch">Why SwiftDispatch</RouterLink>
+      <RouterLink to="/#why-truemediator">Why TrueMediator</RouterLink>
       <RouterLink to="/#benchmarks">Benchmarks</RouterLink>
       <RouterLink to="/docs/migration">Migration</RouterLink>
       <RouterLink to="/docs/getting-started">Docs</RouterLink>
       <a
-        href="https://github.com/Kamyab7/SwiftDispatch"
+        href="https://github.com/Kamyab7/TrueMediator"
         target="_blank"
         rel="noopener noreferrer"
         >GitHub ↗</a

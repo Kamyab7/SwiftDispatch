@@ -1,6 +1,6 @@
-# SwiftDispatch website
+# TrueMediator website
 
-SwiftDispatch marketing site and documentation, built with Vue 3, TypeScript, and Vite.
+TrueMediator marketing site and documentation, built with Vue 3, TypeScript, and Vite.
 
 Requires Node.js `^22.18.0 || >=24.12.0` and npm.
 
@@ -20,12 +20,12 @@ The home page moves visitors through the product promise, code examples, benefit
 
 Primary conversion intent: quick-start visits and successful install-command copies. Secondary intent: migration and evaluation visits, sample exploration, GitHub, and NuGet clicks. A click or clipboard copy does not prove a package install or successful adoption.
 
-`src/funnel.ts` emits local `swiftdispatch:conversion` CustomEvents with `name`, `placement`, and optional `destination`. Events are `quick_start_click`, `migration_click`, `evaluation_click`, `github_click`, `nuget_click`, and `install_copy`. No analytics provider, cookies, persistent identifiers, or network collection is configured. Connect your chosen analytics provider to this event before relying on conversion reports; handle consent as appropriate for that provider. Destination values omit query strings and are limited to recognized links.
+`src/funnel.ts` emits local `truemediator:conversion` CustomEvents with `name`, `placement`, and optional `destination`. Events are `quick_start_click`, `migration_click`, `evaluation_click`, `github_click`, `nuget_click`, and `install_copy`. No analytics provider, cookies, persistent identifiers, or network collection is configured. Connect your chosen analytics provider to this event before relying on conversion reports; handle consent as appropriate for that provider. Destination values omit query strings and are limited to recognized links.
 
 For example, a provider adapter can subscribe with:
 
 ```js
-window.addEventListener("swiftdispatch:conversion", ({ detail }) => {
+window.addEventListener("truemediator:conversion", ({ detail }) => {
   // Forward detail to your configured analytics provider.
 });
 ```

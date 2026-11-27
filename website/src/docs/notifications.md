@@ -1,11 +1,11 @@
 # Notifications
 
-Notifications publish an event to multiple handlers. SwiftDispatch executes notification handlers sequentially by default.
+Notifications publish an event to multiple handlers. TrueMediator executes notification handlers sequentially by default.
 
 ## Define a notification
 
 ```csharp
-using SwiftDispatch.Contracts;
+using TrueMediator.Contracts;
 
 public sealed record OrderPlaced(string OrderId) : INotification;
 ```
@@ -31,16 +31,16 @@ Register services and configure a generated registration class as described in [
 await mediator.Publish(new OrderPlaced("order-123"));
 ```
 
-See the [package smoke test handlers](https://github.com/Kamyab7/SwiftDispatch/tree/master/tests/PackageSmoke/Notifications/Handlers) for multiple handlers.
+See the [package smoke test handlers](https://github.com/Kamyab7/TrueMediator/tree/master/tests/PackageSmoke/Notifications/Handlers) for multiple handlers.
 
 ## Execution strategies
 
-Select parallel execution inside `AddSwiftDispatch`:
+Select parallel execution inside `AddTrueMediator`:
 
 ```csharp
-using SwiftDispatch;
+using TrueMediator;
 
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(typeof(OrderPlaced).Assembly);
     options.UseNotificationExecutionStrategy<ParallelNotificationExecutionStrategy>();

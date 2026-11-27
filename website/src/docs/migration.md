@@ -1,17 +1,17 @@
 # Migrating from MediatR
 
-SwiftDispatch uses familiar mediator interfaces, including `IMediator`, `IRequest`, `IRequestHandler`, `INotification`, and `IPipelineBehavior`.
+TrueMediator uses familiar mediator interfaces, including `IMediator`, `IRequest`, `IRequestHandler`, `INotification`, and `IPipelineBehavior`.
 
 ## Check your requirements
 
-SwiftDispatch targets .NET Standard 2.0, .NET 8, .NET 10, and .NET 11. Review the supported features before migrating: requests with or without responses, sequential notifications, ordered pipelines, cancellation token forwarding, and generated handler discovery.
+TrueMediator targets .NET Standard 2.0, .NET 8, .NET 10, and .NET 11. Review the supported features before migrating: requests with or without responses, sequential notifications, ordered pipelines, cancellation token forwarding, and generated handler discovery.
 
 Migration guidance applies to these supported features; check application-specific MediatR integrations separately.
 
 ## Update registration
 
-1. Add the SwiftDispatch package.
-2. Change relevant namespaces to `SwiftDispatch.Contracts`.
+1. Add the TrueMediator package.
+2. Change relevant namespaces to `TrueMediator.Contracts`.
 3. Move registration into an `AddApplicationServices` extension in the Application assembly, using the block-style configuration below.
 4. Configure pipeline behaviors explicitly with `AddOpenBehavior(typeof(...))` for open generic behaviors, or `AddPipelineBehavior(typeof(...))` for open or closed behaviors.
 5. Run your application tests, including notification ordering and pipeline behavior.
@@ -22,7 +22,7 @@ Inside the Application-layer extension:
 using System.Reflection;
 
 // Inside AddApplicationServices:
-return services.AddSwiftDispatch(options =>
+return services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
     options.AddOpenBehavior(typeof(LoggingBehaviour<,>));
@@ -30,7 +30,7 @@ return services.AddSwiftDispatch(options =>
 });
 ```
 
-The behaviors above are examples you implement using SwiftDispatch's `IPipelineBehavior<TRequest, TResponse>`. In the Web project's `Program.cs`, call `builder.Services.AddApplicationServices()`.
+The behaviors above are examples you implement using TrueMediator's `IPipelineBehavior<TRequest, TResponse>`. In the Web project's `Program.cs`, call `builder.Services.AddApplicationServices()`.
 
 See [getting started](getting-started.md) for the complete extension and [pipeline behaviors](pipeline-behaviors.md) for a behavior implementation.
 
@@ -40,7 +40,7 @@ Use a handler type to include public handlers in a referenced assembly:
 
 ```csharp
 // Inside AddApplicationServices:
-return services.AddSwiftDispatch(options =>
+return services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
     options.RegisterServicesFromAssembly(typeof(OtherAssemblyHandler).Assembly);
