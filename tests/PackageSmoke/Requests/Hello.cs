@@ -1,7 +1,7 @@
-using SwiftDispatch.Contracts;
-using SwiftDispatch.PackageSmoke.Infrastructure;
+using TrueMediator.Contracts;
+using TrueMediator.PackageSmoke.Infrastructure;
 
-namespace SwiftDispatch.PackageSmoke.Requests;
+namespace TrueMediator.PackageSmoke.Requests;
 
 public sealed record Hello(string Name) : IQuery<string>;
 

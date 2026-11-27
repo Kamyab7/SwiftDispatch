@@ -1,5 +1,5 @@
 {
-   "Title":"SwiftDispatch.Benchmarks.DispatchBenchmarks-20261116-204259",
+   "Title":"TrueMediator.Benchmarks.DispatchBenchmarks-20261116-204259",
    "HostEnvironmentInfo":{
       "BenchmarkDotNetCaption":"BenchmarkDotNet",
       "BenchmarkDotNetVersion":"0.15.8",
@@ -22,12 +22,12 @@
    "Benchmarks":[
       {
          "DisplayInfo":"DispatchBenchmarks.MediatR_Send: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
          "Method":"MediatR_Send",
          "MethodTitle":"MediatR_Send",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.MediatR_Send",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.MediatR_Send",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[
@@ -561,12 +561,12 @@
          ]
       },{
          "DisplayInfo":"DispatchBenchmarks.Mediator_Send: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
          "Method":"Mediator_Send",
          "MethodTitle":"Mediator_Send",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.Mediator_Send",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.Mediator_Send",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[
@@ -1078,13 +1078,13 @@
             }
          ]
       },{
-         "DisplayInfo":"DispatchBenchmarks.SwiftDispatch_Send: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "DisplayInfo":"DispatchBenchmarks.TrueMediator_Send: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
-         "Method":"SwiftDispatch_Send",
-         "MethodTitle":"SwiftDispatch_Send",
+         "Method":"TrueMediator_Send",
+         "MethodTitle":"TrueMediator_Send",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.SwiftDispatch_Send",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.TrueMediator_Send",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[
@@ -1618,12 +1618,12 @@
          ]
       },{
          "DisplayInfo":"DispatchBenchmarks.MediatR_Publish: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
          "Method":"MediatR_Publish",
          "MethodTitle":"MediatR_Publish",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.MediatR_Publish",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.MediatR_Publish",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[
@@ -2171,12 +2171,12 @@
          ]
       },{
          "DisplayInfo":"DispatchBenchmarks.Mediator_Publish: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
          "Method":"Mediator_Publish",
          "MethodTitle":"Mediator_Publish",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.Mediator_Publish",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.Mediator_Publish",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[
@@ -2730,13 +2730,13 @@
             }
          ]
       },{
-         "DisplayInfo":"DispatchBenchmarks.SwiftDispatch_Publish: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "DisplayInfo":"DispatchBenchmarks.TrueMediator_Publish: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
-         "Method":"SwiftDispatch_Publish",
-         "MethodTitle":"SwiftDispatch_Publish",
+         "Method":"TrueMediator_Publish",
+         "MethodTitle":"TrueMediator_Publish",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.SwiftDispatch_Publish",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.TrueMediator_Publish",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[
@@ -3284,12 +3284,12 @@
          ]
       },{
          "DisplayInfo":"DispatchBenchmarks.MediatR_AsyncSend: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
          "Method":"MediatR_AsyncSend",
          "MethodTitle":"MediatR_AsyncSend",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.MediatR_AsyncSend",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.MediatR_AsyncSend",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[
@@ -3753,12 +3753,12 @@
          ]
       },{
          "DisplayInfo":"DispatchBenchmarks.Mediator_AsyncSend: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
          "Method":"Mediator_AsyncSend",
          "MethodTitle":"Mediator_AsyncSend",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.Mediator_AsyncSend",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.Mediator_AsyncSend",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[
@@ -4256,13 +4256,13 @@
             }
          ]
       },{
-         "DisplayInfo":"DispatchBenchmarks.SwiftDispatch_AsyncSend: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
-         "Namespace":"SwiftDispatch.Benchmarks",
+         "DisplayInfo":"DispatchBenchmarks.TrueMediator_AsyncSend: ShortRun(IterationCount=3, LaunchCount=1, WarmupCount=3)",
+         "Namespace":"TrueMediator.Benchmarks",
          "Type":"DispatchBenchmarks",
-         "Method":"SwiftDispatch_AsyncSend",
-         "MethodTitle":"SwiftDispatch_AsyncSend",
+         "Method":"TrueMediator_AsyncSend",
+         "MethodTitle":"TrueMediator_AsyncSend",
          "Parameters":"",
-         "FullName":"SwiftDispatch.Benchmarks.DispatchBenchmarks.SwiftDispatch_AsyncSend",
+         "FullName":"TrueMediator.Benchmarks.DispatchBenchmarks.TrueMediator_AsyncSend",
          "HardwareIntrinsics":"AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256",
          "Statistics":{
             "OriginalValues":[

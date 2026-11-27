@@ -1,7 +1,7 @@
-using SwiftDispatch.Contracts;
-using SwiftDispatch.PackageSmoke.Infrastructure;
+using TrueMediator.Contracts;
+using TrueMediator.PackageSmoke.Infrastructure;
 
-namespace SwiftDispatch.PackageSmoke.Notifications.Handlers;
+namespace TrueMediator.PackageSmoke.Notifications.Handlers;
 
 public sealed class EmailObserver(TraceLog trace) : INotificationHandler<GreetingSaved>
 {

@@ -1,5 +1,5 @@
 
-# SwiftDispatch Code of Conduct
+# TrueMediator Code of Conduct
 
 ## Our Pledge
 
@@ -49,7 +49,7 @@ Tensions can occur between community members even when they are trying their bes
 
 When an incident does occur, it is important to report it promptly. To report a possible violation, email [valipourkamyab.official@gmail.com](mailto:valipourkamyab.official@gmail.com). Please do not open a public issue to report a conduct concern. Include a description of the incident, relevant dates and links or screenshots, and any immediate concerns. Share only information necessary to understand the report.
 
-Reports are handled by the SwiftDispatch project maintainer, Kamyab Valipour. Information will be shared only as needed to investigate and respond. Anyone involved in a report should not decide its outcome; an uninvolved maintainer or trusted moderator should handle it where available. If the report concerns the sole maintainer and no independent reviewer is available, you may use [GitHub’s reporting tools](https://docs.github.com/en/communities/maintaining-your-safety-on-github/reporting-abuse-or-spam) for conduct on GitHub.
+Reports are handled by the TrueMediator project maintainer, Kamyab Valipour. Information will be shared only as needed to investigate and respond. Anyone involved in a report should not decide its outcome; an uninvolved maintainer or trusted moderator should handle it where available. If the report concerns the sole maintainer and no independent reviewer is available, you may use [GitHub’s reporting tools](https://docs.github.com/en/communities/maintaining-your-safety-on-github/reporting-abuse-or-spam) for conduct on GitHub.
 
 
 Project Maintainers take reports of violations seriously and will make every effort to respond in a timely manner. They will investigate all reports of code of conduct violations, reviewing messages, logs, and recordings, or interviewing witnesses and other participants. Project Maintainers will keep investigation and enforcement actions as transparent as possible while prioritizing safety and confidentiality. In order to honor these values, enforcement actions are carried out in private with the involved parties, but communicating to the whole community may be part of a mutually agreed upon resolution.
@@ -82,7 +82,7 @@ This enforcement ladder is intended as a guideline. It does not limit the abilit
 
 ## Scope
 
-This includes the SwiftDispatch repository, issues, pull requests, code reviews, discussions, and other project-managed spaces. The same expectations apply to contributors and maintainers.
+This includes the TrueMediator repository, issues, pull requests, code reviews, discussions, and other project-managed spaces. The same expectations apply to contributors and maintainers.
 
 This Code of Conduct applies within all community spaces, and also applies when an individual is officially representing the community in public or other spaces. Examples of representing our community include using an official email address, posting via an official social media account, or acting as an appointed representative at an online or offline event.
 

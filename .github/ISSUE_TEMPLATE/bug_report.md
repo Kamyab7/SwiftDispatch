@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a problem with SwiftDispatch
+about: Report a problem with TrueMediator
 title: ''
 labels: ''
 assignees: ''
@@ -18,6 +18,6 @@ Include a minimal code example or steps to reproduce the problem, plus any relev
 
 ## Environment
 
-- SwiftDispatch version:
+- TrueMediator version:
 - .NET version and operating system:
 - Native AOT or trimming enabled:

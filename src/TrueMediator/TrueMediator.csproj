@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework />
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0;net11.0</TargetFrameworks>
+    <IsAotCompatible Condition="'$(TargetFramework)' != 'netstandard2.0'">true</IsAotCompatible>
+    <Description>A free, lightweight MediatR alternative with source-generated dispatch, Native AOT support, ordered pipelines, and notifications.</Description>
+    <PackageTags>mediator;request;response;queries;commands;notifications;CQRS;source-generator;NativeAOT</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>truemediator-icon-128.png</PackageIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../TrueMediator.Contracts/TrueMediator.Contracts.csproj" />
+    <ProjectReference Include="../TrueMediator.SourceGenerator/TrueMediator.SourceGenerator.csproj" ReferenceOutputAssembly="false" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <None Include="../TrueMediator.SourceGenerator/bin/$(Configuration)/netstandard2.0/TrueMediator.SourceGenerator.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <None Include="../../assets/logo/truemediator-icon-128.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

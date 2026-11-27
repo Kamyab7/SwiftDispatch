@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using SwiftDispatch.ReleaseTools;
+using TrueMediator.ReleaseTools;
 
 // A dependency-free offline harness. HttpClient and process calls are injected;
 // these tests cannot contact GitHub/NuGet or push a package.
@@ -59,13 +59,13 @@ var tests = new (string Name, Func<Fixture, Task> Run)[]
     }),
     ("Mismatched project reference version rejected", f =>
     {
-        File.WriteAllText(f.Graph(), """{"libraries":{"SwiftDispatch.Contracts/2.0.0":{"type":"project"}}}""");
+        File.WriteAllText(f.Graph(), """{"libraries":{"TrueMediator.Contracts/2.0.0":{"type":"project"}}}""");
         ExpectFailure(() => Sbom.Verify(f.Directory), "Restore dependencies missing");
         return Task.CompletedTask;
     }),
     ("Failed original validation blocks retry", f =>
     {
-        File.WriteAllText(Path.Combine(f.Directory, "validation", $"SwiftDispatch.{Fixture.Version}.validation.json"),
+        File.WriteAllText(Path.Combine(f.Directory, "validation", $"TrueMediator.{Fixture.Version}.validation.json"),
             """{"Result":"Failure","ValidationErrors":{"Count":1}}""");
         ExpectFailure(() => Sbom.Verify(f.Directory), "validation did not succeed");
         return Task.CompletedTask;
@@ -269,14 +269,14 @@ internal sealed class Fixture : IDisposable
         """)!;
     public JsonNode? Release { get; set; } = JsonNode.Parse("""
         {"id":1,"tag_name":"v3.0.0-rc.1","target_commitish":"abc123","draft":true,
-         "upload_url":"https://uploads.github.com/repos/Kamyab7/SwiftDispatch/releases/1/assets{?name,label}"}
+         "upload_url":"https://uploads.github.com/repos/Kamyab7/TrueMediator/releases/1/assets{?name,label}"}
         """);
 
     public Fixture()
     {
         foreach (var (name, value) in new Dictionary<string, string?>
         {
-            ["GITHUB_REPOSITORY"] = "Kamyab7/SwiftDispatch", ["GITHUB_REF_NAME"] = "v" + Version,
+            ["GITHUB_REPOSITORY"] = "Kamyab7/TrueMediator", ["GITHUB_REF_NAME"] = "v" + Version,
             ["GITHUB_SHA"] = "abc123", ["GITHUB_RUN_ID"] = "42", ["GITHUB_OUTPUT"] = Output,
             ["GH_TOKEN"] = "test-token", ["NUGET_API_KEY"] = "test-key",
             ["RELEASE_TAG"] = null, ["RELEASE_COMMIT"] = null, ["RELEASE_SOURCE_RUN_ID"] = null
@@ -296,7 +296,7 @@ internal sealed class Fixture : IDisposable
                     <id>{name}</id><version>{Version}</version></metadata></package>
                     """)
             };
-            if (name == "SwiftDispatch") payload["analyzers/dotnet/cs/SwiftDispatch.SourceGenerator.dll"] = Encoding.UTF8.GetBytes("generator");
+            if (name == "TrueMediator") payload["analyzers/dotnet/cs/TrueMediator.SourceGenerator.dll"] = Encoding.UTF8.GetBytes("generator");
             File.WriteAllBytes(Path.Combine(Directory, $"{name}.{Version}.nupkg"), Archive(payload));
             var inputs = Path.Combine(Directory, "validation", $"{name}.{Version}.inputs");
             System.IO.Directory.CreateDirectory(inputs);
@@ -317,8 +317,8 @@ internal sealed class Fixture : IDisposable
         Client = new ReleaseClient(http, Pushes.Add);
     }
 
-    public string Manifest(string name = "SwiftDispatch") => Path.Combine(Directory, "sbom", $"{name}.{Version}.sbom.spdx.json");
-    public string Graph() => Path.Combine(Directory, "validation", $"SwiftDispatch.{Version}.inputs/project.assets.json");
+    public string Manifest(string name = "TrueMediator") => Path.Combine(Directory, "sbom", $"{name}.{Version}.sbom.spdx.json");
+    public string Graph() => Path.Combine(Directory, "validation", $"TrueMediator.{Version}.inputs/project.assets.json");
     public byte[] ArchiveBundle() => Archive(System.IO.Directory.GetFiles(Directory, "*", SearchOption.AllDirectories)
         .ToDictionary(p => Tool.Relative(Directory, p), File.ReadAllBytes));
     public void Mutate(Action<JsonNode> change)
@@ -391,7 +391,7 @@ internal sealed class Fixture : IDisposable
         {
             Release = JsonNode.Parse(data!)!;
             Release["id"] = 1;
-            Release["upload_url"] = "https://uploads.github.com/repos/Kamyab7/SwiftDispatch/releases/1/assets{?name,label}";
+            Release["upload_url"] = "https://uploads.github.com/repos/Kamyab7/TrueMediator/releases/1/assets{?name,label}";
             return Json(Release);
         }
         if (message.Method == HttpMethod.Patch)
@@ -401,7 +401,7 @@ internal sealed class Fixture : IDisposable
         }
         if (url.AbsolutePath.EndsWith("/assets", StringComparison.Ordinal))
             return Json(Assets.Keys.Select(name => new { name, url = "https://api.github.com/assets/" + name,
-                browser_download_url = "https://github.com/Kamyab7/SwiftDispatch/releases/download/v" + Version + "/" + name }).ToArray());
+                browser_download_url = "https://github.com/Kamyab7/TrueMediator/releases/download/v" + Version + "/" + name }).ToArray());
         if (url.AbsolutePath.StartsWith("/assets/", StringComparison.Ordinal) || url.Host == "github.com")
             return Bytes(Assets.GetValueOrDefault(Path.GetFileName(url.AbsolutePath)));
         throw new InvalidOperationException($"Unexpected HTTP request: {message.Method} {url}");

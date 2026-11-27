@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework />
+    <TargetFrameworks>net8.0;net10.0;net11.0</TargetFrameworks>
+    <IsAotCompatible>true</IsAotCompatible>
+    <Description>Asynchronous FluentValidation request pipeline integration for TrueMediator.</Description>
+    <PackageTags>mediator;CQRS;FluentValidation;validation;pipeline</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>truemediator-icon-128.png</PackageIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../TrueMediator.Contracts/TrueMediator.Contracts.csproj" />
+    <PackageReference Include="FluentValidation" />
+    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="../../assets/logo/truemediator-icon-128.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
+</Project>

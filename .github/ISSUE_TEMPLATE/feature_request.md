@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest an improvement to SwiftDispatch
+about: Suggest an improvement to TrueMediator
 title: ''
 labels: ''
 assignees: ''

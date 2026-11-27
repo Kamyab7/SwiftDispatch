@@ -8,6 +8,6 @@
         <Version>2.1.1</Version>
         <Authors>Kamyab Valipour</Authors>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <RepositoryUrl>https://github.com/Kamyab7/SwiftDispatch</RepositoryUrl>
+        <RepositoryUrl>https://github.com/Kamyab7/TrueMediator</RepositoryUrl>
     </PropertyGroup>
 </Project>

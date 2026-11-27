@@ -3,7 +3,7 @@
 #:property PublishAot=false
 #:include ReleaseTools.cs
 
-using SwiftDispatch.ReleaseTools;
+using TrueMediator.ReleaseTools;
 
 if (args.Length != 2 || args[0] is not ("restore" or "stage" or "packages" or "publish"))
 {

@@ -1,5 +1,5 @@
-using SwiftDispatch.Contracts;
+using TrueMediator.Contracts;
 
-namespace SwiftDispatch.PackageSmoke.Notifications;
+namespace TrueMediator.PackageSmoke.Notifications;
 
 public sealed record GreetingSaved(string Greeting) : INotification;

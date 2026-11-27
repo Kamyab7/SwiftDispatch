@@ -1,14 +1,14 @@
 using System.Reflection;
-using SwiftDispatch.FluentValidation;
+using TrueMediator.FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using SwiftDispatch.PackageSmoke.Behaviors;
+using TrueMediator.PackageSmoke.Behaviors;
 
-namespace SwiftDispatch.PackageSmoke.Configuration;
+namespace TrueMediator.PackageSmoke.Configuration;
 
 internal static class DispatchRegistration
 {
     internal static IServiceCollection AddPackageDispatch(this IServiceCollection services) =>
-        services.AddSwiftDispatch(options =>
+        services.AddTrueMediator(options =>
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
             options.AddOpenBehavior(typeof(LoggingBehavior<,>));

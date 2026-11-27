@@ -1,27 +1,38 @@
-# SwiftDispatch
+# TrueMediator
 
-![SwiftDispatch banner](assets/logo/swiftdispatch-banner.png)
+![TrueMediator banner](assets/logo/truemediator-banner.png)
 
 A free, lightweight MediatR alternative with Native AOT support.
 
 Supports `netstandard2.0`, `net8.0`, `net10.0`, and `net11.0`. Native AOT is supported on .NET 8, .NET 10, and .NET 11. Building this repository requires the .NET 11 SDK.
 
+## Migrating from SwiftDispatch
+
+TrueMediator is a breaking rename. Replace `SwiftDispatch` package references and
+namespace imports with `TrueMediator` (including `.Contracts`, `.FluentValidation`,
+and `.EntityFrameworkCore`), and change `AddSwiftDispatch(...)` to
+`AddTrueMediator(...)`. Generator diagnostics now use `TM001`–`TM011` instead of
+`SD001`–`SD011`; update diagnostic suppressions and build rules accordingly.
+Mediator contracts and runtime behavior are unchanged.
+
+The website documentation retains the previous naming during this transition.
+
 ## Quick start
 
-Install [SwiftDispatch from NuGet](https://www.nuget.org/packages/SwiftDispatch/2.1.1). The package includes the source generator automatically and references `SwiftDispatch.Contracts`.
+Install [TrueMediator from NuGet](https://www.nuget.org/packages/TrueMediator/2.1.1). The package includes the source generator automatically and references `TrueMediator.Contracts`.
 
 ```sh
-dotnet add package SwiftDispatch
+dotnet add package TrueMediator
 ```
 
 ```csharp
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using SwiftDispatch;
-using SwiftDispatch.Contracts;
+using TrueMediator;
+using TrueMediator.Contracts;
 
 var services = new ServiceCollection();
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     // Register once; use typeof(SomeHandler).Assembly for another assembly.
     options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
@@ -54,9 +65,9 @@ public sealed class HelloHandler : IRequestHandler<Hello, string>
 
 ## Samples
 
-- [EF Core transactions](samples/SwiftDispatch.Sample.EntityFrameworkCore): attribute-selected transactions using SQLite, with response/void commands and queries.
-- [Console app](samples/SwiftDispatch.Sample.Console): a minimal request and notification example. Run `dotnet run --project samples/SwiftDispatch.Sample.Console -- Ada`.
-- [Clean architecture](samples/SwiftDispatch.Sample.CleanArchitecture): separate domain, application, infrastructure, and API projects with application pipeline behaviors. Run `dotnet run --project samples/SwiftDispatch.Sample.CleanArchitecture/Web -- --urls http://localhost:5081`.
+- [EF Core transactions](samples/TrueMediator.Sample.EntityFrameworkCore): attribute-selected transactions using SQLite, with response/void commands and queries.
+- [Console app](samples/TrueMediator.Sample.Console): a minimal request and notification example. Run `dotnet run --project samples/TrueMediator.Sample.Console -- Ada`.
+- [Clean architecture](samples/TrueMediator.Sample.CleanArchitecture): separate domain, application, infrastructure, and API projects with application pipeline behaviors. Run `dotnet run --project samples/TrueMediator.Sample.CleanArchitecture/Web -- --urls http://localhost:5081`.
 
 ## Supported features
 
@@ -76,20 +87,20 @@ Use `ICommand`, `ICommand<TResponse>`, and `IQuery<TResponse>` to express reques
 
 ## Entity Framework Core integration
 
-Install `SwiftDispatch.EntityFrameworkCore` alongside `SwiftDispatch` to opt response and void requests into EF transactions with `[Transactional]`. Select a default context with `options.UseEntityFrameworkTransactions<TContext>()` or specify `[Transactional(typeof(TContext))]`. Handlers explicitly save changes; the generated innermost behavior owns commit and rollback. Queries and unsupported attribute targets produce build errors.
+Install `TrueMediator.EntityFrameworkCore` alongside `TrueMediator` to opt response and void requests into EF transactions with `[Transactional]`. Select a default context with `options.UseEntityFrameworkTransactions<TContext>()` or specify `[Transactional(typeof(TContext))]`. Handlers explicitly save changes; the generated innermost behavior owns commit and rollback. Queries and unsupported attribute targets produce build errors.
 
-See the [EF integration guide](website/src/docs/entity-framework-core.md) and [SQLite sample](samples/SwiftDispatch.Sample.EntityFrameworkCore). The EF package is verified under JIT execution on .NET 8, .NET 10, and .NET 11; EF/provider Native AOT support is outside the core mediator's AOT guarantee.
+See the [EF integration guide](website/src/docs/entity-framework-core.md) and [SQLite sample](samples/TrueMediator.Sample.EntityFrameworkCore). The EF package is verified under JIT execution on .NET 8, .NET 10, and .NET 11; EF/provider Native AOT support is outside the core mediator's AOT guarantee.
 
 ## FluentValidation integration
 
-Install `SwiftDispatch.FluentValidation` alongside `SwiftDispatch` for asynchronous request validation on .NET 8, .NET 10, and .NET 11. Register your `IValidator<TRequest>` implementations in DI and add `options.AddOpenBehavior(typeof(FluentValidationBehavior<,>))` with `using SwiftDispatch.FluentValidation;`.
+Install `TrueMediator.FluentValidation` alongside `TrueMediator` for asynchronous request validation on .NET 8, .NET 10, and .NET 11. Register your `IValidator<TRequest>` implementations in DI and add `options.AddOpenBehavior(typeof(FluentValidationBehavior<,>))` with `using TrueMediator.FluentValidation;`.
 
-Validators run sequentially, aggregate failures into FluentValidation's `ValidationException`, and prevent invalid requests from reaching handlers. Core SwiftDispatch has no FluentValidation dependency. See the [integration guide](website/src/docs/fluentvalidation.md) for registration, ordering, HTTP mapping, and AOT guidance.
+Validators run sequentially, aggregate failures into FluentValidation's `ValidationException`, and prevent invalid requests from reaching handlers. Core TrueMediator has no FluentValidation dependency. See the [integration guide](website/src/docs/fluentvalidation.md) for registration, ordering, HTTP mapping, and AOT guidance.
 
 ## Build-time handler validation
 
-Missing request handlers fail the build with `SD007` by default. The generator checks
-concrete, closed request types in the assembly containing `AddSwiftDispatch` and any
+Missing request handlers fail the build with `TM007` by default. The generator checks
+concrete, closed request types in the assembly containing `AddTrueMediator` and any
 assemblies explicitly included in that registration. This covers requests with or
 without responses and streaming requests, including unused requests. Each request
 requires a handler for its exact concrete type; a base request's handler does not
@@ -98,7 +109,7 @@ handle derived requests. Notifications may have no handlers.
 To allow intentionally unhandled requests, disable this check for the registration:
 
 ```csharp
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
     options.ValidateMissingHandlers(false);
@@ -112,12 +123,12 @@ types in assemblies outside the registration scope are not checked. This validat
 does not inspect `Send` call sites or validate runtime dependency injection services.
 
 Notification handler validation is separate and **disabled by default**, because
-notifications can legitimately have no subscribers. Opt in to build error `SD008`
+notifications can legitimately have no subscribers. Opt in to build error `TM008`
 when a concrete, closed notification in the same validation scope has no registered
 handler:
 
 ```csharp
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
     options.ValidateNotificationHandlers(true);
@@ -131,20 +142,20 @@ exact concrete notification type, consistent with runtime dispatch.
 
 ## Benchmarks
 
-Speed and managed memory allocations for SwiftDispatch, MediatR, and Mediator on .NET 10.
+Speed and managed memory allocations for TrueMediator, MediatR, and Mediator on .NET 10.
 Lower values are better; results are from an exploratory short run.
 
 | Scenario | Library | Mean time | Allocated per operation |
 | --- | --- | ---: | ---: |
 | Completed request | MediatR | 47.57 ns | 200 B |
 | Completed request | Mediator | 29.20 ns | 88 B |
-| Completed request | SwiftDispatch | 25.11 ns | 136 B |
+| Completed request | TrueMediator | 25.11 ns | 136 B |
 | Notification | MediatR | 215.53 ns | 768 B |
 | Notification | Mediator | 36.72 ns | 56 B |
-| Notification | SwiftDispatch | 54.70 ns | 184 B |
+| Notification | TrueMediator | 54.70 ns | 184 B |
 | Yielding async request | MediatR | 888.31 ns | 224 B |
 | Yielding async request | Mediator | 998.18 ns | 192 B |
-| Yielding async request | SwiftDispatch | 859.18 ns | 160 B |
+| Yielding async request | TrueMediator | 859.18 ns | 160 B |
 
 See the [full results and measurement errors](benchmarks/results/short-run.md),
 [all pairwise comparisons](benchmarks/results/comparison.md), and
@@ -153,7 +164,7 @@ Use the full job on an idle machine before drawing performance conclusions.
 
 ## Contributing
 
-See [Contributing to SwiftDispatch](CONTRIBUTING.md) for setup, coding conventions, testing, and pull request guidelines.
+See [Contributing to TrueMediator](CONTRIBUTING.md) for setup, coding conventions, testing, and pull request guidelines.
 
 Please follow our [Code of Conduct](CODE_OF_CONDUCT.md) in all project spaces.
 
@@ -163,8 +174,8 @@ See our [security policy](SECURITY.md) for supported versions and how to report 
 
 ## Software Bill of Materials
 
-SwiftDispatch publishes an SPDX 2.2 JSON SBOM for each NuGet package version released
-through its SBOM-enabled workflow. Open the [GitHub Release](https://github.com/Kamyab7/SwiftDispatch/releases)
+TrueMediator publishes an SPDX 2.2 JSON SBOM for each NuGet package version released
+through its SBOM-enabled workflow. Open the [GitHub Release](https://github.com/Kamyab7/TrueMediator/releases)
 matching your package version and download its versioned `*.sbom.spdx.json` asset.
 The SBOM describes the package and its release build inputs across all supported
 frameworks, including build dependencies. A consuming application should generate

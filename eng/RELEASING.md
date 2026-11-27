@@ -25,7 +25,7 @@ these steps.
 The scan scope is the shipping project plus its recursive project references.
 Only their sources and original `obj/project.assets.json` restore graphs are
 staged; tests, samples, benchmarks, unrelated shipping projects, and tool packages
-are excluded. SwiftDispatch's scope includes its bundled source generator and its
+are excluded. TrueMediator's scope includes its bundled source generator and its
 Roslyn build dependencies. Referenced shipping projects' nuspec files are also
 copied from the final packages: Microsoft's detector otherwise omits project
 references from the restore graphs. The original graphs are never rewritten.
