@@ -1,0 +1,61 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using Microsoft.CodeAnalysis;
+using static TrueMediator.SourceGenerator.SymbolHelpers;
+
+namespace TrueMediator.SourceGenerator;
+
+internal static class MissingHandlerValidator
+{
+    internal static void Validate(Compilation compilation, IEnumerable<IAssemblySymbol> assemblies,
+        List<Request> requests, List<Observer> notifications,
+        bool validateRequests, bool validateNotifications, CancellationToken cancellationToken,
+        Action<DiagnosticDescriptor, ISymbol, string> reportError)
+    {
+        var contracts = new[]
+        {
+            compilation.GetTypeByMetadataName("TrueMediator.Contracts.IRequest"),
+            compilation.GetTypeByMetadataName("TrueMediator.Contracts.IRequest`1"),
+            compilation.GetTypeByMetadataName("TrueMediator.Contracts.IStreamRequest`1")
+        };
+        INamedTypeSymbol? notificationContract = compilation.GetTypeByMetadataName("TrueMediator.Contracts.INotification");
+        foreach (IAssemblySymbol assembly in assemblies.OrderBy(static item => item.Identity.ToString(), StringComparer.Ordinal))
+        {
+            foreach (INamedTypeSymbol type in Types(assembly.GlobalNamespace).OrderBy(Name, StringComparer.Ordinal))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (type.TypeKind is not (TypeKind.Class or TypeKind.Struct) || type.IsAbstract || type.IsStatic || IsOpen(type))
+                {
+                    continue;
+                }
+
+                if (validateNotifications && notificationContract != null
+                    && type.AllInterfaces.Any(item => SymbolEqualityComparer.Default.Equals(item, notificationContract))
+                    && !notifications.Any(observer => SymbolEqualityComparer.Default.Equals(observer.Message, type)))
+                {
+                    reportError(GeneratorDiagnostics.MissingNotificationHandler, type,
+                        $"Notification '{Name(type)}' has no registered handler. Add a concrete handler and include its assembly in AddTrueMediator registration, or disable this check with ValidateNotificationHandlers(false).");
+                }
+
+                if (!validateRequests) continue;
+                foreach (INamedTypeSymbol contract in type.AllInterfaces.Where(item => contracts.Any(
+                    definition => definition != null && SymbolEqualityComparer.Default.Equals(item.OriginalDefinition, definition))))
+                {
+                    bool streams = SymbolEqualityComparer.Default.Equals(contract.OriginalDefinition, contracts[2]);
+                    bool returnsVoid = SymbolEqualityComparer.Default.Equals(contract, contracts[0]);
+                    if (requests.Any(request => SymbolEqualityComparer.Default.Equals(request.Message, type)
+                        && request.Streams == streams && request.ReturnsVoid == returnsVoid
+                        && (returnsVoid || SymbolEqualityComparer.Default.Equals(request.Response, contract.TypeArguments[0]))))
+                    {
+                        continue;
+                    }
+
+                    reportError(GeneratorDiagnostics.MissingHandler, type,
+                        $"Request '{Name(type)}' has no registered handler for '{Name(contract)}'. Add a concrete handler and include its assembly in AddTrueMediator registration, or disable this check with ValidateMissingHandlers(false).");
+                }
+            }
+        }
+    }
+}

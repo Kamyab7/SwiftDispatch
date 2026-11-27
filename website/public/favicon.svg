@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="TrueMediator crossing ribbons">
+<rect width="128" height="128" rx="20" fill="#080f19"/>
+<g transform="translate(0 32)"><path d="M8 50H32C54 50 74 14 96 14H120" fill="none" stroke="#78ddd0" stroke-width="14"/>
+<path d="M8 14H32C54 14 74 50 96 50H120" fill="none" stroke="#080f19" stroke-width="21"/>
+<path d="M8 14H32C54 14 74 50 96 50H120" fill="none" stroke="#70b5ff" stroke-width="14"/></g>
+</svg>

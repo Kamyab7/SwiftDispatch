@@ -5,7 +5,7 @@ export function emitConversion(
   destination?: string,
 ) {
   window.dispatchEvent(
-    new CustomEvent("swiftdispatch:conversion", {
+    new CustomEvent("truemediator:conversion", {
       detail: { name, placement, ...(destination ? { destination } : {}) },
     }),
   );

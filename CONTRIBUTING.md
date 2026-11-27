@@ -1,6 +1,6 @@
-# Contributing to SwiftDispatch
+# Contributing to TrueMediator
 
-Contributions are welcome: bug reports, fixes, tests, documentation, and feature proposals all help improve SwiftDispatch.
+Contributions are welcome: bug reports, fixes, tests, documentation, and feature proposals all help improve TrueMediator.
 
 Everyone participating in this project is expected to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -15,7 +15,7 @@ Everyone participating in this project is expected to follow our [Code of Conduc
 
 For suspected security vulnerabilities, follow the private reporting process in [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
-For bugs, include the SwiftDispatch version, .NET SDK and runtime versions (`dotnet --info`), operating system, steps to reproduce, expected behavior, and actual behavior. A minimal runnable example and relevant compiler diagnostics or stack traces are especially useful. Mention whether the issue occurs with Native AOT or trimming.
+For bugs, include the TrueMediator version, .NET SDK and runtime versions (`dotnet --info`), operating system, steps to reproduce, expected behavior, and actual behavior. A minimal runnable example and relevant compiler diagnostics or stack traces are especially useful. Mention whether the issue occurs with Native AOT or trimming.
 
 For features, describe the problem, an example of the desired usage, and any alternatives you considered. Remove secrets and private data from examples and logs.
 
@@ -28,26 +28,26 @@ Install the .NET 11 SDK to build the repository and the .NET 8 and .NET 10 runti
 From the repository root:
 
 ```sh
-dotnet restore SwiftDispatch.slnx
-dotnet build SwiftDispatch.slnx -c Release
-dotnet test tests/SwiftDispatch.Tests -c Release --no-build
-dotnet test tests/SwiftDispatch.FluentValidation.Tests -c Release --no-build
-dotnet test tests/SwiftDispatch.EntityFrameworkCore.Tests -c Release --no-build
+dotnet restore TrueMediator.slnx
+dotnet build TrueMediator.slnx -c Release
+dotnet test tests/TrueMediator.Tests -c Release --no-build
+dotnet test tests/TrueMediator.FluentValidation.Tests -c Release --no-build
+dotnet test tests/TrueMediator.EntityFrameworkCore.Tests -c Release --no-build
 ```
 
 ## Find the right place to contribute
 
 | Path | Purpose |
 | --- | --- |
-| `src/SwiftDispatch.Contracts/` | Public request, notification, streaming, and mediator contracts |
-| `src/SwiftDispatch/` | Runtime dispatch, dependency injection, and execution strategies |
-| `src/SwiftDispatch.EntityFrameworkCore/` | Optional attribute-selected EF Core transactions |
-| `src/SwiftDispatch.FluentValidation/` | Optional asynchronous request validation integration |
-| `src/SwiftDispatch.SourceGenerator/` | Registration discovery, diagnostics, and generated dispatch code |
-| `tests/SwiftDispatch.Tests/` | xUnit runtime and source generator tests |
-| `tests/SwiftDispatch.EntityFrameworkCore.Tests/` | Relational transactions and attribute diagnostics |
+| `src/TrueMediator.Contracts/` | Public request, notification, streaming, and mediator contracts |
+| `src/TrueMediator/` | Runtime dispatch, dependency injection, and execution strategies |
+| `src/TrueMediator.EntityFrameworkCore/` | Optional attribute-selected EF Core transactions |
+| `src/TrueMediator.FluentValidation/` | Optional asynchronous request validation integration |
+| `src/TrueMediator.SourceGenerator/` | Registration discovery, diagnostics, and generated dispatch code |
+| `tests/TrueMediator.Tests/` | xUnit runtime and source generator tests |
+| `tests/TrueMediator.EntityFrameworkCore.Tests/` | Relational transactions and attribute diagnostics |
 | `tests/EfPackageSmoke/` | Packed EF integration consumption under JIT execution |
-| `tests/SwiftDispatch.FluentValidation.Tests/` | Validation behavior and generated pipeline integration tests |
+| `tests/TrueMediator.FluentValidation.Tests/` | Validation behavior and generated pipeline integration tests |
 | `tests/NetStandardSmoke/` | .NET Standard consumer compatibility coverage |
 | `tests/PackageSmoke/` | Packaged-library and Native AOT smoke checks |
 | `samples/` | Example applications |
@@ -70,7 +70,7 @@ dotnet test tests/SwiftDispatch.EntityFrameworkCore.Tests -c Release --no-build
 During development, run the build and test commands above. For a focused test run, use a filter:
 
 ```sh
-dotnet test tests/SwiftDispatch.Tests -c Release --filter FullyQualifiedName~NotificationTests
+dotnet test tests/TrueMediator.Tests -c Release --filter FullyQualifiedName~NotificationTests
 ```
 
 Before submitting library, generator, or packaging changes, run the same verification as CI in a Linux x64 environment:

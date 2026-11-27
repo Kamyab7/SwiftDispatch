@@ -1,14 +1,14 @@
 # FluentValidation integration
 
-`SwiftDispatch.FluentValidation` provides an optional asynchronous validation behavior for requests with responses and void requests. It targets .NET 8, .NET 10, and .NET 11 and uses FluentValidation 12. Core SwiftDispatch retains its .NET Standard 2.0 support and does not depend on FluentValidation.
+`TrueMediator.FluentValidation` provides an optional asynchronous validation behavior for requests with responses and void requests. It targets .NET 8, .NET 10, and .NET 11 and uses FluentValidation 12. Core TrueMediator retains its .NET Standard 2.0 support and does not depend on FluentValidation.
 
 ## Install and register
 
 Install both packages in the application project that configures dispatch:
 
 ```sh
-dotnet add package SwiftDispatch
-dotnet add package SwiftDispatch.FluentValidation
+dotnet add package TrueMediator
+dotnet add package TrueMediator.FluentValidation
 ```
 
 Register validators explicitly and include the behavior in your existing direct registration lambda:
@@ -16,11 +16,11 @@ Register validators explicitly and include the behavior in your existing direct 
 ```csharp
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using SwiftDispatch.Contracts;
-using SwiftDispatch.FluentValidation;
+using TrueMediator.Contracts;
+using TrueMediator.FluentValidation;
 
 services.AddScoped<IValidator<CreateOrder>, CreateOrderValidator>();
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(typeof(CreateOrder).Assembly);
     options.AddOpenBehavior(typeof(FluentValidationBehavior<,>));

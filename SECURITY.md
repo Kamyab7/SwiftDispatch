@@ -2,13 +2,13 @@
 
 ## Supported versions
 
-Security fixes are provided for the latest stable release of SwiftDispatch. Older releases and prerelease versions do not receive security fixes; upgrade to the latest stable release to receive them.
+Security fixes are provided for the latest stable release of TrueMediator. Older releases and prerelease versions do not receive security fixes; upgrade to the latest stable release to receive them.
 
-This policy covers the SwiftDispatch runtime, contracts, source generator, and packages maintained in this repository. Reports involving the repository's website or release workflows are also welcome.
+This policy covers the TrueMediator runtime, contracts, source generator, and packages maintained in this repository. Reports involving the repository's website or release workflows are also welcome.
 
 ## Report a vulnerability
 
-Please report suspected vulnerabilities privately to [valipourkamyab.official@gmail.com](mailto:valipourkamyab.official@gmail.com), with a subject such as `SwiftDispatch security report`.
+Please report suspected vulnerabilities privately to [valipourkamyab.official@gmail.com](mailto:valipourkamyab.official@gmail.com), with a subject such as `TrueMediator security report`.
 
 Do not disclose vulnerability details in public issues, pull requests, or discussions before a fix or mitigation is available and disclosure has been coordinated. Ordinary bugs and feature requests can be reported through public issues as described in [CONTRIBUTING.md](CONTRIBUTING.md). If you are unsure whether an issue has security implications, report it privately first.
 
@@ -27,6 +27,6 @@ Remove credentials, personal data, and unrelated sensitive information from repo
 
 The project maintainer will review the report, seek clarification where needed, and work with the reporter to assess its impact and identify a fix or mitigation. Reports will be handled as privately as possible, with details shared only as needed for investigation and remediation.
 
-SwiftDispatch is maintained on a best-effort basis. Response and resolution times depend on maintainer availability and the complexity of the issue; no fixed response or release deadline is guaranteed. If you have not received a response within seven days, please follow up by email.
+TrueMediator is maintained on a best-effort basis. Response and resolution times depend on maintainer availability and the complexity of the issue; no fixed response or release deadline is guaranteed. If you have not received a response within seven days, please follow up by email.
 
 For confirmed vulnerabilities, the maintainer will coordinate disclosure timing with the reporter and aim to publish a fix or mitigation together with an advisory explaining affected versions and upgrade instructions. Reporter credit will be included with their consent. If the report is not considered a security vulnerability, the maintainer will explain the assessment and discuss whether it belongs in a public bug report.

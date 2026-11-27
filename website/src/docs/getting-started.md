@@ -1,24 +1,24 @@
 # Getting started
 
-SwiftDispatch is a free, lightweight mediator targeting **.NET Standard 2.0, .NET 8, .NET 10, and .NET 11**. Source generation handles registration and dispatch without runtime reflection, with support for Native AOT and trimming.
+TrueMediator is a free, lightweight mediator targeting **.NET Standard 2.0, .NET 8, .NET 10, and .NET 11**. Source generation handles registration and dispatch without runtime reflection, with support for Native AOT and trimming.
 
 ## Installation
 
 For a standalone console example, create a project first:
 
 ```sh
-dotnet new console -n SwiftDispatchDemo
-cd SwiftDispatchDemo
+dotnet new console -n TrueMediatorDemo
+cd TrueMediatorDemo
 ```
 
 Add the packages to your application:
 
 ```sh
 dotnet add package Microsoft.Extensions.DependencyInjection
-dotnet add package SwiftDispatch
+dotnet add package TrueMediator
 ```
 
-The SwiftDispatch package includes the source generator automatically and references SwiftDispatch.Contracts.
+The TrueMediator package includes the source generator automatically and references TrueMediator.Contracts.
 
 ## Run your first handler
 
@@ -27,11 +27,11 @@ Replace the console project's `Program.cs` with this complete example:
 ```csharp
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using SwiftDispatch;
-using SwiftDispatch.Contracts;
+using TrueMediator;
+using TrueMediator.Contracts;
 
 var services = new ServiceCollection();
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
 });
@@ -75,7 +75,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        return services.AddSwiftDispatch(options =>
+        return services.AddTrueMediator(options =>
         {
             options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
         });
@@ -96,17 +96,17 @@ builder.Services.AddApplicationServices();
 
 The source generator reads the configuration at build time; the lambda is not executed at runtime. Use one direct registration lambda per assembly, with calls on its options parameter. Assemblies must use `Assembly.GetExecutingAssembly()` or `typeof(T).Assembly`; behavior arguments must use `typeof(...)`. Variables, helper calls inside the lambda, and conditional configuration are unsupported.
 
-If you use FluentValidation, register all Application validators inside `AddApplicationServices`, before `AddSwiftDispatch`:
+If you use FluentValidation, register all Application validators inside `AddApplicationServices`, before `AddTrueMediator`:
 
 ```csharp
 services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 ```
 
-This scanning helper requires the `FluentValidation.DependencyInjectionExtensions` package and `using FluentValidation;`. For Native AOT, prefer explicit validator registration. Install `SwiftDispatch.FluentValidation` and add its behavior explicitly as shown in the [FluentValidation integration guide](fluentvalidation.md).
+This scanning helper requires the `FluentValidation.DependencyInjectionExtensions` package and `using FluentValidation;`. For Native AOT, prefer explicit validator registration. Install `TrueMediator.FluentValidation` and add its behavior explicitly as shown in the [FluentValidation integration guide](fluentvalidation.md).
 
 ## Validate missing handlers at build time
 
-By default, SwiftDispatch reports build error `SD007` for every concrete, closed
+By default, TrueMediator reports build error `TM007` for every concrete, closed
 request type without a matching registered handler in the current assembly or any
 assembly explicitly included in the registration. This includes unused requests,
 requests without responses, and streaming requests. Handlers match exact concrete
@@ -116,7 +116,7 @@ can have zero handlers.
 If some requests are intentionally unhandled, turn off this check:
 
 ```csharp
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
     options.ValidateMissingHandlers(false);
@@ -134,12 +134,12 @@ contracts and handler projects, include both assemblies in the registration to
 validate all contract request types.
 
 Notification handler validation is separate and **disabled by default**, because
-notifications can legitimately have no subscribers. Opt in to build error `SD008`
+notifications can legitimately have no subscribers. Opt in to build error `TM008`
 when a concrete, closed notification in the same validation scope has no registered
 handler:
 
 ```csharp
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(typeof(SomeHandler).Assembly);
     options.ValidateNotificationHandlers(true);
@@ -156,7 +156,7 @@ exact concrete notification type, consistent with runtime dispatch.
 Define a request and its handler:
 
 ```csharp
-using SwiftDispatch.Contracts;
+using TrueMediator.Contracts;
 
 public sealed record Hello(string Name) : IRequest<string>;
 
@@ -172,7 +172,7 @@ To try the Application-layer registration outside the Web host, create a service
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
 using MyApp.Application;
-using SwiftDispatch.Contracts;
+using TrueMediator.Contracts;
 
 var services = new ServiceCollection();
 services.AddApplicationServices();
@@ -190,4 +190,4 @@ Console.WriteLine(greeting);
 - Learn about [pipeline behaviors](pipeline-behaviors.md).
 - Publish [notifications](notifications.md) to multiple handlers.
 - Review [migration from MediatR](migration.md).
-- Explore the [complete sample](https://github.com/Kamyab7/SwiftDispatch/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture).
+- Explore the [complete sample](https://github.com/TrueMediator/TrueMediator/tree/master/samples/TrueMediator.Sample.CleanArchitecture).

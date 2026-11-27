@@ -14,11 +14,11 @@ import SiteFooter from "../components/SiteFooter.vue";
       class="privacy-content wrap markdown-body"
       tabindex="-1"
     >
-      <p class="eyebrow">SWIFTDISPATCH / PRIVACY</p>
+      <p class="eyebrow">TRUEMEDIATOR / PRIVACY</p>
       <h1>Privacy policy</h1>
       <p>Last updated: <time datetime="2026-11-16">16 November 2026</time></p>
       <p>
-        This policy describes the SwiftDispatch website maintained by the
+        This policy describes the TrueMediator website maintained by the
         project's
         <a
           href="https://github.com/Kamyab7"
@@ -26,7 +26,7 @@ import SiteFooter from "../components/SiteFooter.vue";
           rel="noopener noreferrer"
           >Kamyab7 maintainer</a
         >. It covers the current website, rather than applications that use the
-        SwiftDispatch library.
+        TrueMediator library.
       </p>
 
       <h2>Browsing this website</h2>
@@ -92,7 +92,7 @@ import SiteFooter from "../components/SiteFooter.vue";
       <p>
         For privacy questions, contact the maintainer at
         <a
-          href="mailto:valipourkamyab.official@gmail.com?subject=SwiftDispatch%20privacy"
+          href="mailto:valipourkamyab.official@gmail.com?subject=TrueMediator%20privacy"
           >valipourkamyab.official@gmail.com</a
         >, the project's published contact address. Emailing the maintainer
         shares your address and message through the email services involved.
@@ -117,7 +117,7 @@ import SiteFooter from "../components/SiteFooter.vue";
         forms, email subscriptions, or other data processing. The date above
         identifies this version.
       </p>
-      <RouterLink class="text-link" to="/">← Back to SwiftDispatch</RouterLink>
+      <RouterLink class="text-link" to="/">← Back to TrueMediator</RouterLink>
     </main>
     <SiteFooter />
   </div>

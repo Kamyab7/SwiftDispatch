@@ -42,7 +42,7 @@ Inside `AddApplicationServices`, configure stream behaviors in outermost-first o
 using System.Reflection;
 
 // Inside AddApplicationServices:
-return services.AddSwiftDispatch(options =>
+return services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
     options.AddStreamPipelineBehavior(typeof(StreamLoggingBehavior<,>));

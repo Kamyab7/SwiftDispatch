@@ -10,7 +10,7 @@ using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace SwiftDispatch.ReleaseTools;
+namespace TrueMediator.ReleaseTools;
 
 internal static class Tool
 {
@@ -56,7 +56,7 @@ internal static class Tool
 
 internal sealed class TemporaryDirectory : IDisposable
 {
-    public string Path { get; } = Directory.CreateTempSubdirectory("swiftdispatch-sbom-").FullName;
+    public string Path { get; } = Directory.CreateTempSubdirectory("truemediator-sbom-").FullName;
     public void Dispose() => Directory.Delete(Path, recursive: true);
 }
 
@@ -68,8 +68,8 @@ internal sealed record Package(string Path, string Name, string Version, XElemen
 
 internal static class Sbom
 {
-    public static readonly string[] Projects = ["SwiftDispatch", "SwiftDispatch.Contracts",
-        "SwiftDispatch.FluentValidation", "SwiftDispatch.EntityFrameworkCore"];
+    public static readonly string[] Projects = ["TrueMediator", "TrueMediator.Contracts",
+        "TrueMediator.FluentValidation", "TrueMediator.EntityFrameworkCore"];
 
     public static Package Metadata(string path)
     {
@@ -237,7 +237,7 @@ internal static class Sbom
                 File.Copy(props, Path.Combine(inputs, Path.GetFileName(props)));
             run(["tool", "run", "sbom-tool", "--", "generate", "-b", payload, "-bc", inputs,
                 "-pn", package.Name, "-pv", package.Version, "-ps", "Kamyab Valipour",
-                "-nsb", "https://github.com/Kamyab7/SwiftDispatch/sbom", "-mi", "SPDX:2.2"]);
+                "-nsb", "https://github.com/TrueMediator/TrueMediator/sbom", "-mi", "SPDX:2.2"]);
             run(["tool", "run", "sbom-tool", "--", "validate", "-b", payload, "-mi", "SPDX:2.2",
                 "-o", Path.Combine(reports, package.Stem + ".validation.json")]);
             var manifest = Path.Combine(payload, "_manifest/spdx_2.2/manifest.spdx.json");
@@ -279,7 +279,7 @@ internal sealed class ReleaseClient(HttpClient http, Action<string[]>? run = nul
         bool github = true, string accept = "application/vnd.github+json")
     {
         using var message = new HttpRequestMessage(new HttpMethod(method ?? (data is null ? "GET" : "POST")), url);
-        message.Headers.UserAgent.ParseAdd("SwiftDispatch-release");
+        message.Headers.UserAgent.ParseAdd("TrueMediator-release");
         if (github)
         {
             message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", Tool.Env("GH_TOKEN"));

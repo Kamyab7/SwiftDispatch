@@ -35,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$WIKI_TOKEN" ]; then
-            echo '::error::Add the WIKI_TOKEN repository secret before syncing the wiki.'
+            echo "::error::Set WIKI_TOKEN to a token with wiki write access to ${GITHUB_REPOSITORY}; check organization approval and SSO if required."
             exit 1
           fi
           export GIT_ASKPASS="$RUNNER_TEMP/wiki-askpass.sh"

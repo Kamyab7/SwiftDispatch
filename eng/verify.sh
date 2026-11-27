@@ -3,16 +3,16 @@ set -euo pipefail
 task_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$task_root"
 export DOTNET_PROCESSOR_COUNT="${DOTNET_PROCESSOR_COUNT:-2}"
-dotnet build SwiftDispatch.slnx -c Release --disable-build-servers -m:1
-dotnet test tests/SwiftDispatch.Tests -c Release --no-build
-dotnet test tests/SwiftDispatch.FluentValidation.Tests -c Release --no-build
-dotnet test tests/SwiftDispatch.EntityFrameworkCore.Tests -c Release --no-build
+dotnet build TrueMediator.slnx -c Release --disable-build-servers -m:1
+dotnet test tests/TrueMediator.Tests -c Release --no-build
+dotnet test tests/TrueMediator.FluentValidation.Tests -c Release --no-build
+dotnet test tests/TrueMediator.EntityFrameworkCore.Tests -c Release --no-build
 mkdir -p "$task_root/artifacts"
 package_output="$(mktemp -d "$task_root/artifacts/verify-packages.XXXXXX")"
-dotnet pack src/SwiftDispatch.Contracts -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
-dotnet pack src/SwiftDispatch -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
-dotnet pack src/SwiftDispatch.FluentValidation -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
-dotnet pack src/SwiftDispatch.EntityFrameworkCore -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
+dotnet pack src/TrueMediator.Contracts -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
+dotnet pack src/TrueMediator -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
+dotnet pack src/TrueMediator.FluentValidation -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
+dotnet pack src/TrueMediator.EntityFrameworkCore -c Release --no-build --disable-build-servers -m:1 -o "$package_output"
 dotnet tool restore
 dotnet run --file eng/sbom.cs -- generate "$package_output"
 package_cache="$(mktemp -d "$task_root/artifacts/package-cache.XXXXXX")"

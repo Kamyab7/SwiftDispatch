@@ -1,7 +1,7 @@
-using SwiftDispatch.Contracts;
-using SwiftDispatch.PackageSmoke.Infrastructure;
+using TrueMediator.Contracts;
+using TrueMediator.PackageSmoke.Infrastructure;
 
-namespace SwiftDispatch.PackageSmoke.Behaviors;
+namespace TrueMediator.PackageSmoke.Behaviors;
 
 public sealed class LoggingBehavior<TRequest, TResponse>(TraceLog trace) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

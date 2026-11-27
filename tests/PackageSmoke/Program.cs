@@ -1,11 +1,11 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using SwiftDispatch.PackageSmoke.Behaviors;
-using SwiftDispatch.Contracts;
-using SwiftDispatch.PackageSmoke.Configuration;
-using SwiftDispatch.PackageSmoke.Infrastructure;
-using SwiftDispatch.PackageSmoke.Notifications;
-using SwiftDispatch.PackageSmoke.Requests;
+using TrueMediator.PackageSmoke.Behaviors;
+using TrueMediator.Contracts;
+using TrueMediator.PackageSmoke.Configuration;
+using TrueMediator.PackageSmoke.Infrastructure;
+using TrueMediator.PackageSmoke.Notifications;
+using TrueMediator.PackageSmoke.Requests;
 
 var services = new ServiceCollection();
 services.AddScoped(static _ => new TraceLog());
@@ -57,4 +57,4 @@ if (trace.Entries.Count(entry => entry == "hello" || entry.StartsWith("saved: ",
 
 Console.WriteLine(greeting);
 Console.WriteLine(string.Join(" -> ", trace.Entries));
-Console.WriteLine("SwiftDispatch smoke test passed.");
+Console.WriteLine("TrueMediator smoke test passed.");

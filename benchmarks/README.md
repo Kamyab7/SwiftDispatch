@@ -1,6 +1,6 @@
 # Mediator benchmarks
 
-Compare this checkout of SwiftDispatch with MediatR 15.0.0 and
+Compare this checkout of TrueMediator with MediatR 15.0.0 and
 [martinothamar/Mediator](https://github.com/martinothamar/Mediator) 3.0.2,
 using BenchmarkDotNet 0.15.8 on .NET 10. Versions are pinned in
 `Directory.Packages.props`.
@@ -9,16 +9,16 @@ Run from the repository root with the .NET 10 SDK:
 
 ```sh
 # Check every request result and notification delivery without timing.
-dotnet run -c Release --project benchmarks/SwiftDispatch.Benchmarks -- --verify
+dotnet run -c Release --project benchmarks/TrueMediator.Benchmarks -- --verify
 
 # Full measurement (recommended for published comparisons).
-dotnet run -c Release --project benchmarks/SwiftDispatch.Benchmarks -- --filter '*'
+dotnet run -c Release --project benchmarks/TrueMediator.Benchmarks -- --filter '*'
 
 # Faster exploratory run; fewer samples, wider uncertainty.
-dotnet run -c Release --project benchmarks/SwiftDispatch.Benchmarks -- --filter '*' --job short --artifacts benchmarks/BenchmarkDotNet.Artifacts
+dotnet run -c Release --project benchmarks/TrueMediator.Benchmarks -- --filter '*' --job short --artifacts benchmarks/BenchmarkDotNet.Artifacts
 
 # Pairwise speed and allocation comparisons for all three libraries.
-python3 benchmarks/compare.py benchmarks/BenchmarkDotNet.Artifacts/results/SwiftDispatch.Benchmarks.DispatchBenchmarks-report-full.json
+python3 benchmarks/compare.py benchmarks/BenchmarkDotNet.Artifacts/results/TrueMediator.Benchmarks.DispatchBenchmarks-report-full.json
 ```
 
 The default full run writes reports under `BenchmarkDotNet.Artifacts/results`
@@ -40,10 +40,10 @@ See the checked-in [exploratory short run](results/short-run.md) and
 All libraries are invoked through their `IMediator` interface, resolved once
 from the same DI scope. Handlers are transient in all three libraries. Mediator
 is explicitly configured as transient instead of its default singleton lifetime;
-SwiftDispatch's mediator is scoped. Scope construction, registration, source
+TrueMediator's mediator is scoped. Scope construction, registration, source
 generation, request creation and mediator resolution are outside timed operations.
 There are no pipeline behaviors or logging sinks. Notification execution is sequential.
-Task APIs are used for MediatR and SwiftDispatch; Mediator uses its native
+Task APIs are used for MediatR and TrueMediator; Mediator uses its native
 ValueTask API. This intentionally includes the allocation difference between those APIs.
 The completed Task result is 42, outside the runtime's small-integer Task cache.
 

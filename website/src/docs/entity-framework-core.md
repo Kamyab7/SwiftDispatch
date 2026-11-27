@@ -1,14 +1,14 @@
 # Entity Framework Core transactions
 
-`SwiftDispatch.EntityFrameworkCore` adds opt-in, attribute-selected transactions to response and void requests. The package targets .NET 8, .NET 10, and .NET 11 and depends on EF Core Relational 8.0.34 or later. Core SwiftDispatch and its command/query contracts do not depend on EF Core.
+`TrueMediator.EntityFrameworkCore` adds opt-in, attribute-selected transactions to response and void requests. The package targets .NET 8, .NET 10, and .NET 11 and depends on EF Core Relational 8.0.34 or later. Core TrueMediator and its command/query contracts do not depend on EF Core.
 
 ## Install and configure
 
-Install both SwiftDispatch and its integration in the application that configures dispatch, plus your EF relational database provider:
+Install both TrueMediator and its integration in the application that configures dispatch, plus your EF relational database provider:
 
 ```sh
-dotnet add package SwiftDispatch
-dotnet add package SwiftDispatch.EntityFrameworkCore
+dotnet add package TrueMediator
+dotnet add package TrueMediator.EntityFrameworkCore
 ```
 
 Register your context normally, then select the default context directly in the existing registration lambda:
@@ -16,11 +16,11 @@ Register your context normally, then select the default context directly in the 
 ```csharp
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using SwiftDispatch.Contracts;
-using SwiftDispatch.EntityFrameworkCore;
+using TrueMediator.Contracts;
+using TrueMediator.EntityFrameworkCore;
 
 services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connectionString));
-services.AddSwiftDispatch(options =>
+services.AddTrueMediator(options =>
 {
     options.RegisterServicesFromAssembly(typeof(CreateOrder).Assembly);
     options.UseEntityFrameworkTransactions<ApplicationDbContext>();
@@ -37,7 +37,7 @@ public sealed record GetOrder(int Id) : IQuery<OrderDto?>;
 
 `ApplicationDbContext` and `OrderDto` above are application types. Implement handlers with the existing `IRequestHandler<TRequest,TResponse>` or `IRequestHandler<TRequest>` interfaces, and dispatch them with `mediator.Send(...)`.
 
-The default-context call is a build-time directive, like other SwiftDispatch options: use it directly in the registration lambda. It does not register the context or start transactions. Only one default may be selected per registration. Explicit attribute context selection overrides that default and can be used without a default. A context must be an accessible, concrete, closed `DbContext` type; register it separately in the same service scope as the mediator and handlers.
+The default-context call is a build-time directive, like other TrueMediator options: use it directly in the registration lambda. It does not register the context or start transactions. Only one default may be selected per registration. Explicit attribute context selection overrides that default and can be used without a default. A context must be an accessible, concrete, closed `DbContext` type; register it separately in the same service scope as the mediator and handlers.
 
 No runtime attribute scanning, reflection-based behavior construction, or per-message runtime selection is used. The generator constructs and registers a closed transaction behavior only for each marked request. Do not add `EntityFrameworkTransactionBehavior<,,>` manually as an open behavior.
 
@@ -47,7 +47,7 @@ Use `[Transactional]` when requests should use the default configured with `opti
 
 | Attribute | Context selection |
 | --- | --- |
-| `[Transactional]` | Uses the configured default context. A missing default produces build error `SD010` at the host registration. |
+| `[Transactional]` | Uses the configured default context. A missing default produces build error `TM010` at the host registration. |
 | `[Transactional(typeof(ApplicationDbContext))]` | Explicitly selects `ApplicationDbContext`, overriding any default. Works even when no default is configured. |
 
 In the example above, both forms select the same `ApplicationDbContext`. The explicit form on `CancelOrder` demonstrates an alternative; it is not required for void commands. Both forms support commands with responses and void commands.
@@ -58,7 +58,7 @@ The explicit form makes the request declaration reference a concrete context typ
 
 ## Command and query intent
 
-The optional contracts are available in `SwiftDispatch.Contracts` on all core-supported frameworks, including .NET Standard 2.0:
+The optional contracts are available in `TrueMediator.Contracts` on all core-supported frameworks, including .NET Standard 2.0:
 
 - `ICommand` inherits the response-less `IRequest` contract.
 - `ICommand<TResponse>` inherits `IRequest<TResponse>`.
@@ -71,19 +71,19 @@ They use the existing handlers and sender API; existing `IRequest` implementatio
 
 | Diagnostic | Meaning |
 | --- | --- |
-| `SD009` | `[Transactional]` is applied to a query, stream, notification, non-request, abstract request, or open generic request. |
-| `SD010` | The context is missing, invalid, or inaccessible. Configure a default or specify a valid context on the attribute. |
-| `SD011` | A concrete request implements both command and query contracts. |
-| `SD001` | Default context configuration is repeated or the configuration syntax is unsupported. |
+| `TM009` | `[Transactional]` is applied to a query, stream, notification, non-request, abstract request, or open generic request. |
+| `TM010` | The context is missing, invalid, or inaccessible. Configure a default or specify a valid context on the attribute. |
+| `TM011` | A concrete request implements both command and query contracts. |
+| `TM001` | Default context configuration is repeated or the configuration syntax is unsupported. |
 
 For example, this query fails the build, with the diagnostic attached to its attribute:
 
 ```csharp
-[Transactional] // SD009: queries cannot be transactional.
+[Transactional] // TM009: queries cannot be transactional.
 public sealed record GetOrder(int Id) : IQuery<OrderDto?>;
 ```
 
-Inherited query interfaces are recognized. Invalid target declarations and explicit context types are checked in the current assembly even without a dispatch registration, provided the SwiftDispatch generator is installed. Missing defaults are checked at the host registration so a contracts library can declare `[Transactional]` without choosing an infrastructure context. Included assemblies are also validated; declarations in assemblies outside the registration scope are not inspected. Attributes are single-use and are not inherited from base request classes.
+Inherited query interfaces are recognized. Invalid target declarations and explicit context types are checked in the current assembly even without a dispatch registration, provided the TrueMediator generator is installed. Missing defaults are checked at the host registration so a contracts library can declare `[Transactional]` without choosing an infrastructure context. Included assemblies are also validated; declarations in assemblies outside the registration scope are not inspected. Attributes are single-use and are not inherited from base request classes.
 
 ## Pipeline and transaction ownership
 
@@ -115,12 +115,12 @@ A database connection failure during commit can leave the outcome unknown; the i
 
 ## Verification and limits
 
-The SQLite sample at `samples/SwiftDispatch.Sample.EntityFrameworkCore` demonstrates response and void commands, explicit and default context selection, a query, and rollback after a saved change. Run it with:
+The SQLite sample at `samples/TrueMediator.Sample.EntityFrameworkCore` demonstrates response and void commands, explicit and default context selection, a query, and rollback after a saved change. Run it with:
 
 ```sh
-dotnet run --project samples/SwiftDispatch.Sample.EntityFrameworkCore
+dotnet run --project samples/TrueMediator.Sample.EntityFrameworkCore
 ```
 
 CI verifies real relational transactions and consumes the packed integration on .NET 8, .NET 10, and .NET 11. SQLite is the tested provider; validate other providers and EF major versions with your application. The integration requires a relational provider and does not supply an outbox, durable notifications, sagas, or automatic multi-context coordination.
 
-This EF integration is verified under normal .NET JIT execution. It does not extend SwiftDispatch's Native AOT guarantee to EF Core, its providers, or application models. The separate EF-free package consumer verifies that command/query contracts and existing dispatch remain trimming/AOT compatible.
+This EF integration is verified under normal .NET JIT execution. It does not extend TrueMediator's Native AOT guarantee to EF Core, its providers, or application models. The separate EF-free package consumer verifies that command/query contracts and existing dispatch remain trimming/AOT compatible.

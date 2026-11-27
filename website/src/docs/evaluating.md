@@ -1,6 +1,6 @@
-# Is SwiftDispatch right for your project?
+# Is TrueMediator right for your project?
 
-SwiftDispatch is a lightweight, MIT-licensed .NET mediator with source-generated registration and dispatch. Use this guide to decide whether to try it in a new project or evaluate an existing application for migration.
+TrueMediator is a lightweight, MIT-licensed .NET mediator with source-generated registration and dispatch. Use this guide to decide whether to try it in a new project or evaluate an existing application for migration.
 
 ## Start with your use case
 
@@ -15,9 +15,9 @@ SwiftDispatch is a lightweight, MIT-licensed .NET mediator with source-generated
 
 ## Check framework and registration requirements
 
-SwiftDispatch targets .NET Standard 2.0, .NET 8, .NET 10, and .NET 11. Native AOT is supported on .NET 8, .NET 10, and .NET 11. Building the repository requires the .NET 11 SDK.
+TrueMediator targets .NET Standard 2.0, .NET 8, .NET 10, and .NET 11. Native AOT is supported on .NET 8, .NET 10, and .NET 11. Building the repository requires the .NET 11 SDK.
 
-The source generator is included in the SwiftDispatch NuGet package. It reads registration at build time. Use a direct configuration lambda and supported assembly and behavior expressions; dynamic or conditional runtime configuration is unsupported. See [getting started](getting-started.md) for the configuration rules.
+The source generator is included in the TrueMediator NuGet package. It reads registration at build time. Use a direct configuration lambda and supported assembly and behavior expressions; dynamic or conditional runtime configuration is unsupported. See [getting started](getting-started.md) for the configuration rules.
 
 ## Evaluate an existing MediatR application
 
@@ -33,14 +33,14 @@ For parallel notifications, handlers share the publication scope. Their dependen
 
 ## Inspect performance evidence
 
-The repository compares SwiftDispatch, MediatR, and Mediator on .NET 10. The current published results are an exploratory short run with three measurement iterations on a shared development machine. Some repository build and test work overlapped measurement.
+The repository compares TrueMediator, MediatR, and Mediator on .NET 10. The current published results are an exploratory short run with three measurement iterations on a shared development machine. Some repository build and test work overlapped measurement.
 
 These are working examples, not publication-quality evidence. In particular, the yielding async request timing errors overlap substantially, so the results do not establish a reliable async speed winner. Execution time and allocation tradeoffs vary by scenario.
 
-Review [full results and measurement errors](https://github.com/Kamyab7/SwiftDispatch/blob/master/benchmarks/results/short-run.md) and [reproduction instructions](https://github.com/Kamyab7/SwiftDispatch/blob/master/benchmarks/README.md). Run the full job on an idle machine and measure representative application workloads before drawing performance conclusions.
+Review [full results and measurement errors](https://github.com/TrueMediator/TrueMediator/blob/master/benchmarks/results/short-run.md) and [reproduction instructions](https://github.com/TrueMediator/TrueMediator/blob/master/benchmarks/README.md). Run the full job on an idle machine and measure representative application workloads before drawing performance conclusions.
 
 ## Try it on one feature
 
-Use the [quick start](getting-started.md) to run a request and handler. Then inspect the [clean architecture sample](https://github.com/Kamyab7/SwiftDispatch/tree/master/samples/SwiftDispatch.Sample.CleanArchitecture) for a larger application structure.
+Use the [quick start](getting-started.md) to run a request and handler. Then inspect the [clean architecture sample](https://github.com/TrueMediator/TrueMediator/tree/master/samples/TrueMediator.Sample.CleanArchitecture) for a larger application structure.
 
 If your application already uses MediatR, begin with the [migration guide](migration.md).

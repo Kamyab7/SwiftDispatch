@@ -1,7 +1,7 @@
 using FluentValidation;
-using SwiftDispatch.PackageSmoke.Requests;
+using TrueMediator.PackageSmoke.Requests;
 
-namespace SwiftDispatch.PackageSmoke.Behaviors;
+namespace TrueMediator.PackageSmoke.Behaviors;
 
 public sealed class HelloValidator : AbstractValidator<Hello>
 {

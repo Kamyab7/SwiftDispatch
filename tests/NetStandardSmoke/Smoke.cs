@@ -1,8 +1,8 @@
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
-using SwiftDispatch.Contracts;
+using TrueMediator.Contracts;
 
-namespace SwiftDispatch.NetStandardSmoke;
+namespace TrueMediator.NetStandardSmoke;
 
 public sealed class Ping : IQuery<int>;
 
@@ -41,7 +41,7 @@ public static class Smoke
     public static async Task Run()
     {
         var services = new ServiceCollection();
-        services.AddSwiftDispatch(options => options
+        services.AddTrueMediator(options => options
             .AddHandlersFromAssemblyContaining<Ping>()
             .AddStreamPipelineBehavior(typeof(StreamBehavior<,>)));
         using var provider = services.BuildServiceProvider();

@@ -6,12 +6,12 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SwiftDispatch" VersionOverride="$(Version)" />
-    <PackageReference Include="SwiftDispatch.EntityFrameworkCore" VersionOverride="$(Version)" />
+    <PackageReference Include="TrueMediator" VersionOverride="$(Version)" />
+    <PackageReference Include="TrueMediator.EntityFrameworkCore" VersionOverride="$(Version)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-    <Compile Include="../../samples/SwiftDispatch.Sample.EntityFrameworkCore/**/*.cs"
-             Exclude="../../samples/SwiftDispatch.Sample.EntityFrameworkCore/obj/**/*.cs;../../samples/SwiftDispatch.Sample.EntityFrameworkCore/bin/**/*.cs"
+    <Compile Include="../../samples/TrueMediator.Sample.EntityFrameworkCore/**/*.cs"
+             Exclude="../../samples/TrueMediator.Sample.EntityFrameworkCore/obj/**/*.cs;../../samples/TrueMediator.Sample.EntityFrameworkCore/bin/**/*.cs"
              Link="Sample/%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

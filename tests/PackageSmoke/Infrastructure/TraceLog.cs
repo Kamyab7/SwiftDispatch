@@ -1,4 +1,4 @@
-namespace SwiftDispatch.PackageSmoke.Infrastructure;
+namespace TrueMediator.PackageSmoke.Infrastructure;
 
 public sealed class TraceLog
 {

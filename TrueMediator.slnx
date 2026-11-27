@@ -1,0 +1,38 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TrueMediator.EntityFrameworkCore/TrueMediator.EntityFrameworkCore.csproj" />
+    <Project Path="src/TrueMediator.FluentValidation/TrueMediator.FluentValidation.csproj" />
+    <Project Path="src/TrueMediator.Contracts/TrueMediator.Contracts.csproj" />
+    <Project Path="src/TrueMediator/TrueMediator.csproj" />
+    <Project Path="src/TrueMediator.SourceGenerator/TrueMediator.SourceGenerator.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EfPackageSmoke/EfPackageSmoke.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="tests/TrueMediator.EntityFrameworkCore.Tests/TrueMediator.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/TrueMediator.FluentValidation.Tests/TrueMediator.FluentValidation.Tests.csproj" />
+    <Project Path="tests/NetStandardSmoke/NetStandardSmoke.csproj" />
+    <Project Path="tests/PackageSmoke/PackageSmoke.csproj">
+      <!-- eng/verify.sh builds this after creating the local NuGet packages. -->
+      <Build Project="false" />
+    </Project>
+    <Project Path="tests/TrueMediator.Tests/TrueMediator.Tests.csproj" />
+  </Folder>
+  <Folder Name="/samples/Console/">
+    <Project Path="samples/TrueMediator.Sample.Console/TrueMediator.Sample.Console.csproj" />
+  </Folder>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/TrueMediator.Benchmarks/TrueMediator.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/samples/EntityFrameworkCore/">
+    <Project Path="samples/TrueMediator.Sample.EntityFrameworkCore/TrueMediator.Sample.EntityFrameworkCore.csproj" />
+  </Folder>
+  <Folder Name="/samples/" />
+  <Folder Name="/samples/CleanArchitecture/">
+    <Project Path="samples/TrueMediator.Sample.CleanArchitecture/Domain/Domain.csproj" />
+    <Project Path="samples/TrueMediator.Sample.CleanArchitecture/Application/Application.csproj" />
+    <Project Path="samples/TrueMediator.Sample.CleanArchitecture/Infrastructure/Infrastructure.csproj" />
+    <Project Path="samples/TrueMediator.Sample.CleanArchitecture/Web/Web.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,110 @@
+using Microsoft.CodeAnalysis;
+using Xunit;
+
+using static TrueMediator.Tests.TestSupport.GeneratorTestHelper;
+
+namespace TrueMediator.Tests.Generators;
+
+public sealed class HandlerGenerationTests
+{
+    [Fact]
+    public void DuplicateHandlersAreRejected()
+    {
+        (GeneratorDriverRunResult result, _) = Generate(Handler + """
+            public class Other : IRequestHandler<Ping,int>
+            {
+                public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(2);
+            }
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddTrueMediator(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
+            """);
+        Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "TM004");
+    }
+
+    [Theory]
+    [InlineData("public Handler() {} public Handler(string value) {}")]
+    [InlineData("private Handler() {}")]
+    [InlineData("public Handler(ref int value) {}")]
+    public void InvalidConstructorsAreRejected(string constructor)
+    {
+        (GeneratorDriverRunResult result, _) = Generate("""
+            public record Ping : IRequest<int>;
+            public class Handler : IRequestHandler<Ping,int>
+            {
+            """ + constructor + """
+                public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
+            }
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddTrueMediator(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
+            """);
+        Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "TM003");
+    }
+
+    [Fact]
+    public void OpenGenericHandlersAreRejected()
+    {
+        (GeneratorDriverRunResult result, _) = Generate("""
+            public record Ping<T> : IRequest<T>;
+            public class Handler<T> : IRequestHandler<Ping<T>,T>
+            {
+                public Task<T> Handle(Ping<T> request, CancellationToken ct) => Task.FromResult(default(T)!);
+            }
+            public class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddTrueMediator(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
+            """);
+        Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "TM005");
+    }
+
+    [Fact]
+    public void ExplicitInterfaceHandlersAndConstructorDependenciesCompile()
+    {
+        SuccessfulSource("""
+            public record Ping : IRequest<int>;
+            public class Handler(IServiceProvider services) : IRequestHandler<Ping,int>
+            {
+                Task<int> IRequestHandler<Ping,int>.Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
+            }
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddTrueMediator(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
+            """);
+    }
+
+    [Fact]
+    public void InheritedClosedHandlersAreDiscovered()
+    {
+        SuccessfulSource("""
+            public record Ping : IRequest<int>;
+            public abstract class Base<T> : IRequestHandler<Ping,int>
+            {
+                public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
+            }
+            public class Handler : Base<int>;
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddTrueMediator(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
+            """);
+    }
+
+    [Fact]
+    public void NullableConstructorParametersCompileWithoutGeneratedWarnings()
+    {
+        SuccessfulSource("""
+            public record Ping : IRequest<int>;
+            public class Handler : IRequestHandler<Ping,int>
+            {
+                public Handler(IServiceProvider? services, int? value) {}
+                public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
+            }
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddTrueMediator(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
+            """);
+    }
+
+    [Fact]
+    public void InheritedRequiredMembersProduceConstructorDiagnostic()
+    {
+        (GeneratorDriverRunResult result, _) = Generate("""
+            public record Ping : IRequest<int>;
+            public abstract class Base { public required string Name { get; init; } }
+            public class Handler : Base, IRequestHandler<Ping,int>
+            {
+                public Task<int> Handle(Ping request, CancellationToken ct) => Task.FromResult(1);
+            }
+            internal class Registration { public static IServiceCollection Register(IServiceCollection services) => services.AddTrueMediator(options => options.AddHandlersFromAssemblyContaining<Registration>()); }
+            """);
+        Assert.Contains(result.Diagnostics, static diagnostic => diagnostic.Id == "TM003");
+    }
+}

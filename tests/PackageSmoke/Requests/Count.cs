@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
-using SwiftDispatch.Contracts;
+using TrueMediator.Contracts;
 
-namespace SwiftDispatch.PackageSmoke.Requests;
+namespace TrueMediator.PackageSmoke.Requests;
 
 public sealed record Count(int Limit) : IStreamRequest<int>;
 

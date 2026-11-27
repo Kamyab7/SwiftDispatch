@@ -1,6 +1,6 @@
-# SwiftDispatch website
+# TrueMediator website
 
-SwiftDispatch marketing site and documentation, built with Vue 3, TypeScript, and Vite.
+TrueMediator marketing site and documentation, built with Vue 3, TypeScript, and Vite.
 
 Requires Node.js `^22.18.0 || >=24.12.0` and npm.
 
@@ -14,18 +14,30 @@ npm run dev
 `npm run build` checks types and builds production files in `dist/`.
 `npm run preview` serves the production build locally.
 
+## GitHub Pages deployment
+
+The production URL is https://truemediator.github.io/TrueMediator/.
+Vite's base is `/TrueMediator/`; the hash router and favicon URLs use that same base.
+The development and preview servers also serve the site under `/TrueMediator/`.
+
+In `TrueMediator/TrueMediator`, set **Settings → Pages → Build and deployment → Source**
+to **GitHub Actions** and remove any previous custom domain. The `github-pages`
+environment must allow deployments from `master`. The deployment workflow builds
+and publishes `website/dist` on pushes to `master` or through **Run workflow**.
+No `CNAME` file is needed for this GitHub-hosted address.
+
 ## Adoption funnel
 
 The home page moves visitors through the product promise, code examples, benefits, benchmark evidence, migration, adoption questions, and quick start. New projects go to the runnable console example; existing MediatR projects go to the migration guide. The evaluation guide supports compatibility decisions. Documentation points visitors onward to implementation and the clean architecture sample.
 
 Primary conversion intent: quick-start visits and successful install-command copies. Secondary intent: migration and evaluation visits, sample exploration, GitHub, and NuGet clicks. A click or clipboard copy does not prove a package install or successful adoption.
 
-`src/funnel.ts` emits local `swiftdispatch:conversion` CustomEvents with `name`, `placement`, and optional `destination`. Events are `quick_start_click`, `migration_click`, `evaluation_click`, `github_click`, `nuget_click`, and `install_copy`. No analytics provider, cookies, persistent identifiers, or network collection is configured. Connect your chosen analytics provider to this event before relying on conversion reports; handle consent as appropriate for that provider. Destination values omit query strings and are limited to recognized links.
+`src/funnel.ts` emits local `truemediator:conversion` CustomEvents with `name`, `placement`, and optional `destination`. Events are `quick_start_click`, `migration_click`, `evaluation_click`, `github_click`, `nuget_click`, and `install_copy`. No analytics provider, cookies, persistent identifiers, or network collection is configured. Connect your chosen analytics provider to this event before relying on conversion reports; handle consent as appropriate for that provider. Destination values omit query strings and are limited to recognized links.
 
 For example, a provider adapter can subscribe with:
 
 ```js
-window.addEventListener("swiftdispatch:conversion", ({ detail }) => {
+window.addEventListener("truemediator:conversion", ({ detail }) => {
   // Forward detail to your configured analytics provider.
 });
 ```
@@ -40,7 +52,7 @@ Documentation is rendered from Markdown files in `src/docs/`. Add a `.md` file w
 
 Link between guides using relative Markdown links, for example `[Pipeline behaviors](pipeline-behaviors.md)`. Level-two headings populate the page's table of contents. Raw HTML is disabled in Markdown.
 
-Open `/#/docs/getting-started` in the local dev server. Hash-based routing supports static hosts without server-side route rewrites. Changes to Markdown update through Vite; production updates require a new build.
+Open `/TrueMediator/#/docs/getting-started` in the local dev server. Hash-based routing supports static hosts without server-side route rewrites. Changes to Markdown update through Vite; production updates require a new build.
 
 ## GitHub wiki
 
