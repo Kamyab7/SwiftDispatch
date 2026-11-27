@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import logo from "../assets/logo.png";
+import logo from "../assets/logo.svg";
 const open = ref(false);
 </script>
 <template>
